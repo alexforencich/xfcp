@@ -24,26 +24,21 @@ THE SOFTWARE.
 
 import struct
 
+packet_types = {}
+
+
+def register(cls, ptype):
+    if ptype in packet_types:
+        raise Exception("ptype already registered")
+    packet_types[ptype] = cls
+
+
 def parse(data):
     pkt = Packet()
     pkt.parse(data)
 
-    if pkt.ptype == 0xfe:
-        return IDRequestPacket(pkt)
-    if pkt.ptype == 0xff:
-        return IDResponsePacket(pkt)
-    if pkt.ptype == 0x10:
-        return ReadRequestPacket(pkt)
-    if pkt.ptype == 0x11:
-        return ReadResponsePacket(pkt)
-    if pkt.ptype == 0x12:
-        return WriteRequestPacket(pkt)
-    if pkt.ptype == 0x13:
-        return WriteResponsePacket(pkt)
-    if pkt.ptype == 0x2C:
-        return I2CRequestPacket(pkt)
-    if pkt.ptype == 0x2D:
-        return I2CResponsePacket(pkt)
+    if pkt.ptype in packet_types:
+        return packet_types[pkt.ptype](pkt)
 
     return pkt
 
@@ -118,10 +113,14 @@ class IDRequestPacket(Packet):
     def __init__(self, payload=b'', path=[], rpath=[], ptype=0xfe):
         super(IDRequestPacket, self).__init__(payload, path, rpath, ptype)
 
+register(IDRequestPacket, 0xfe)
+
 
 class IDResponsePacket(Packet):
     def __init__(self, payload=b'', path=[], rpath=[], ptype=0xff):
         super(IDResponsePacket, self).__init__(payload, path, rpath, ptype)
+
+register(IDResponsePacket, 0xff)
 
 
 class MemoryAccessPacket(Packet):
@@ -168,10 +167,14 @@ class ReadRequestPacket(MemoryAccessPacket):
     def __init__(self, payload=b'', path=[], rpath=[], ptype=0x10):
         super(ReadRequestPacket, self).__init__(payload, path, rpath, ptype)
 
+register(ReadRequestPacket, 0x10)
+
 
 class ReadResponsePacket(MemoryAccessPacket):
     def __init__(self, payload=b'', path=[], rpath=[], ptype=0x11):
         super(ReadResponsePacket, self).__init__(payload, path, rpath, ptype)
+
+register(ReadResponsePacket, 0x11)
 
 
 class WriteRequestPacket(MemoryAccessPacket):
@@ -182,10 +185,14 @@ class WriteRequestPacket(MemoryAccessPacket):
         self.count = len(self.data)
         return super(WriteRequestPacket, self).build()
 
+register(WriteRequestPacket, 0x12)
+
 
 class WriteResponsePacket(MemoryAccessPacket):
     def __init__(self, payload=b'', path=[], rpath=[], ptype=0x13):
         super(WriteResponsePacket, self).__init__(payload, path, rpath, ptype)
+
+register(WriteResponsePacket, 0x13)
 
 
 class I2CPacket(Packet):
@@ -340,6 +347,8 @@ class I2CRequestPacket(I2CPacket):
     def unpack_write(self):
         return self.unpack_write_req()
 
+register(I2CRequestPacket, 0x2C)
+
 
 class I2CResponsePacket(I2CPacket):
     def __init__(self, payload=b'', path=[], rpath=[], ptype=0x2D):
@@ -362,4 +371,6 @@ class I2CResponsePacket(I2CPacket):
 
     def unpack_write(self):
         return self.unpack_write_resp()
+
+register(I2CResponsePacket, 0x2D)
 

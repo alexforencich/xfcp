@@ -27,20 +27,33 @@ import struct
 from . import packet
 from . import interface
 
+node_types = []
+
+
+def register(cls, ntype, prefix=16):
+    prefix = min(max(int(prefix), 1), 16)
+    ntype = ntype & (0xffff0000 >> prefix)
+    if any(ntype == nt[1] and prefix == nt[2] for nt in node_types):
+        raise Exception("ntype with same prefix already registered")
+    node_types.append((cls, ntype, prefix))
+
+
 def enumerate_interface(interface, path=()):
     node = Node()
     node.interface = interface
     node.path = path
     node.init()
 
-    # mask 0x8000
-    if node.ntype & 0x8000 == 0x8000:
-        return MemoryNode(node).init()
-    # mask 0xFF00
-    if node.ntype & 0xFF00 == 0x0100:
-        return SwitchNode(node).init()
-    if node.ntype & 0xFF00 == 0x2C00:
-        return I2CNode(node).init()
+    match_cls = None
+    match_prefix = 0
+
+    for nt in node_types:
+        if node.ntype & (0xffff0000 >> nt[2]) == nt[1] and nt[2] > match_prefix:
+            match_cls = nt[0]
+            match_prefix = nt[2]
+
+    if match_cls is not None:
+        return match_cls(node).init()
 
     return node
 
@@ -135,6 +148,8 @@ class SwitchNode(Node):
             self.children.append(enumerate_interface(self.interface, self.path+(p,)))
 
         return self
+
+register(SwitchNode, 0x0100, 8)
 
 
 class MemoryNode(Node):
@@ -241,6 +256,8 @@ class MemoryNode(Node):
     def write_qword(self, addr, data):
         return self.write_qwords(addr, [data])
 
+register(MemoryNode, 0x8000, 1)
+
 
 class I2CNode(Node):
     def __init__(self, obj=None):
@@ -296,4 +313,6 @@ class I2CNode(Node):
         self.interface.send(pkt)
         pkt = self.interface.receive()
         return pkt.unpack_set_prescale()
+
+register(I2CNode, 0x2C00, 8)
 
