@@ -14,6 +14,7 @@ in PATH.
 ## How to test
 
 Run make program to program the Atlys board with the Digilent command line
-tools.  Then run test.py or xfcp_ctrl.py with the appropriate interface selected.
+tools.  Then run test.py or xfcp_ctrl.py with the appropriate interface
+selected.
 
 
