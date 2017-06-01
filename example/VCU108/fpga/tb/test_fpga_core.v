@@ -48,6 +48,7 @@ reg i2c_scl_i = 1;
 reg i2c_sda_i = 1;
 reg phy_gmii_clk = 0;
 reg phy_gmii_rst = 0;
+reg phy_gmii_clk_en = 0;
 reg [7:0] phy_gmii_rxd = 0;
 reg phy_gmii_rx_dv = 0;
 reg phy_gmii_rx_er = 0;
@@ -85,6 +86,7 @@ initial begin
         i2c_sda_i,
         phy_gmii_clk,
         phy_gmii_rst,
+        phy_gmii_clk_en,
         phy_gmii_rxd,
         phy_gmii_rx_dv,
         phy_gmii_rx_er,
@@ -130,6 +132,7 @@ UUT (
     .i2c_sda_t(i2c_sda_t),
     .phy_gmii_clk(phy_gmii_clk),
     .phy_gmii_rst(phy_gmii_rst),
+    .phy_gmii_clk_en(phy_gmii_clk_en),
     .phy_gmii_rxd(phy_gmii_rxd),
     .phy_gmii_rx_dv(phy_gmii_rx_dv),
     .phy_gmii_rx_er(phy_gmii_rx_er),
