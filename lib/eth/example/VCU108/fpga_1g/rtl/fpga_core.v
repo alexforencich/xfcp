@@ -54,6 +54,7 @@ module fpga_core
      */
     input  wire       phy_gmii_clk,
     input  wire       phy_gmii_rst,
+    input  wire       phy_gmii_clk_en,
     input  wire [7:0] phy_gmii_rxd,
     input  wire       phy_gmii_rx_dv,
     input  wire       phy_gmii_rx_er,
@@ -291,9 +292,14 @@ always @(posedge clk) begin
     if (rst) begin
         led_reg <= 0;
     end else begin
-        valid_last <= tx_udp_payload_tvalid;
-        if (tx_udp_payload_tvalid & ~valid_last) begin
-            led_reg <= tx_udp_payload_tdata;
+        if (tx_udp_payload_tvalid) begin
+            if (~valid_last) begin
+                led_reg <= tx_udp_payload_tdata;
+                valid_last <= 1'b1;
+            end
+            if (tx_udp_payload_tlast) begin
+                valid_last <= 1'b0;
+            end
         end
     end
 end
@@ -311,7 +317,7 @@ eth_mac_1g_fifo #(
     .TX_FIFO_ADDR_WIDTH(12),
     .RX_FIFO_ADDR_WIDTH(12)
 )
-eth_mac_1g_fifo_inst (
+eth_mac_inst (
     .rx_clk(phy_gmii_clk),
     .rx_rst(phy_gmii_rst),
     .tx_clk(phy_gmii_clk),
@@ -338,8 +344,19 @@ eth_mac_1g_fifo_inst (
     .gmii_tx_en(phy_gmii_tx_en),
     .gmii_tx_er(phy_gmii_tx_er),
 
+    .rx_clk_enable(phy_gmii_clk_en),
+    .tx_clk_enable(phy_gmii_clk_en),
+    .rx_mii_select(1'b0),
+    .tx_mii_select(1'b0),
+
+    .tx_fifo_overflow(),
+    .tx_fifo_bad_frame(),
+    .tx_fifo_good_frame(),
     .rx_error_bad_frame(rx_error_bad_frame),
     .rx_error_bad_fcs(rx_error_bad_fcs),
+    .rx_fifo_overflow(),
+    .rx_fifo_bad_frame(),
+    .rx_fifo_good_frame(),
 
     .ifg_delay(12)
 );

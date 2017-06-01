@@ -60,6 +60,7 @@ module fpga_core #
     input  wire       phy_rx_dv,
     input  wire       phy_rx_er,
     output wire       phy_gtx_clk,
+    input  wire       phy_tx_clk,
     output wire [7:0] phy_txd,
     output wire       phy_tx_en,
     output wire       phy_tx_er,
@@ -71,19 +72,6 @@ module fpga_core #
     input  wire       uart_rxd,
     output wire       uart_txd
 );
-
-// GMII between MAC and PHY IF
-wire gmii_rx_clk;
-wire gmii_rx_rst;
-wire [7:0] gmii_rxd;
-wire gmii_rx_dv;
-wire gmii_rx_er;
-
-wire gmii_tx_clk;
-wire gmii_tx_rst;
-wire [7:0] gmii_txd;
-wire gmii_tx_en;
-wire gmii_tx_er;
 
 // AXI between MAC and Ethernet modules
 wire [7:0] rx_axis_tdata;
@@ -304,9 +292,14 @@ always @(posedge clk) begin
     if (rst) begin
         led_reg <= 0;
     end else begin
-        valid_last <= tx_udp_payload_tvalid;
-        if (tx_udp_payload_tvalid & ~valid_last) begin
-            led_reg <= tx_udp_payload_tdata;
+        if (tx_udp_payload_tvalid) begin
+            if (~valid_last) begin
+                led_reg <= tx_udp_payload_tdata;
+                valid_last <= 1'b1;
+            end
+            if (tx_udp_payload_tlast) begin
+                valid_last <= 1'b0;
+            end
         end
     end
 end
@@ -317,47 +310,18 @@ assign phy_reset_n = ~rst;
 
 assign uart_txd = 0;
 
-gmii_phy_if #(
+eth_mac_1g_gmii_fifo #(
     .TARGET(TARGET),
     .IODDR_STYLE("IODDR2"),
-    .CLOCK_INPUT_STYLE("BUFIO2")
-)
-gmii_phy_if_inst (
-    .clk(clk),
-    .rst(rst),
-
-    .mac_gmii_rx_clk(gmii_rx_clk),
-    .mac_gmii_rx_rst(gmii_rx_rst),
-    .mac_gmii_rxd(gmii_rxd),
-    .mac_gmii_rx_dv(gmii_rx_dv),
-    .mac_gmii_rx_er(gmii_rx_er),
-    .mac_gmii_tx_clk(gmii_tx_clk),
-    .mac_gmii_tx_rst(gmii_tx_rst),
-    .mac_gmii_txd(gmii_txd),
-    .mac_gmii_tx_en(gmii_tx_en),
-    .mac_gmii_tx_er(gmii_tx_er),
-
-    .phy_gmii_rx_clk(phy_rx_clk),
-    .phy_gmii_rxd(phy_rxd),
-    .phy_gmii_rx_dv(phy_rx_dv),
-    .phy_gmii_rx_er(phy_rx_er),
-    .phy_gmii_tx_clk(phy_gtx_clk),
-    .phy_gmii_txd(phy_txd),
-    .phy_gmii_tx_en(phy_tx_en),
-    .phy_gmii_tx_er(phy_tx_er)
-);
-
-eth_mac_1g_fifo #(
+    .CLOCK_INPUT_STYLE("BUFIO2"),
     .ENABLE_PADDING(1),
     .MIN_FRAME_LENGTH(64),
     .TX_FIFO_ADDR_WIDTH(12),
     .RX_FIFO_ADDR_WIDTH(12)
 )
-eth_mac_1g_fifo_inst (
-    .rx_clk(gmii_rx_clk),
-    .rx_rst(gmii_rx_rst),
-    .tx_clk(gmii_tx_clk),
-    .tx_rst(gmii_tx_rst),
+eth_mac_inst (
+    .gtx_clk(clk),
+    .gtx_rst(rst),
     .logic_clk(clk),
     .logic_rst(rst),
 
@@ -373,15 +337,25 @@ eth_mac_1g_fifo_inst (
     .rx_axis_tlast(rx_axis_tlast),
     .rx_axis_tuser(rx_axis_tuser),
 
-    .gmii_rxd(gmii_rxd),
-    .gmii_rx_dv(gmii_rx_dv),
-    .gmii_rx_er(gmii_rx_er),
-    .gmii_txd(gmii_txd),
-    .gmii_tx_en(gmii_tx_en),
-    .gmii_tx_er(gmii_tx_er),
+    .gmii_rx_clk(phy_rx_clk),
+    .gmii_rxd(phy_rxd),
+    .gmii_rx_dv(phy_rx_dv),
+    .gmii_rx_er(phy_rx_er),
+    .gmii_tx_clk(phy_gtx_clk),
+    .mii_tx_clk(phy_tx_clk),
+    .gmii_txd(phy_txd),
+    .gmii_tx_en(phy_tx_en),
+    .gmii_tx_er(phy_tx_er),
 
+    .tx_fifo_overflow(),
+    .tx_fifo_bad_frame(),
+    .tx_fifo_good_frame(),
     .rx_error_bad_frame(rx_error_bad_frame),
     .rx_error_bad_fcs(rx_error_bad_fcs),
+    .rx_fifo_overflow(),
+    .rx_fifo_bad_frame(),
+    .rx_fifo_good_frame(),
+    .speed(),
 
     .ifg_delay(12)
 );
