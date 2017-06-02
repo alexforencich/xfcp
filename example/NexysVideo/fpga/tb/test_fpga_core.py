@@ -53,10 +53,11 @@ srcs.append("../lib/eth/rtl/oddr.v")
 srcs.append("../lib/eth/rtl/ssio_ddr_in.v")
 srcs.append("../lib/eth/rtl/ssio_ddr_out.v")
 srcs.append("../lib/eth/rtl/rgmii_phy_if.v")
-srcs.append("../lib/eth/rtl/eth_mac_1g_fifo.v")
+srcs.append("../lib/eth/rtl/eth_mac_1g_rgmii_fifo.v")
+srcs.append("../lib/eth/rtl/eth_mac_1g_rgmii.v")
 srcs.append("../lib/eth/rtl/eth_mac_1g.v")
-srcs.append("../lib/eth/rtl/eth_mac_1g_rx.v")
-srcs.append("../lib/eth/rtl/eth_mac_1g_tx.v")
+srcs.append("../lib/eth/rtl/axis_gmii_rx.v")
+srcs.append("../lib/eth/rtl/axis_gmii_tx.v")
 srcs.append("../lib/eth/rtl/lfsr.v")
 srcs.append("../lib/eth/rtl/eth_axis_rx.v")
 srcs.append("../lib/eth/rtl/eth_axis_tx.v")
@@ -149,6 +150,8 @@ def bench():
     s2_sda_t = Signal(bool(1))
 
     # sources and sinks
+    mii_select = Signal(bool(0))
+
     rgmii_source = rgmii_ep.RGMIISource()
 
     rgmii_source_logic = rgmii_source.create_logic(
@@ -156,6 +159,7 @@ def bench():
         rst,
         txd=phy_rxd,
         tx_ctl=phy_rx_ctl,
+        mii_select=mii_select,
         name='rgmii_source'
     )
 
@@ -166,6 +170,7 @@ def bench():
         rst,
         rxd=phy_txd,
         rx_ctl=phy_tx_ctl,
+        mii_select=mii_select,
         name='rgmii_sink'
     )
 
@@ -276,7 +281,6 @@ def bench():
     @always(delay(4))
     def clkgen():
         clk.next = not clk
-        phy_rx_clk.next = not phy_rx_clk
 
     @instance
     def clkgen2():
@@ -284,6 +288,14 @@ def bench():
         while True:
             clk90.next = not clk90
             yield delay(4)
+
+    rx_clk_hp = Signal(int(4))
+
+    @instance
+    def rx_clk_gen():
+        while True:
+            yield delay(int(rx_clk_hp))
+            phy_rx_clk.next = not phy_rx_clk
 
     @instance
     def check():
@@ -640,7 +652,7 @@ def bench():
 
         raise StopSimulation
 
-    return dut, rgmii_source_logic, rgmii_sink_logic, uart_source_logic, uart_sink_logic, i2c_mem_logic1, i2c_mem_logic2, bus, clkgen, clkgen2, check
+    return dut, rgmii_source_logic, rgmii_sink_logic, uart_source_logic, uart_sink_logic, i2c_mem_logic1, i2c_mem_logic2, bus, clkgen, clkgen2, rx_clk_gen, check
 
 def test_bench():
     sim = Simulation(bench())
