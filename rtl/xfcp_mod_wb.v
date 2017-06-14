@@ -486,6 +486,13 @@ always @* begin
                     wb_cyc_o_next = 1'b1;
                     wb_stb_o_next = 1'b1;
                     state_next = STATE_WRITE_2;
+                    if (up_xfcp_in_tlast) begin
+                        // last asserted, nothing further to write
+                        ptr_next = 0;
+                    end
+                end else if (up_xfcp_in_tlast) begin
+                    // last asserted, return to idle
+                    state_next = STATE_IDLE;
                 end else begin
                     state_next = STATE_WRITE_1;
                 end
