@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 """
 
+import math
 import struct
 
 from . import packet
@@ -180,11 +181,11 @@ class MemoryNode(Node):
         pkt.addr = addr
         pkt.data = b''
         pkt.count = count
-        pkt.addr_width = self.addr_width
+        pkt.addr_width = self.addr_width+math.ceil(math.log(self.word_size/8, 2))
         pkt.count_width = self.count_width
         self.interface.send(pkt)
         pkt = self.interface.receive()
-        pkt.addr_width = self.addr_width
+        pkt.addr_width = self.addr_width+math.ceil(math.log(self.word_size/8, 2))
         pkt.count_width = self.count_width
         pkt.parse()
         return pkt.data
@@ -221,11 +222,11 @@ class MemoryNode(Node):
         pkt.addr = addr
         pkt.data = data
         pkt.count = len(data)
-        pkt.addr_width = self.addr_width
+        pkt.addr_width = self.addr_width+math.ceil(math.log(self.word_size/8, 2))
         pkt.count_width = self.count_width
         self.interface.send(pkt)
         pkt = self.interface.receive()
-        pkt.addr_width = self.addr_width
+        pkt.addr_width = self.addr_width+math.ceil(math.log(self.word_size/8, 2))
         pkt.count_width = self.count_width
         pkt.parse()
         return pkt.count
