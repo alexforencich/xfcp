@@ -236,7 +236,7 @@ class MemoryNode(Node):
         data = b''
         for w in words:
             data += struct.pack('<Q', w)[:ws]
-        return self.write(addr*ws, data)/ws
+        return int(self.write(addr*ws, data)/ws)
 
     def write_dwords(self, addr, data):
         return self.write_words(addr, data, 4)
