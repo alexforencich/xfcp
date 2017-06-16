@@ -101,8 +101,7 @@ class GTYE3ChannelNode(xfcp.node.MemoryNode):
 
     def is_rx_prbs_locked(self):
         w = self.masked_read(0xff03, 0x000c)
-        if w & 0x0004:
-            self.rx_prbs_error = True
+        self.rx_prbs_error = bool(w & 0x0004)
         self.rx_prbs_error_valid = True
         return bool(w & 0x0008)
 
