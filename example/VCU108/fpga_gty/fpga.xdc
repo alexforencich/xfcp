@@ -89,8 +89,8 @@ set_property -dict {LOC AK42} [get_ports qsfp_tx1_p] ;# MGTYTXN0_127 GTYE3_CHANN
 #set_property -dict {LOC AK43} [get_ports qsfp_tx1_n] ;# MGTYTXP0_127 GTYE3_CHANNEL_X0Y12 / GTYE3_COMMON_X0Y3
 set_property -dict {LOC AJ40} [get_ports qsfp_tx2_p] ;# MGTYTXN1_127 GTYE3_CHANNEL_X0Y13 / GTYE3_COMMON_X0Y3
 #set_property -dict {LOC AJ41} [get_ports qsfp_tx2_n] ;# MGTYTXP1_127 GTYE3_CHANNEL_X0Y13 / GTYE3_COMMON_X0Y3
-set_property -dict {LOC AG41} [get_ports qsfp_tx3_p] ;# MGTYTXN2_127 GTYE3_CHANNEL_X0Y14 / GTYE3_COMMON_X0Y3
-#set_property -dict {LOC AG40} [get_ports qsfp_tx3_n] ;# MGTYTXP2_127 GTYE3_CHANNEL_X0Y14 / GTYE3_COMMON_X0Y3
+set_property -dict {LOC AG40} [get_ports qsfp_tx3_p] ;# MGTYTXN2_127 GTYE3_CHANNEL_X0Y14 / GTYE3_COMMON_X0Y3
+#set_property -dict {LOC AG41} [get_ports qsfp_tx3_n] ;# MGTYTXP2_127 GTYE3_CHANNEL_X0Y14 / GTYE3_COMMON_X0Y3
 set_property -dict {LOC AE40} [get_ports qsfp_tx4_p] ;# MGTYTXN3_127 GTYE3_CHANNEL_X0Y15 / GTYE3_COMMON_X0Y3
 #set_property -dict {LOC AE41} [get_ports qsfp_tx4_n] ;# MGTYTXP3_127 GTYE3_CHANNEL_X0Y15 / GTYE3_COMMON_X0Y3
 set_property -dict {LOC AF38} [get_ports qsfp_mgt_refclk_0_p] ;# MGTREFCLK0P_127 from U32 SI570 via U102 SI53340
