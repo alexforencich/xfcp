@@ -39,10 +39,11 @@ def register(cls, ntype, prefix=16):
     node_types.append((cls, ntype, prefix))
 
 
-def enumerate_interface(interface, path=()):
+def enumerate_interface(interface, path=(), parent=None):
     node = Node()
     node.interface = interface
     node.path = path
+    node.parent = parent
     node.init()
 
     match_cls = None
@@ -66,6 +67,7 @@ class Node(object):
         self.ntype = 0
         self.name = ''
         self.ext_str = ''
+        self.parent = None
         self.children = []
         self.id_pkt = None
 
@@ -75,6 +77,7 @@ class Node(object):
             self.ntype = obj.ntype
             self.name = obj.name
             self.ext_str = obj.ext_str
+            self.parent = obj.parent
             self.children = obj.children
             self.id_pkt = obj.id_pkt
 
@@ -161,7 +164,7 @@ class SwitchNode(Node):
         self.up_ports, self.down_ports = struct.unpack_from('BB', self.id_pkt.payload, 2)
 
         for p in range(self.down_ports):
-            self.children.append(enumerate_interface(self.interface, self.path+(p,)))
+            self.children.append(enumerate_interface(self.interface, self.path+(p,), self))
 
         return self
 
