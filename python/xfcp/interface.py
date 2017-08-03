@@ -88,7 +88,7 @@ def cobs_decode(block):
 
 class Interface(object):
     def __init__(self):
-        pass
+        self._root = None
 
     def send(self, packet):
         raise NotImplementedError()
@@ -97,7 +97,13 @@ class Interface(object):
         raise NotImplementedError()
 
     def enumerate(self):
-        return node.enumerate_interface(self)
+        self._root = node.enumerate_interface(self)
+        return self._root
+
+    def get_root(self):
+        if self._root is None:
+            self.enumerate()
+        return self._root
 
 
 class SerialInterface(Interface):
