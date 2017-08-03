@@ -186,6 +186,8 @@ class MemoryNode(Node):
             self.word_size = obj.word_size
             self.count_width = obj.count_width
 
+        self.byte_addr_width = self.addr_width+math.ceil(math.log(self.word_size/8, 2))
+
     def init(self, id_pkt=None):
         super(MemoryNode, self).init(id_pkt)
 
