@@ -135,7 +135,6 @@ class UDPInterface(Interface):
 
         self.host = host
         self.port = port
-        self.addrinfo = (host, port)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.settimeout(timeout)
 
@@ -148,7 +147,7 @@ class UDPInterface(Interface):
         self.socket.settimeout(value)
 
     def send(self, pkt):
-        self.socket.sendto(pkt.build(), self.addrinfo)
+        self.socket.sendto(pkt.build(), (self.host, self.port))
 
     def receive(self):
         return packet.parse(self.socket.recvfrom(1500)[0])
