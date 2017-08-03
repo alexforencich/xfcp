@@ -111,6 +111,21 @@ class Node(object):
 
         return n
 
+    def find_by_type(self, t, prefix=16):
+        l = []
+
+        for n in self.children:
+            if type(t) is int:
+                if t & (0xffff0000 >> prefix) == n.ntype & (0xffff0000 >> prefix):
+                    l.append(n)
+            else:
+                if isinstance(n, t):
+                    l.append(n)
+
+            l.extend(n.find_by_type(t, prefix))
+
+        return l
+
     def __repr__(self):
         return '%s(interface=%s, path=%s, ntype=%d, name="%s", ext_str="%s", children=%s)' % (type(self).__name__, repr(self.interface), repr(self.path), self.ntype, self.name, self.ext_str, repr(self.children))
 
