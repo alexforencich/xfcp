@@ -35,6 +35,7 @@ def register(cls, ntype, prefix=16):
     ntype = ntype & (0xffff0000 >> prefix)
     if any(ntype == nt[1] and prefix == nt[2] for nt in node_types):
         raise Exception("ntype with same prefix already registered")
+    assert issubclass(cls, Node)
     node_types.append((cls, ntype, prefix))
 
 

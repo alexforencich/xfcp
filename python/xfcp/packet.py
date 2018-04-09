@@ -30,6 +30,7 @@ packet_types = {}
 def register(cls, ptype):
     if ptype in packet_types:
         raise Exception("ptype already registered")
+    assert issubclass(cls, Packet)
     packet_types[ptype] = cls
 
 
