@@ -26,7 +26,6 @@ import math
 import struct
 
 from . import packet
-from . import interface
 
 node_types = []
 
