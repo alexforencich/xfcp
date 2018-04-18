@@ -77,6 +77,8 @@ class Packet(object):
     def parse(self, data):
         i = 0
 
+        data = bytearray(data)
+
         self.path = []
         self.rpath = []
 
