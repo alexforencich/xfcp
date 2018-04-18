@@ -277,7 +277,7 @@ class I2CPacket(Packet):
 
     def pack_read_resp(self, data, start=False, stop=False):
         if len(data) == 1:
-            self.payload += struct.pack('BB', 0x02 | (0x01 if start else 0x00) | (0x08 if stop else 0x00), data[0])
+            self.payload += struct.pack('B', 0x02 | (0x01 if start else 0x00) | (0x08 if stop else 0x00)) + data
         elif len(data) > 1:
             self.payload += struct.pack('BB', 0x12 | (0x01 if start else 0x00) | (0x08 if stop else 0x00), len(data)) + data
 
@@ -300,7 +300,7 @@ class I2CPacket(Packet):
 
     def pack_write_req(self, data, start=False, stop=False):
         if len(data) == 1:
-            self.payload += struct.pack('BB', 0x04 | (0x01 if start else 0x00) | (0x08 if stop else 0x00), data[0])
+            self.payload += struct.pack('B', 0x04 | (0x01 if start else 0x00) | (0x08 if stop else 0x00)) + data
         elif len(data) > 1:
             self.payload += struct.pack('BB', 0x14 | (0x01 if start else 0x00) | (0x08 if stop else 0x00), len(data)) + data
 
