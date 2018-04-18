@@ -52,7 +52,7 @@ class Packet(object):
         self.ptype = ptype
 
         if isinstance(payload, Packet):
-            self.payload = bytes(payload.payload)
+            self.payload = bytearray(payload.payload)
             self.path = tuple(payload.path)
             self.rpath = tuple(payload.rpath)
             self.ptype = payload.ptype
