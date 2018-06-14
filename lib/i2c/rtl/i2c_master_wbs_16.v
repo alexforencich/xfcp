@@ -78,7 +78,7 @@ scl  ST \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ 
 
 Write
     __    ___ ___ ___ ___ ___ ___ ___ ___     ___ ___ ___ ___ ___ ___ ___ ___     ___ ___ ___ ___ ___ ___ ___ ___ ___    __
-sda   \__/_6_X_5_X_4_X_3_X_2_X_1_X_0_/_W_\_A_/_7_X_6_X_5_X_4_X_3_X_2_X_1_X_0_\_A_/_7_X_6_X_5_X_4_X_3_X_2_X_1_X_0_/_N_\__/
+sda   \__/_6_X_5_X_4_X_3_X_2_X_1_X_0_/ W \_A_/_7_X_6_X_5_X_4_X_3_X_2_X_1_X_0_\_A_/_7_X_6_X_5_X_4_X_3_X_2_X_1_X_0_/ N \__/
     ____   _   _   _   _   _   _   _   _   _   _   _   _   _   _   _   _   _   _   _   _   _   _   _   _   _   _   _   ____
 scl  ST \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ SP
 
@@ -344,7 +344,7 @@ end else begin
     assign cmd_write_int = cmd_write_reg;
     assign cmd_write_multiple_int = cmd_write_multiple_reg;
     assign cmd_stop_int = cmd_stop_reg;
-    assign cmd_valid = cmd_valid_reg;
+    assign cmd_valid_int = cmd_valid_reg;
     assign cmd_ready = cmd_ready_int;
 end
 
