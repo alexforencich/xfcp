@@ -32,7 +32,7 @@ THE SOFTWARE.
 module wb_ram #
 (
     parameter DATA_WIDTH = 32,              // width of data bus in bits (8, 16, 32, or 64)
-    parameter ADDR_WIDTH = 32,              // width of address bus in bits
+    parameter ADDR_WIDTH = 16,              // width of address bus in bits
     parameter SELECT_WIDTH = (DATA_WIDTH/8) // width of word select bus (1, 2, 4, or 8)
 )
 (
@@ -66,11 +66,15 @@ wire [VALID_ADDR_WIDTH-1:0] adr_i_valid = adr_i >> (ADDR_WIDTH - VALID_ADDR_WIDT
 assign dat_o = dat_o_reg;
 assign ack_o = ack_o_reg;
 
-integer i;
+integer i, j;
 
 initial begin
-    for (i = 0; i < 2**VALID_ADDR_WIDTH; i = i + 1) begin
-        mem[i] = 0;
+    // two nested loops for smaller number of iterations per loop
+    // workaround for synthesizer complaints about large loop counts
+    for (i = 0; i < 2**ADDR_WIDTH; i = i + 2**(ADDR_WIDTH/2)) begin
+        for (j = i; j < i + 2**(ADDR_WIDTH/2); j = j + 1) begin
+            mem[j] = 0;
+        end
     end
 end
 
