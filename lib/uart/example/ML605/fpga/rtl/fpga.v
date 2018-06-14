@@ -31,11 +31,12 @@ THE SOFTWARE.
  */
 module fpga (
     /*
-     * Clock: 100MHz
-     * Reset: Push button, active low
+     * Clock: 200MHz
+     * Reset: Push button, active high
      */
-    input  wire       clk,
-    input  wire       reset_n,
+    input  wire       sys_clk_p,
+    input  wire       sys_clk_n,
+    input  wire       reset,
     /*
      * GPIO
      */
@@ -45,41 +46,61 @@ module fpga (
     input  wire       btnr,
     input  wire       btnc,
     input  wire [7:0] sw,
+    output wire       ledu,
+    output wire       ledl,
+    output wire       ledd,
+    output wire       ledr,
+    output wire       ledc,
     output wire [7:0] led,
     /*
-     * UART: 9600 bps, 8N1
+     * Ethernet: 1000BASE-T GMII
      */
-    input  wire       uart_rxd,
-    output wire       uart_txd
+    input  wire       phy_rx_clk,
+    input  wire [7:0] phy_rxd,
+    input  wire       phy_rx_dv,
+    input  wire       phy_rx_er,
+    output wire       phy_gtx_clk,
+    output wire [7:0] phy_txd,
+    output wire       phy_tx_en,
+    output wire       phy_tx_er,
+    output wire       phy_reset_n,
+    /*
+     * Silicon Labs CP2103 USB UART
+     */
+    output wire       uart_rxd,
+    input  wire       uart_txd,
+    input  wire       uart_rts,
+    output wire       uart_cts
 );
 
 // Clock and reset
 
-wire clk_ibufg;
-wire clk_bufg;
-wire clk_mmcm_out;
+wire sys_clk_ibufg;
+wire sys_clk_bufg;
+wire clk_125mhz_mmcm_out;
 
 // Internal 125 MHz clock
-wire clk_int;
-wire rst_int;
+wire clk_125mhz_int;
+wire rst_125mhz_int;
 
-wire mmcm_rst = ~reset_n;
+wire mmcm_rst = reset;
 wire mmcm_locked;
 wire mmcm_clkfb;
 
-IBUFG
-clk_ibufg_inst(
-    .I(clk),
-    .O(clk_ibufg)
+IBUFGDS
+clk_ibufgds_inst(
+    .I(sys_clk_p),
+    .IB(sys_clk_n),
+    .O(sys_clk_ibufg)
 );
 
 // MMCM instance
-// 100 MHz in, 125 MHz out
-// PFD range: 10 MHz to 550 MHz
+// 200 MHz in, 125 MHz out
+// PFD range: 10 MHz to 450 MHz
 // VCO range: 600 MHz to 1200 MHz
-// M = 10, D = 1 sets Fvco = 1000 MHz (in range)
+// M = 5, D = 1 sets Fvco = 1000 MHz (in range)
 // Divide by 8 to get output frequency of 125 MHz
-MMCME2_BASE #(
+MMCM_BASE #(
     .BANDWIDTH("OPTIMIZED"),
     .CLKOUT0_DIVIDE_F(8),
     .CLKOUT0_DUTY_CYCLE(0.5),
@@ -87,7 +108,7 @@ MMCME2_BASE #(
     .CLKOUT1_DIVIDE(1),
     .CLKOUT1_DUTY_CYCLE(0.5),
     .CLKOUT1_PHASE(0),
-    .CLKOUT2_DIVIDE(5),
+    .CLKOUT2_DIVIDE(1),
     .CLKOUT2_DUTY_CYCLE(0.5),
     .CLKOUT2_PHASE(0),
     .CLKOUT3_DIVIDE(1),
@@ -102,20 +123,20 @@ MMCME2_BASE #(
     .CLKOUT6_DIVIDE(1),
     .CLKOUT6_DUTY_CYCLE(0.5),
     .CLKOUT6_PHASE(0),
-    .CLKFBOUT_MULT_F(10),
+    .CLKFBOUT_MULT_F(5),
     .CLKFBOUT_PHASE(0),
     .DIVCLK_DIVIDE(1),
-    .REF_JITTER1(0.010),
-    .CLKIN1_PERIOD(10.0),
+    .REF_JITTER1(0.100),
+    .CLKIN1_PERIOD(5.0),
     .STARTUP_WAIT("FALSE"),
     .CLKOUT4_CASCADE("FALSE")
 )
 clk_mmcm_inst (
-    .CLKIN1(clk_ibufg),
+    .CLKIN1(sys_clk_ibufg),
     .CLKFBIN(mmcm_clkfb),
     .RST(mmcm_rst),
     .PWRDWN(1'b0),
-    .CLKOUT0(clk_mmcm_out),
+    .CLKOUT0(clk_125mhz_mmcm_out),
     .CLKOUT0B(),
     .CLKOUT1(),
     .CLKOUT1B(),
@@ -132,18 +153,18 @@ clk_mmcm_inst (
 );
 
 BUFG
-clk_bufg_inst (
-    .I(clk_mmcm_out),
-    .O(clk_int)
+clk_125mhz_bufg_inst (
+    .I(clk_125mhz_mmcm_out),
+    .O(clk_125mhz_int)
 );
 
 sync_reset #(
     .N(4)
 )
-sync_reset_inst (
-    .clk(clk_int),
+sync_reset_125mhz_inst (
+    .clk(clk_125mhz_int),
     .rst(~mmcm_locked),
-    .sync_reset_out(rst_int)
+    .sync_reset_out(rst_125mhz_int)
 );
 
 // GPIO
@@ -154,14 +175,26 @@ wire btnr_int;
 wire btnc_int;
 wire [7:0] sw_int;
 
+wire ledu_int;
+wire ledl_int;
+wire ledd_int;
+wire ledr_int;
+wire ledc_int;
+wire [7:0] led_int;
+
+wire uart_rxd_int;
+wire uart_txd_int;
+wire uart_rts_int;
+wire uart_cts_int;
+
 debounce_switch #(
     .WIDTH(13),
     .N(4),
     .RATE(125000)
 )
 debounce_switch_inst (
-    .clk(clk_int),
-    .rst(rst_int),
+    .clk(clk_125mhz_int),
+    .rst(rst_125mhz_int),
     .in({btnu,
         btnl,
         btnd,
@@ -177,14 +210,26 @@ debounce_switch_inst (
 );
 
 sync_signal #(
-    .WIDTH(1),
+    .WIDTH(2),
     .N(2)
 )
 sync_signal_inst (
-    .clk(clk_int),
-    .in({uart_rxd}),
-    .out({uart_rxd_int})
+    .clk(clk_125mhz_int),
+    .in({uart_txd,
+        uart_rts}),
+    .out({uart_txd_int,
+        uart_rts_int})
 );
+
+assign ledu = ledu_int;
+assign ledl = ledl_int;
+assign ledd = ledd_int;
+assign ledr = ledr_int;
+assign ledc = ledc_int;
+assign led = led_int;
+
+assign uart_rxd = uart_rxd_int;
+assign uart_cts = uart_cts_int;
 
 fpga_core
 core_inst (
@@ -192,8 +237,8 @@ core_inst (
      * Clock: 125MHz
      * Synchronous reset
      */
-    .clk(clk_int),
-    .rst(rst_int),
+    .clk_125mhz(clk_125mhz_int),
+    .rst_125mhz(rst_125mhz_int),
     /*
      * GPIO
      */
@@ -203,12 +248,31 @@ core_inst (
     .btnr(btnr_int),
     .btnc(btnc_int),
     .sw(sw_int),
-    .led(led),
+    .ledu(ledu_int),
+    .ledl(ledl_int),
+    .ledd(ledd_int),
+    .ledr(ledr_int),
+    .ledc(ledc_int),
+    .led(led_int),
     /*
-     * UART: 9600 bps, 8N1
+     * Ethernet: 1000BASE-T GMII
+     */
+    .phy_rx_clk(phy_rx_clk),
+    .phy_rxd(phy_rxd),
+    .phy_rx_dv(phy_rx_dv),
+    .phy_rx_er(phy_rx_er),
+    .phy_gtx_clk(phy_gtx_clk),
+    .phy_txd(phy_txd),
+    .phy_tx_en(phy_tx_en),
+    .phy_tx_er(phy_tx_er),
+    .phy_reset_n(phy_reset_n),
+    /*
+     * UART: 115200 bps, 8N1
      */
     .uart_rxd(uart_rxd_int),
-    .uart_txd(uart_txd)
+    .uart_txd(uart_txd_int),
+    .uart_rts(uart_rts_int),
+    .uart_cts(uart_cts_int)
 );
 
 endmodule

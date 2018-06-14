@@ -1,6 +1,6 @@
 """
 
-Copyright (c) 2014-2016 Alex Forencich
+Copyright (c) 2014-2017 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -84,7 +84,7 @@ class UARTSource(object):
                         bit_cnt = width+1
                         txd.next = 0
 
-        return logic
+        return instances()
 
 
 class UARTSink(object):
@@ -159,5 +159,5 @@ class UARTSink(object):
                         bit_cnt = width+2
                         temp_data = 0
 
-        return logic
+        return instances()
 
