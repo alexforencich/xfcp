@@ -517,7 +517,7 @@ def bench():
 
         raise StopSimulation
 
-    return dut, up_xfcp_port_logic, wb_ram_port0, clkgen, check
+    return instances()
 
 def test_bench():
     sim = Simulation(bench())

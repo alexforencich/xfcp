@@ -218,7 +218,7 @@ def bench():
 
         raise StopSimulation
 
-    return dut, uart_source_logic, uart_sink_logic, down_xfcp_port_logic, clkgen, check
+    return instances()
 
 def test_bench():
     sim = Simulation(bench())

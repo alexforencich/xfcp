@@ -652,7 +652,7 @@ def bench():
 
         raise StopSimulation
 
-    return dut, rgmii_source_logic, rgmii_sink_logic, uart_source_logic, uart_sink_logic, i2c_mem_logic1, i2c_mem_logic2, bus, clkgen, clkgen2, rx_clk_gen, check
+    return instances()
 
 def test_bench():
     sim = Simulation(bench())

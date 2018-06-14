@@ -248,5 +248,5 @@ class XFCPPort(object):
             name=None if name is None else name+"_sink"
         )
 
-        return source, sink
+        return instances()
 
