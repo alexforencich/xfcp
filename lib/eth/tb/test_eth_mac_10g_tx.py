@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 
-Copyright (c) 2015-2017 Alex Forencich
+Copyright (c) 2015-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -272,7 +272,7 @@ def bench():
             axis_frame1 = test_frame1.build_axis()
             axis_frame2 = test_frame2.build_axis()
 
-            axis_frame1.user = 1
+            axis_frame1.last_cycle_user = 1
 
             source.send(axis_frame1)
             source.send(axis_frame2)
@@ -345,7 +345,7 @@ def bench():
 
         raise StopSimulation
 
-    return dut, source_logic, sink_logic, clkgen, check
+    return instances()
 
 def test_bench():
     sim = Simulation(bench())

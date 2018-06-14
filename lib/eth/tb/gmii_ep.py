@@ -1,6 +1,6 @@
 """
 
-Copyright (c) 2014-2017 Alex Forencich
+Copyright (c) 2014-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -172,7 +172,7 @@ class GMIISource(object):
                         tx_er.next = 0
                         tx_en.next = 0
 
-        return logic
+        return instances()
 
 
 class GMIISink(object):
@@ -261,5 +261,5 @@ class GMIISink(object):
                         d = []
                         er = []
 
-        return logic
+        return instances()
 

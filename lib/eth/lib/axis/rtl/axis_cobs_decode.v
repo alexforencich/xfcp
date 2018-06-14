@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2016-2017 Alex Forencich
+Copyright (c) 2016-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -276,7 +276,7 @@ always @* begin
     store_axis_int_to_output = 1'b0;
     store_axis_int_to_temp = 1'b0;
     store_axis_temp_to_output = 1'b0;
-    
+
     if (output_axis_tready_int_reg) begin
         // input is ready
         if (output_axis_tready | ~output_axis_tvalid_reg) begin

@@ -1,6 +1,6 @@
 """
 
-Copyright (c) 2014-2017 Alex Forencich
+Copyright (c) 2014-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -63,7 +63,7 @@ class RGMIISource(gmii_ep.GMIISource):
                 gmii_tx_en_reg.next = gmii_tx_en
                 gmii_tx_er_reg.next = gmii_tx_er
 
-        return gmii_source, logic
+        return instances()
 
 
 class RGMIISink(gmii_ep.GMIISink):
@@ -102,5 +102,5 @@ class RGMIISink(gmii_ep.GMIISink):
                 dat |= int(rxd.val) << 4
                 ctl2 = int(rx_ctl.val)
 
-        return gmii_sink, logic
+        return instances()
 

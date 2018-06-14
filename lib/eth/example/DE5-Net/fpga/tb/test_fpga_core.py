@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 
-Copyright (c) 2016-2017 Alex Forencich
+Copyright (c) 2016-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -63,8 +63,8 @@ srcs.append("../lib/eth/rtl/eth_arb_mux_64_2.v")
 srcs.append("../lib/eth/rtl/eth_mux_64_2.v")
 srcs.append("../lib/eth/lib/axis/rtl/arbiter.v")
 srcs.append("../lib/eth/lib/axis/rtl/priority_encoder.v")
-srcs.append("../lib/eth/lib/axis/rtl/axis_fifo_64.v")
-srcs.append("../lib/eth/lib/axis/rtl/axis_async_frame_fifo_64.v")
+srcs.append("../lib/eth/lib/axis/rtl/axis_fifo.v")
+srcs.append("../lib/eth/lib/axis/rtl/axis_async_frame_fifo.v")
 srcs.append("%s.v" % testbench)
 
 src = ' '.join(srcs)
@@ -293,7 +293,7 @@ def bench():
 
         raise StopSimulation
 
-    return dut, sfp_a_source_logic, sfp_a_sink_logic, sfp_b_source_logic, sfp_b_sink_logic, sfp_c_source_logic, sfp_c_sink_logic, sfp_d_source_logic, sfp_d_sink_logic, clkgen, check
+    return instances()
 
 def test_bench():
     sim = Simulation(bench())

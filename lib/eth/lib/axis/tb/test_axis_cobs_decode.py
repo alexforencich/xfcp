@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 
-Copyright (c) 2016-2017 Alex Forencich
+Copyright (c) 2016-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -264,7 +264,7 @@ def bench():
 
                     assert cobs_decode(enc) == block
                     assert rx_frame.data == block
-                    assert not rx_frame.user[-1]
+                    assert not rx_frame.last_cycle_user
 
                     assert sink.empty()
 
@@ -292,7 +292,7 @@ def bench():
 
                     assert cobs_decode(enc) == block
                     assert rx_frame.data == block
-                    assert not rx_frame.user[-1]
+                    assert not rx_frame.last_cycle_user
 
                     assert sink.empty()
 
@@ -320,13 +320,13 @@ def bench():
 
                     assert cobs_decode(enc) == block
                     assert rx_frame.data == block
-                    assert not rx_frame.user[-1]
+                    assert not rx_frame.last_cycle_user
 
                     rx_frame = sink.recv()
 
                     assert cobs_decode(enc) == block
                     assert rx_frame.data == block
-                    assert not rx_frame.user[-1]
+                    assert not rx_frame.last_cycle_user
 
                     assert sink.empty()
 
@@ -352,13 +352,13 @@ def bench():
 
                     assert cobs_decode(enc) == block
                     assert rx_frame.data == block
-                    assert not rx_frame.user[-1]
+                    assert not rx_frame.last_cycle_user
 
                     rx_frame = sink.recv()
 
                     assert cobs_decode(enc) == block
                     assert rx_frame.data == block
-                    assert not rx_frame.user[-1]
+                    assert not rx_frame.last_cycle_user
 
                     assert sink.empty()
 
@@ -372,7 +372,7 @@ def bench():
                 test_frame2 = axis_ep.AXIStreamFrame(enc+b'\x02')
                 test_frame3 = axis_ep.AXIStreamFrame(enc)
 
-                test_frame1.user = 1
+                test_frame1.last_cycle_user = 1
 
                 for wait in wait_normal, wait_pause_source, wait_pause_sink:
                     source.send(test_frame1)
@@ -388,17 +388,17 @@ def bench():
 
                     rx_frame = sink.recv()
 
-                    assert rx_frame.user[-1]
+                    assert rx_frame.last_cycle_user
 
                     rx_frame = sink.recv()
 
-                    assert rx_frame.user[-1]
+                    assert rx_frame.last_cycle_user
 
                     rx_frame = sink.recv()
 
                     assert cobs_decode(enc) == block
                     assert rx_frame.data == block
-                    assert not rx_frame.user[-1]
+                    assert not rx_frame.last_cycle_user
 
                     assert sink.empty()
 
@@ -412,7 +412,7 @@ def bench():
                 test_frame2 = axis_ep.AXIStreamFrame(enc+b'\x02\x00')
                 test_frame3 = axis_ep.AXIStreamFrame(enc+b'\x00')
 
-                test_frame1.user = 1
+                test_frame1.last_cycle_user = 1
 
                 for wait in wait_normal, wait_pause_source, wait_pause_sink:
                     source.send(test_frame1)
@@ -428,17 +428,17 @@ def bench():
 
                     rx_frame = sink.recv()
 
-                    assert rx_frame.user[-1]
+                    assert rx_frame.last_cycle_user
 
                     rx_frame = sink.recv()
 
-                    assert rx_frame.user[-1]
+                    assert rx_frame.last_cycle_user
 
                     rx_frame = sink.recv()
 
                     assert cobs_decode(enc) == block
                     assert rx_frame.data == block
-                    assert not rx_frame.user[-1]
+                    assert not rx_frame.last_cycle_user
 
                     assert sink.empty()
 
@@ -446,7 +446,7 @@ def bench():
 
         raise StopSimulation
 
-    return dut, source_logic, sink_logic, clkgen, check
+    return instances()
 
 def test_bench():
     sim = Simulation(bench())

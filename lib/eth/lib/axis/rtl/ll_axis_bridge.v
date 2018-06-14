@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2014-2017 Alex Forencich
+Copyright (c) 2014-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ module ll_axis_bridge #
 (
     input  wire                   clk,
     input  wire                   rst,
-    
+
     /*
      * LocalLink input
      */
@@ -45,7 +45,7 @@ module ll_axis_bridge #
     input  wire                   ll_eof_in_n,
     input  wire                   ll_src_rdy_in_n,
     output wire                   ll_dst_rdy_out_n,
-    
+
     /*
      * AXI output
      */

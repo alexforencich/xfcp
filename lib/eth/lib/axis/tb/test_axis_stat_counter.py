@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 
-Copyright (c) 2014-2017 Alex Forencich
+Copyright (c) 2014-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -268,10 +268,13 @@ def bench():
         yield clk.posedge
         trigger.next = 0
 
-        test_frame = axis_ep.AXIStreamFrame(b'\xDA\xD1\xD2\xD3\xD4\xD5' +
-                                            b'\x5A\x51\x52\x53\x54\x55' +
-                                            b'\x80\x00' +
-                                            b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10')
+        test_frame = axis_ep.AXIStreamFrame(
+            b'\xDA\xD1\xD2\xD3\xD4\xD5' +
+            b'\x5A\x51\x52\x53\x54\x55' +
+            b'\x80\x00' +
+            b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10'
+        )
+
         source.send(test_frame)
         yield clk.posedge
 
@@ -320,10 +323,13 @@ def bench():
         yield clk.posedge
         trigger.next = 0
 
-        test_frame = axis_ep.AXIStreamFrame(b'\xDA\xD1\xD2\xD3\xD4\xD5' +
-                                            b'\x5A\x51\x52\x53\x54\x55' +
-                                            b'\x80\x00' +
-                                            bytearray(range(256)))
+        test_frame = axis_ep.AXIStreamFrame(
+            b'\xDA\xD1\xD2\xD3\xD4\xD5' +
+            b'\x5A\x51\x52\x53\x54\x55' +
+            b'\x80\x00' +
+            bytearray(range(256))
+        )
+
         source.send(test_frame)
         yield clk.posedge
 
@@ -372,10 +378,13 @@ def bench():
         yield clk.posedge
         trigger.next = 0
 
-        test_frame = axis_ep.AXIStreamFrame(b'\xDA\xD1\xD2\xD3\xD4\xD5' +
-                                            b'\x5A\x51\x52\x53\x54\x55' +
-                                            b'\x80\x00' +
-                                            bytearray(range(256)))
+        test_frame = axis_ep.AXIStreamFrame(
+            b'\xDA\xD1\xD2\xD3\xD4\xD5' +
+            b'\x5A\x51\x52\x53\x54\x55' +
+            b'\x80\x00' +
+            bytearray(range(256))
+        )
+
         source.send(test_frame)
         yield clk.posedge
 
@@ -438,14 +447,19 @@ def bench():
         yield clk.posedge
         trigger.next = 0
 
-        test_frame1 = axis_ep.AXIStreamFrame(b'\xDA\xD1\xD2\xD3\xD4\xD5' +
-                                             b'\x5A\x51\x52\x53\x54\x55' +
-                                             b'\x80\x00' +
-                                             b'\x01\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10')
-        test_frame2 = axis_ep.AXIStreamFrame(b'\xDA\xD1\xD2\xD3\xD4\xD5' +
-                                             b'\x5A\x51\x52\x53\x54\x55' +
-                                             b'\x80\x00' +
-                                             b'\x02\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10')
+        test_frame1 = axis_ep.AXIStreamFrame(
+            b'\xDA\xD1\xD2\xD3\xD4\xD5' +
+            b'\x5A\x51\x52\x53\x54\x55' +
+            b'\x80\x00' +
+            b'\x01\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10'
+        )
+        test_frame2 = axis_ep.AXIStreamFrame(
+            b'\xDA\xD1\xD2\xD3\xD4\xD5' +
+            b'\x5A\x51\x52\x53\x54\x55' +
+            b'\x80\x00' +
+            b'\x02\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10'
+        )
+
         source.send(test_frame1)
         source.send(test_frame2)
         yield clk.posedge
@@ -495,14 +509,19 @@ def bench():
         yield clk.posedge
         trigger.next = 0
 
-        test_frame1 = axis_ep.AXIStreamFrame(b'\xDA\xD1\xD2\xD3\xD4\xD5' +
-                                             b'\x5A\x51\x52\x53\x54\x55' +
-                                             b'\x80\x00' +
-                                             b'\x01\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10')
-        test_frame2 = axis_ep.AXIStreamFrame(b'\xDA\xD1\xD2\xD3\xD4\xD5' +
-                                             b'\x5A\x51\x52\x53\x54\x55' +
-                                             b'\x80\x00' +
-                                             b'\x02\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10')
+        test_frame1 = axis_ep.AXIStreamFrame(
+            b'\xDA\xD1\xD2\xD3\xD4\xD5' +
+            b'\x5A\x51\x52\x53\x54\x55' +
+            b'\x80\x00' +
+            b'\x01\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10'
+        )
+        test_frame2 = axis_ep.AXIStreamFrame(
+            b'\xDA\xD1\xD2\xD3\xD4\xD5' +
+            b'\x5A\x51\x52\x53\x54\x55' +
+            b'\x80\x00' +
+            b'\x02\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10'
+        )
+
         source.send(test_frame1)
         source.send(test_frame2)
         yield clk.posedge
@@ -552,14 +571,19 @@ def bench():
         yield clk.posedge
         trigger.next = 0
 
-        test_frame1 = axis_ep.AXIStreamFrame(b'\xDA\xD1\xD2\xD3\xD4\xD5' +
-                                             b'\x5A\x51\x52\x53\x54\x55' +
-                                             b'\x80\x00' +
-                                             b'\x01\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10')
-        test_frame2 = axis_ep.AXIStreamFrame(b'\xDA\xD1\xD2\xD3\xD4\xD5' +
-                                             b'\x5A\x51\x52\x53\x54\x55' +
-                                             b'\x80\x00' +
-                                             b'\x02\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10')
+        test_frame1 = axis_ep.AXIStreamFrame(
+            b'\xDA\xD1\xD2\xD3\xD4\xD5' +
+            b'\x5A\x51\x52\x53\x54\x55' +
+            b'\x80\x00' +
+            b'\x01\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10'
+        )
+        test_frame2 = axis_ep.AXIStreamFrame(
+            b'\xDA\xD1\xD2\xD3\xD4\xD5' +
+            b'\x5A\x51\x52\x53\x54\x55' +
+            b'\x80\x00' +
+            b'\x02\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10'
+        )
+
         source.send(test_frame1)
         source.send(test_frame2)
         yield clk.posedge
@@ -613,10 +637,12 @@ def bench():
         test_frame = []
 
         for i in range(len(lens)):
-            test_frame.append(axis_ep.AXIStreamFrame(b'\xDA\xD1\xD2\xD3\xD4\xD5' +
-                                             b'\x5A\x51\x52\x53\x54\x55' +
-                                             b'\x80\x00' +
-                                             bytearray(range(lens[i]))))
+            test_frame.append(axis_ep.AXIStreamFrame(
+                b'\xDA\xD1\xD2\xD3\xD4\xD5' +
+                b'\x5A\x51\x52\x53\x54\x55' +
+                b'\x80\x00' +
+                bytearray(range(lens[i])))
+            )
 
         for f in test_frame:
             source.send(f)
@@ -671,10 +697,12 @@ def bench():
         test_frame = []
 
         for i in range(len(lens)):
-            test_frame.append(axis_ep.AXIStreamFrame(b'\xDA\xD1\xD2\xD3\xD4\xD5' +
-                                             b'\x5A\x51\x52\x53\x54\x55' +
-                                             b'\x80\x00' +
-                                             bytearray(range(lens[i]))))
+            test_frame.append(axis_ep.AXIStreamFrame(
+                b'\xDA\xD1\xD2\xD3\xD4\xD5' +
+                b'\x5A\x51\x52\x53\x54\x55' +
+                b'\x80\x00' +
+                bytearray(range(lens[i])))
+            )
 
         for f in test_frame:
             source.send(f)
@@ -737,7 +765,7 @@ def bench():
 
         raise StopSimulation
 
-    return dut, source_logic, monitor_sink_logic, sink_logic, clkgen, check
+    return instances()
 
 def test_bench():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 
-Copyright (c) 2016-2017 Alex Forencich
+Copyright (c) 2016-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -72,10 +72,8 @@ srcs.append("../lib/eth/lib/axis/rtl/arbiter.v")
 srcs.append("../lib/eth/lib/axis/rtl/priority_encoder.v")
 srcs.append("../lib/eth/lib/axis/rtl/axis_adapter.v")
 srcs.append("../lib/eth/lib/axis/rtl/axis_fifo.v")
-srcs.append("../lib/eth/lib/axis/rtl/axis_fifo_64.v")
-srcs.append("../lib/eth/lib/axis/rtl/axis_switch_64_4x4.v")
+srcs.append("../lib/eth/lib/axis/rtl/axis_switch_4x4.v")
 srcs.append("../lib/eth/lib/axis/rtl/axis_async_frame_fifo.v")
-srcs.append("../lib/eth/lib/axis/rtl/axis_async_frame_fifo_64.v")
 srcs.append("%s.v" % testbench)
 
 src = ' '.join(srcs)
@@ -513,7 +511,7 @@ def bench():
 
         raise StopSimulation
 
-    return dut, qsfp_1_source_logic, qsfp_1_sink_logic, qsfp_2_source_logic, qsfp_2_sink_logic, qsfp_3_source_logic, qsfp_3_sink_logic, qsfp_4_source_logic, qsfp_4_sink_logic, gmii_source_logic, gmii_sink_logic, clkgen, clk_enable_gen, check
+    return instances()
 
 def test_bench():
     sim = Simulation(bench())

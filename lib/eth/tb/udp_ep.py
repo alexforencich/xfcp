@@ -1,6 +1,6 @@
 """
 
-Copyright (c) 2014-2017 Alex Forencich
+Copyright (c) 2014-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -449,7 +449,7 @@ class UDPFrameSource():
                         self.header_queue.append(frame)
                         self.payload_source.send(frame.payload)
 
-        return logic, pause_logic, udp_payload_source
+        return instances()
 
 
 class UDPFrameSink():
@@ -578,5 +578,5 @@ class UDPFrameSink():
                         if len(self.header_queue) == 0:
                             assert self.payload_sink.empty()
 
-        return logic, pause_logic, udp_payload_sink
+        return instances()
 

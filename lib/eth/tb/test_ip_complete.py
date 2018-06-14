@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 
-Copyright (c) 2014-2017 Alex Forencich
+Copyright (c) 2014-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -572,7 +572,7 @@ def bench():
 
         raise StopSimulation
 
-    return dut, eth_source_logic, eth_sink_logic, ip_source_logic, ip_sink_logic, clkgen, monitor, check
+    return instances()
 
 def test_bench():
     sim = Simulation(bench())

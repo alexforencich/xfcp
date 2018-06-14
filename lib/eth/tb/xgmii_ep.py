@@ -1,6 +1,6 @@
 """
 
-Copyright (c) 2015-2017 Alex Forencich
+Copyright (c) 2015-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -225,7 +225,7 @@ class XGMIISource(object):
                         txd.next = 0x0707070707070707 if bw == 8 else 0x07070707
                         txc.next = 0xff if bw == 8 else 0xf
 
-        return logic
+        return instances()
 
 
 class XGMIISink(object):
@@ -307,5 +307,5 @@ class XGMIISink(object):
                                 d.append((int(rxd) >> (8*i)) & 0xff)
                                 c.append((int(rxc) >> i) & 1)
 
-        return logic
+        return instances()
 

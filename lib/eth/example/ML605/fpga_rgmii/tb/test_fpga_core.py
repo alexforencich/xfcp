@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 
-Copyright (c) 2015-2017 Alex Forencich
+Copyright (c) 2015-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -320,7 +320,7 @@ def bench():
 
         raise StopSimulation
 
-    return dut, rgmii_source_logic, rgmii_sink_logic, clkgen, clkgen2, rx_clk_gen, check
+    return instances()
 
 def test_bench():
     sim = Simulation(bench())

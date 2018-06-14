@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2016-2017 Alex Forencich
+Copyright (c) 2016-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -49,12 +49,26 @@ module oddr #
     output wire [WIDTH-1:0] q
 );
 
+/*
+
+Provides a consistent output DDR flip flop across multiple FPGA families
+              _____       _____       _____       _____
+    clk  ____/     \_____/     \_____/     \_____/     \_____
+         _ ___________ ___________ ___________ ___________ __
+    d1   _X____D0_____X____D2_____X____D4_____X____D6_____X__
+         _ ___________ ___________ ___________ ___________ __
+    d2   _X____D1_____X____D3_____X____D5_____X____D7_____X__
+         _____ _____ _____ _____ _____ _____ _____ _____ ____
+    d    _____X_D0__X_D1__X_D2__X_D3__X_D4__X_D5__X_D6__X_D7_
+
+*/
+
 genvar n;
 
 generate
 
 if (TARGET == "XILINX") begin
-    for (n = 0; n < WIDTH; n = n + 1) begin
+    for (n = 0; n < WIDTH; n = n + 1) begin : oddr
         if (IODDR_STYLE == "IODDR") begin
             ODDR #(
                 .DDR_CLK_EDGE("SAME_EDGE"),
@@ -90,7 +104,6 @@ end else if (TARGET == "ALTERA") begin
     altddio_out #(
         .WIDTH(WIDTH),
         .POWER_UP_HIGH("OFF"),
-        .INTENDED_DEVICE_FAMILY("Stratix V"),
         .OE_REG("UNUSED")
     )
     altddio_out_inst (

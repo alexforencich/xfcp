@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2014-2017 Alex Forencich
+Copyright (c) 2014-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -313,7 +313,9 @@ if (CHECKSUM_GEN_ENABLE) begin
         .output_udp_payload_tvalid(tx_udp_payload_tvalid),
         .output_udp_payload_tready(tx_udp_payload_tready),
         .output_udp_payload_tlast(tx_udp_payload_tlast),
-        .output_udp_payload_tuser(tx_udp_payload_tuser)
+        .output_udp_payload_tuser(tx_udp_payload_tuser),
+        // Status signals
+        .busy()
     );
 
 end else begin

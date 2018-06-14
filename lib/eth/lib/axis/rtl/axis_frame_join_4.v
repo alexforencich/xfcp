@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2014-2017 Alex Forencich
+Copyright (c) 2014-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -191,7 +191,7 @@ always @* begin
                 // next cycle if started will send data, so enable input
                 input_0_axis_tready_next = output_axis_tready_int_early;
             end
-            
+
             if (input_0_axis_tvalid) begin
                 // input 0 valid; start transferring data
                 if (TAG_ENABLE) begin
@@ -286,7 +286,7 @@ always @* begin
                 end
             end else begin
                 state_next = STATE_TRANSFER;
-            end 
+            end
         end
     endcase
 end
@@ -352,7 +352,7 @@ always @* begin
     store_axis_int_to_output = 1'b0;
     store_axis_int_to_temp = 1'b0;
     store_axis_temp_to_output = 1'b0;
-    
+
     if (output_axis_tready_int_reg) begin
         // input is ready
         if (output_axis_tready | ~output_axis_tvalid_reg) begin

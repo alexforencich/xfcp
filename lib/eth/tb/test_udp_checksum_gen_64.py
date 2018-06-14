@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 
-Copyright (c) 2016-2017 Alex Forencich
+Copyright (c) 2016-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ testbench = 'test_%s' % module
 srcs = []
 
 srcs.append("../rtl/%s.v" % module)
-srcs.append("../lib/axis/rtl/axis_fifo_64.v")
+srcs.append("../lib/axis/rtl/axis_fifo.v")
 srcs.append("%s.v" % testbench)
 
 src = ' '.join(srcs)
@@ -499,7 +499,7 @@ def bench():
 
         raise StopSimulation
 
-    return dut, source_logic, sink_logic, clkgen, check
+    return instances()
 
 def test_bench():
     sim = Simulation(bench())

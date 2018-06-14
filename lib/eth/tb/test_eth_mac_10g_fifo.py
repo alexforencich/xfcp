@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 
-Copyright (c) 2015-2017 Alex Forencich
+Copyright (c) 2015-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ srcs.append("../rtl/lfsr.v")
 srcs.append("../rtl/eth_mac_10g_rx.v")
 srcs.append("../rtl/eth_mac_10g_tx.v")
 srcs.append("../rtl/eth_mac_10g.v")
-srcs.append("../lib/axis/rtl/axis_async_frame_fifo_64.v")
+srcs.append("../lib/axis/rtl/axis_async_frame_fifo.v")
 srcs.append("%s.v" % testbench)
 
 src = ' '.join(srcs)
@@ -313,7 +313,7 @@ def bench():
 
         raise StopSimulation
 
-    return dut, axis_source_logic, axis_sink_logic, xgmii_source_logic, xgmii_sink_logic, clkgen, check
+    return instances()
 
 def test_bench():
     sim = Simulation(bench())

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 
-Copyright (c) 2014-2017 Alex Forencich
+Copyright (c) 2014-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,7 @@ srcs.append("../rtl/%s.v" % module)
 srcs.append("../rtl/udp_checksum_gen_64.v")
 srcs.append("../rtl/udp_ip_rx_64.v")
 srcs.append("../rtl/udp_ip_tx_64.v")
-srcs.append("../lib/axis/rtl/axis_fifo_64.v")
+srcs.append("../lib/axis/rtl/axis_fifo.v")
 srcs.append("%s.v" % testbench)
 
 src = ' '.join(srcs)
@@ -568,7 +568,7 @@ def bench():
 
         raise StopSimulation
 
-    return dut, ip_source_logic, ip_sink_logic, udp_source_logic, udp_sink_logic, clkgen, monitor, check
+    return instances()
 
 def test_bench():
     sim = Simulation(bench())

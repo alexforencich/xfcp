@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2014-2017 Alex Forencich
+Copyright (c) 2014-2018 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,7 @@ module arbiter #
 (
     input  wire                     clk,
     input  wire                     rst,
-    
+
     input  wire [PORTS-1:0]         request,
     input  wire [PORTS-1:0]         acknowledge,
 
