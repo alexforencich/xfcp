@@ -350,7 +350,7 @@ xfcp_switch_1x4 #(
     .XFCP_ID_TYPE(16'h0100),
     .XFCP_ID_STR("XFCP switch"),
     .XFCP_EXT_ID(0),
-    .XFCP_EXT_ID_STR("NexysVideo")
+    .XFCP_EXT_ID_STR("VCU108")
 )
 xfcp_switch_inst (
     .clk(clk),
