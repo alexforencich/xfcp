@@ -76,7 +76,7 @@ def main():
             if n2 is None:
                 print("Error: invalid path (%s)" % path)
             else:
-                print(n2.id_pkt.payload.hex())
+                print(' '.join(('{:02x}'.format(x) for x in n2.id_pkt.payload)))
 
     if args.write is not None:
         do_enumerate = False
@@ -99,7 +99,8 @@ def main():
             if n2 is None:
                 print("Error: invalid path (%s)" % path)
             elif isinstance(n2, xfcp.node.MemoryNode):
-                print(n2.read(int(item[1], 0), int(item[2], 0)).hex())
+                data = n2.read(int(item[1], 0), int(item[2], 0))
+                print(' '.join(('{:02x}'.format(x) for x in data)))
             else:
                 print("Error: not a MemoryNode (%s)" % path)
 
@@ -124,7 +125,8 @@ def main():
             if n2 is None:
                 print("Error: invalid path (%s)" % path)
             elif isinstance(n2, xfcp.node.I2CNode):
-                print(n2.read_i2c(int(item[1], 0), int(item[2], 0)).hex())
+                data = n2.read_i2c(int(item[1], 0), int(item[2], 0))
+                print(' '.join(('{:02x}'.format(x) for x in data)))
             else:
                 print("Error: not a I2CNode (%s)" % path)
 
