@@ -57,6 +57,7 @@ srcs.append("../lib/eth/rtl/arp_eth_rx.v")
 srcs.append("../lib/eth/rtl/arp_eth_tx.v")
 srcs.append("../lib/eth/rtl/eth_arb_mux_2.v")
 srcs.append("../lib/eth/rtl/eth_mux_2.v")
+srcs.append("../lib/eth/rtl/lfsr.v")
 srcs.append("../lib/eth/lib/axis/rtl/arbiter.v")
 srcs.append("../lib/eth/lib/axis/rtl/priority_encoder.v")
 srcs.append("../lib/eth/lib/axis/rtl/axis_fifo.v")
@@ -249,10 +250,8 @@ def bench():
 
         eth_source.send(test_frame.build_eth().build_axis())
 
-        rx_pkt = None
-        while rx_pkt is None:
-            yield clk.posedge
-            rx_pkt = down_xfcp_port.recv()
+        yield down_xfcp_port.wait()
+        rx_pkt = down_xfcp_port.recv()
 
         print(rx_pkt)
 
@@ -276,10 +275,8 @@ def bench():
         down_xfcp_port.send(pkt)
 
         # wait for ARP request packet
-        rx_frame = None
-        while rx_frame is None:
-            yield clk.posedge
-            rx_frame = eth_sink.recv()
+        yield eth_sink.wait()
+        rx_frame = eth_sink.recv()
 
         check_eth_frame = eth_ep.EthFrame()
         check_eth_frame.parse_axis(rx_frame.data)
@@ -318,10 +315,8 @@ def bench():
 
         eth_source.send(arp_frame.build_eth().build_axis())
 
-        rx_frame = None
-        while rx_frame is None:
-            yield clk.posedge
-            rx_frame = eth_sink.recv()
+        yield eth_sink.wait()
+        rx_frame = eth_sink.recv()
 
         check_eth_frame = eth_ep.EthFrame()
         check_eth_frame.parse_axis(rx_frame.data)

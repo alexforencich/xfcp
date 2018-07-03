@@ -200,6 +200,9 @@ class XFCPPort(object):
             return frame
         return None
 
+    def wait(self, timeout=0):
+        yield self.sink.wait(timeout)
+
     def create_logic(self,
                 clk,
                 rst,
