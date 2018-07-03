@@ -246,7 +246,7 @@ class IPFrameSource():
 
     def send(self, frame):
         frame = IPFrame(frame)
-        if len(self.header_queue) == 0:
+        if not self.header_queue:
             self.header_queue.append(frame)
             self.payload_source.send(frame.payload)
         else:
@@ -256,7 +256,7 @@ class IPFrameSource():
         return len(self.queue)
 
     def empty(self):
-        return self.count() == 0
+        return not self.queue
 
     def create_logic(self,
                 clk,
@@ -326,7 +326,7 @@ class IPFrameSource():
                     if ip_hdr_ready_int:
                         ip_hdr_valid_int.next = False
                     if (ip_hdr_ready_int and ip_hdr_valid) or not ip_hdr_valid_int:
-                        if len(self.header_queue) > 0:
+                        if self.header_queue:
                             frame = self.header_queue.pop(0)
                             frame.build()
                             eth_dest_mac.next = frame.eth_dest_mac
@@ -351,7 +351,7 @@ class IPFrameSource():
 
                             ip_hdr_valid_int.next = True
 
-                    if len(self.queue) > 0 and len(self.header_queue) == 0:
+                    if self.queue and not self.header_queue:
                         frame = self.queue.pop(0)
                         self.header_queue.append(frame)
                         self.payload_source.send(frame.payload)
@@ -365,9 +365,10 @@ class IPFrameSink():
         self.queue = []
         self.payload_sink = axis_ep.AXIStreamSink()
         self.header_queue = []
+        self.sync = Signal(intbv(0))
 
     def recv(self):
-        if len(self.queue) > 0:
+        if self.queue:
             return self.queue.pop(0)
         return None
 
@@ -375,7 +376,15 @@ class IPFrameSink():
         return len(self.queue)
 
     def empty(self):
-        return self.count() == 0
+        return not self.queue
+
+    def wait(self, timeout=0):
+        if self.queue:
+            return
+        if timeout:
+            yield self.sync, delay(timeout)
+        else:
+            yield self.sync
 
     def create_logic(self,
                 clk,
@@ -464,10 +473,11 @@ class IPFrameSink():
                         frame.ip_dest_ip = int(ip_dest_ip)
                         self.header_queue.append(frame)
 
-                    if not self.payload_sink.empty() and len(self.header_queue) > 0:
+                    if not self.payload_sink.empty() and self.header_queue:
                         frame = self.header_queue.pop(0)
                         frame.payload = self.payload_sink.recv()
                         self.queue.append(frame)
+                        self.sync.next = not self.sync
 
                         if name is not None:
                             print("[%s] Got frame %s" % (name, repr(frame)))

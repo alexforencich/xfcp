@@ -94,7 +94,7 @@ class GMIISource(object):
         return len(self.queue)
 
     def empty(self):
-        return self.count() == 0
+        return not self.queue
 
     def create_logic(self,
                 clk,
@@ -148,7 +148,7 @@ class GMIISource(object):
                                 ifg_cnt = 12*2
                             else:
                                 ifg_cnt = 12
-                    elif len(self.queue) > 0:
+                    elif self.queue:
                         frame = GMIIFrame(self.queue.pop(0))
                         d, er = frame.build()
                         if name is not None:
@@ -179,9 +179,10 @@ class GMIISink(object):
     def __init__(self):
         self.has_logic = False
         self.queue = []
+        self.sync = Signal(intbv(0))
 
     def recv(self):
-        if len(self.queue) > 0:
+        if self.queue:
             return self.queue.pop(0)
         return None
 
@@ -189,7 +190,15 @@ class GMIISink(object):
         return len(self.queue)
 
     def empty(self):
-        return self.count() == 0
+        return not self.queue
+
+    def wait(self, timeout=0):
+        if self.queue:
+            return
+        if timeout:
+            yield self.sync, delay(timeout)
+        else:
+            yield self.sync
 
     def create_logic(self,
                 clk,
@@ -255,6 +264,7 @@ class GMIISink(object):
                                 er = er2
                             frame.parse(d, er)
                             self.queue.append(frame)
+                            self.sync.next = not self.sync
                             if name is not None:
                                 print("[%s] Got frame %s" % (name, repr(frame)))
                         frame = None

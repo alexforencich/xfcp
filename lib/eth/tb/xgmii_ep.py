@@ -115,7 +115,7 @@ class XGMIISource(object):
         return len(self.queue)
 
     def empty(self):
-        return self.count() == 0
+        return not self.queue
 
     def create_logic(self,
                 clk,
@@ -179,7 +179,7 @@ class XGMIISource(object):
 
                         txd.next = d
                         txc.next = c
-                    elif len(self.queue) > 0:
+                    elif self.queue:
                         frame = self.queue.pop(0)
                         dl, cl = frame.build()
                         if name is not None:
@@ -232,9 +232,10 @@ class XGMIISink(object):
     def __init__(self):
         self.has_logic = False
         self.queue = []
+        self.sync = Signal(intbv(0))
 
     def recv(self):
-        if len(self.queue) > 0:
+        if self.queue:
             return self.queue.pop(0)
         return None
 
@@ -242,7 +243,15 @@ class XGMIISink(object):
         return len(self.queue)
 
     def empty(self):
-        return self.count() == 0
+        return not self.queue
+
+    def wait(self, timeout=0):
+        if self.queue:
+            return
+        if timeout:
+            yield self.sync, delay(timeout)
+        else:
+            yield self.sync
 
     def create_logic(self,
                 clk,
@@ -297,6 +306,7 @@ class XGMIISink(object):
                                 # terminate
                                 frame.parse(d, c)
                                 self.queue.append(frame)
+                                self.sync.next = not self.sync
                                 if name is not None:
                                     print("[%s] Got frame %s" % (name, repr(frame)))
                                 frame = None

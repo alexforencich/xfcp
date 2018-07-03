@@ -331,7 +331,7 @@ class UDPFrameSource():
 
     def send(self, frame):
         frame = UDPFrame(frame)
-        if len(self.header_queue) == 0:
+        if not self.header_queue:
             self.header_queue.append(frame)
             self.payload_source.send(frame.payload)
         else:
@@ -341,7 +341,7 @@ class UDPFrameSource():
         return len(self.queue)
 
     def empty(self):
-        return self.count() == 0
+        return not self.queue
 
     def create_logic(self,
                 clk,
@@ -415,7 +415,7 @@ class UDPFrameSource():
                     if udp_hdr_ready_int:
                         udp_hdr_valid_int.next = False
                     if (udp_hdr_ready_int and udp_hdr_valid) or not udp_hdr_valid_int:
-                        if len(self.header_queue) > 0:
+                        if self.header_queue:
                             frame = self.header_queue.pop(0)
                             frame.build()
                             eth_dest_mac.next = frame.eth_dest_mac
@@ -444,7 +444,7 @@ class UDPFrameSource():
 
                             udp_hdr_valid_int.next = True
 
-                    if len(self.queue) > 0 and len(self.header_queue) == 0:
+                    if self.queue and not self.header_queue:
                         frame = self.queue.pop(0)
                         self.header_queue.append(frame)
                         self.payload_source.send(frame.payload)
@@ -458,9 +458,10 @@ class UDPFrameSink():
         self.queue = []
         self.payload_sink = axis_ep.AXIStreamSink()
         self.header_queue = []
+        self.sync = Signal(intbv(0))
 
     def recv(self):
-        if len(self.queue) > 0:
+        if self.queue:
             return self.queue.pop(0)
         return None
 
@@ -468,7 +469,15 @@ class UDPFrameSink():
         return len(self.queue)
 
     def empty(self):
-        return self.count() == 0
+        return not self.queue
+
+    def wait(self, timeout=0):
+        if self.queue:
+            return
+        if timeout:
+            yield self.sync, delay(timeout)
+        else:
+            yield self.sync
 
     def create_logic(self,
                 clk,
@@ -566,10 +575,11 @@ class UDPFrameSink():
                         frame.udp_checksum = int(udp_checksum)
                         self.header_queue.append(frame)
 
-                    if not self.payload_sink.empty() and len(self.header_queue) > 0:
+                    if not self.payload_sink.empty() and self.header_queue:
                         frame = self.header_queue.pop(0)
                         frame.payload = self.payload_sink.recv()
                         self.queue.append(frame)
+                        self.sync.next = not self.sync
 
                         if name is not None:
                             print("[%s] Got frame %s" % (name, repr(frame)))
