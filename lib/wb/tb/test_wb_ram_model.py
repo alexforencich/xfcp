@@ -60,7 +60,7 @@ def bench():
         ack_o=port0_ack_o,
         cyc_i=port0_cyc_i,
         latency=1,
-        async=False,
+        asynchronous=False,
         name='port0'
     )
 
@@ -246,7 +246,7 @@ def bench():
 
         raise StopSimulation
 
-    return wb_ram_port0, clkgen, check
+    return instances()
 
 def test_bench():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))

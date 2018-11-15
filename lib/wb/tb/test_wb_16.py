@@ -76,7 +76,7 @@ def bench():
         ack_o=port0_ack_o,
         cyc_i=port0_cyc_i,
         latency=1,
-        async=False,
+        asynchronous=False,
         name='port0'
     )
 
@@ -154,7 +154,8 @@ def bench():
         current_test.next = 5
 
         for length in range(1,8):
-            for offset in range(4):
+            for offset in range(4,8):
+                wb_ram_inst.write_mem(256*(16*offset+length), b'\xAA'*32)
                 wb_master_inst.init_write(256*(16*offset+length)+offset, b'\x11\x22\x33\x44\x55\x66\x77\x88'[0:length])
 
                 yield wb_master_inst.wait()
@@ -164,7 +165,9 @@ def bench():
                 for i in range(0, len(data), 16):
                     print(" ".join(("{:02x}".format(c) for c in bytearray(data[i:i+16]))))
 
-                assert wb_ram_inst.read_mem(256*(16*offset+length)+offset,length) == b'\x11\x22\x33\x44\x55\x66\x77\x88'[0:length]
+                assert wb_ram_inst.read_mem(256*(16*offset+length)+offset, length) == b'\x11\x22\x33\x44\x55\x66\x77\x88'[0:length]
+                assert wb_ram_inst.read_mem(256*(16*offset+length)+offset-2, 1) == b'\xAA'
+                assert wb_ram_inst.read_mem(256*(16*offset+length)+offset+length+1, 1) == b'\xAA'
 
         yield delay(100)
 
@@ -173,7 +176,7 @@ def bench():
         current_test.next = 6
 
         for length in range(1,8):
-            for offset in range(4):
+            for offset in range(4,8):
                 wb_master_inst.init_read(256*(16*offset+length)+offset, length)
 
                 yield wb_master_inst.wait()
@@ -239,7 +242,7 @@ def bench():
 
         raise StopSimulation
 
-    return wb_master_logic, wb_ram_port0, clkgen, check
+    return instances()
 
 def test_bench():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
