@@ -41,11 +41,11 @@ module axis_gmii_tx #
     /*
      * AXI input
      */
-    input  wire [7:0]  input_axis_tdata,
-    input  wire        input_axis_tvalid,
-    output wire        input_axis_tready,
-    input  wire        input_axis_tlast,
-    input  wire        input_axis_tuser,
+    input  wire [7:0]  s_axis_tdata,
+    input  wire        s_axis_tvalid,
+    output wire        s_axis_tready,
+    input  wire        s_axis_tlast,
+    input  wire        s_axis_tuser,
 
     /*
      * GMII output
@@ -66,6 +66,10 @@ module axis_gmii_tx #
     input  wire [7:0]  ifg_delay
 );
 
+localparam [7:0]
+    ETH_PRE = 8'h55,
+    ETH_SFD = 8'hD5;
+
 localparam [2:0]
     STATE_IDLE = 3'd0,
     STATE_PREAMBLE = 3'd1,
@@ -82,7 +86,7 @@ reg [2:0] state_reg = STATE_IDLE, state_next;
 reg reset_crc;
 reg update_crc;
 
-reg [7:0] input_tdata_reg = 8'd0, input_tdata_next;
+reg [7:0] s_tdata_reg = 8'd0, s_tdata_next;
 
 reg mii_odd_reg = 1'b0, mii_odd_next;
 reg [3:0] mii_msn_reg = 4'b0, mii_msn_next;
@@ -93,12 +97,12 @@ reg [7:0] gmii_txd_reg = 8'd0, gmii_txd_next;
 reg gmii_tx_en_reg = 1'b0, gmii_tx_en_next;
 reg gmii_tx_er_reg = 1'b0, gmii_tx_er_next;
 
-reg input_axis_tready_reg = 1'b0, input_axis_tready_next;
+reg s_axis_tready_reg = 1'b0, s_axis_tready_next;
 
 reg [31:0] crc_state = 32'hFFFFFFFF;
 wire [31:0] crc_next;
 
-assign input_axis_tready = input_axis_tready_reg;
+assign s_axis_tready = s_axis_tready_reg;
 
 assign gmii_txd = gmii_txd_reg;
 assign gmii_tx_en = gmii_tx_en_reg;
@@ -114,7 +118,7 @@ lfsr #(
     .STYLE("AUTO")
 )
 eth_crc_8 (
-    .data_in(input_tdata_reg),
+    .data_in(s_tdata_reg),
     .state_in(crc_state),
     .data_out(),
     .state_out(crc_next)
@@ -131,9 +135,9 @@ always @* begin
 
     frame_ptr_next = frame_ptr_reg;
 
-    input_axis_tready_next = 1'b0;
+    s_axis_tready_next = 1'b0;
 
-    input_tdata_next = input_tdata_reg;
+    s_tdata_next = s_tdata_reg;
 
     gmii_txd_next = 8'd0;
     gmii_tx_en_next = 1'b0;
@@ -145,7 +149,7 @@ always @* begin
         gmii_tx_en_next = gmii_tx_en_reg;
         gmii_tx_er_next = gmii_tx_er_reg;
         state_next = state_reg;
-    end else if (mii_select & mii_odd_reg) begin
+    end else if (mii_select && mii_odd_reg) begin
         // MII odd cycle - hold state, output MSN
         mii_odd_next = 1'b0;
         gmii_txd_next = {4'd0, mii_msn_reg};
@@ -159,10 +163,10 @@ always @* begin
                 reset_crc = 1'b1;
                 mii_odd_next = 1'b0;
 
-                if (input_axis_tvalid) begin
+                if (s_axis_tvalid) begin
                     mii_odd_next = 1'b1;
                     frame_ptr_next = 16'd1;
-                    gmii_txd_next = 8'h55; // Preamble
+                    gmii_txd_next = ETH_PRE;
                     gmii_tx_en_next = 1'b1;
                     state_next = STATE_PREAMBLE;
                 end else begin
@@ -176,21 +180,21 @@ always @* begin
                 mii_odd_next = 1'b1;
                 frame_ptr_next = frame_ptr_reg + 16'd1;
 
-                gmii_txd_next = 8'h55; // Preamble
+                gmii_txd_next = ETH_PRE;
                 gmii_tx_en_next = 1'b1;
 
                 if (frame_ptr_reg == 16'd6) begin
-                    input_axis_tready_next = 1'b1;
-                    input_tdata_next = input_axis_tdata;
+                    s_axis_tready_next = 1'b1;
+                    s_tdata_next = s_axis_tdata;
                     state_next = STATE_PREAMBLE;
                 end else if (frame_ptr_reg == 16'd7) begin
                     // end of preamble; start payload
                     frame_ptr_next = 16'd0;
-                    if (input_axis_tready_reg) begin
-                        input_axis_tready_next = 1'b1;
-                        input_tdata_next = input_axis_tdata;
+                    if (s_axis_tready_reg) begin
+                        s_axis_tready_next = 1'b1;
+                        s_tdata_next = s_axis_tdata;
                     end
-                    gmii_txd_next = 8'hD5; // SFD
+                    gmii_txd_next = ETH_SFD;
                     state_next = STATE_PAYLOAD;
                 end else begin
                     state_next = STATE_PREAMBLE;
@@ -200,20 +204,20 @@ always @* begin
                 // send payload
 
                 update_crc = 1'b1;
-                input_axis_tready_next = 1'b1;
+                s_axis_tready_next = 1'b1;
 
                 mii_odd_next = 1'b1;
                 frame_ptr_next = frame_ptr_reg + 16'd1;
 
-                gmii_txd_next = input_tdata_reg;
+                gmii_txd_next = s_tdata_reg;
                 gmii_tx_en_next = 1'b1;
 
-                input_tdata_next = input_axis_tdata;
+                s_tdata_next = s_axis_tdata;
 
-                if (input_axis_tvalid) begin
-                    if (input_axis_tlast) begin
-                        input_axis_tready_next = ~input_axis_tready_reg;
-                        if (input_axis_tuser) begin
+                if (s_axis_tvalid) begin
+                    if (s_axis_tlast) begin
+                        s_axis_tready_next = !s_axis_tready_reg;
+                        if (s_axis_tuser) begin
                             gmii_tx_er_next = 1'b1;
                             frame_ptr_next = 1'b0;
                             state_next = STATE_IFG;
@@ -238,11 +242,11 @@ always @* begin
                 mii_odd_next = 1'b1;
                 frame_ptr_next = frame_ptr_reg + 16'd1;
 
-                gmii_txd_next = input_tdata_reg;
+                gmii_txd_next = s_tdata_reg;
                 gmii_tx_en_next = 1'b1;
 
                 if (ENABLE_PADDING && frame_ptr_reg < MIN_FRAME_LENGTH-5) begin
-                    input_tdata_next = 8'd0;
+                    s_tdata_next = 8'd0;
                     state_next = STATE_PAD;
                 end else begin
                     frame_ptr_next = 16'd0;
@@ -259,7 +263,7 @@ always @* begin
                 gmii_txd_next = 8'd0;
                 gmii_tx_en_next = 1'b1;
 
-                input_tdata_next = 8'd0;
+                s_tdata_next = 8'd0;
 
                 if (frame_ptr_reg < MIN_FRAME_LENGTH-5) begin
                     state_next = STATE_PAD;
@@ -296,11 +300,11 @@ always @* begin
 
                 mii_odd_next = 1'b1;
                 frame_ptr_next = frame_ptr_reg + 16'd1;
-                input_axis_tready_next = 1'b1;
+                s_axis_tready_next = 1'b1;
 
-                if (input_axis_tvalid) begin
-                    if (input_axis_tlast) begin
-                        input_axis_tready_next = 1'b0;
+                if (s_axis_tvalid) begin
+                    if (s_axis_tlast) begin
+                        s_axis_tready_next = 1'b0;
                         if (frame_ptr_reg < ifg_delay-1) begin
                             state_next = STATE_IFG;
                         end else begin
@@ -342,7 +346,7 @@ always @(posedge clk) begin
 
         frame_ptr_reg <= 16'd0;
 
-        input_axis_tready_reg <= 1'b0;
+        s_axis_tready_reg <= 1'b0;
 
         gmii_tx_en_reg <= 1'b0;
         gmii_tx_er_reg <= 1'b0;
@@ -353,7 +357,7 @@ always @(posedge clk) begin
 
         frame_ptr_reg <= frame_ptr_next;
 
-        input_axis_tready_reg <= input_axis_tready_next;
+        s_axis_tready_reg <= s_axis_tready_next;
 
         gmii_tx_en_reg <= gmii_tx_en_next;
         gmii_tx_er_reg <= gmii_tx_er_next;
@@ -369,7 +373,7 @@ always @(posedge clk) begin
     mii_odd_reg <= mii_odd_next;
     mii_msn_reg <= mii_msn_next;
 
-    input_tdata_reg <= input_tdata_next;
+    s_tdata_reg <= s_tdata_next;
 
     gmii_txd_reg <= gmii_txd_next;
 end
