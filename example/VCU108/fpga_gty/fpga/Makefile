@@ -37,14 +37,12 @@ SYN_FILES += lib/eth/rtl/ip_complete.v
 SYN_FILES += lib/eth/rtl/ip.v
 SYN_FILES += lib/eth/rtl/ip_eth_rx.v
 SYN_FILES += lib/eth/rtl/ip_eth_tx.v
-SYN_FILES += lib/eth/rtl/ip_arb_mux_2.v
-SYN_FILES += lib/eth/rtl/ip_mux_2.v
+SYN_FILES += lib/eth/rtl/ip_arb_mux.v
 SYN_FILES += lib/eth/rtl/arp.v
 SYN_FILES += lib/eth/rtl/arp_cache.v
 SYN_FILES += lib/eth/rtl/arp_eth_rx.v
 SYN_FILES += lib/eth/rtl/arp_eth_tx.v
-SYN_FILES += lib/eth/rtl/eth_arb_mux_2.v
-SYN_FILES += lib/eth/rtl/eth_mux_2.v
+SYN_FILES += lib/eth/rtl/eth_arb_mux.v
 SYN_FILES += lib/i2c/rtl/i2c_master.v
 SYN_FILES += lib/uart/rtl/uart.v
 SYN_FILES += lib/uart/rtl/uart_rx.v
@@ -56,8 +54,6 @@ SYN_FILES += lib/axis/rtl/axis_cobs_encode.v
 SYN_FILES += lib/axis/rtl/axis_cobs_decode.v
 SYN_FILES += lib/axis/rtl/axis_fifo.v
 SYN_FILES += lib/axis/rtl/axis_async_fifo.v
-SYN_FILES += lib/axis/rtl/axis_frame_fifo.v
-SYN_FILES += lib/axis/rtl/axis_async_frame_fifo.v
 
 # XDC files
 XDC_FILES = fpga.xdc
