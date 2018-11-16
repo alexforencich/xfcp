@@ -163,7 +163,7 @@ def bench():
         i = 4
         while i > 0:
             i = max(0, i-1)
-            if up_xfcp_in_tvalid or up_xfcp_out_tvalid or wb_cyc_o:
+            if not up_xfcp_port.idle() or wb_cyc_o:
                 i = 4
             yield clk.posedge
 
@@ -171,7 +171,7 @@ def bench():
         i = 2
         while i > 0:
             i = max(0, i-1)
-            if up_xfcp_in_tvalid or up_xfcp_out_tvalid or wb_cyc_o:
+            if not up_xfcp_port.idle() or wb_cyc_o:
                 i = 2
             up_xfcp_port_in_pause.next = True
             yield clk.posedge
@@ -184,7 +184,7 @@ def bench():
         i = 2
         while i > 0:
             i = max(0, i-1)
-            if up_xfcp_in_tvalid or up_xfcp_out_tvalid or wb_cyc_o:
+            if not up_xfcp_port.idle() or wb_cyc_o:
                 i = 2
             up_xfcp_port_out_pause.next = True
             yield clk.posedge

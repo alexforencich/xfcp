@@ -195,7 +195,7 @@ def bench():
         i = 8
         while i > 0:
             i = max(0, i-1)
-            if up_xfcp_in_tvalid or up_xfcp_out_tvalid or not i2c_scl_i or not i2c_sda_i:
+            if not up_xfcp_port.idle() or not i2c_scl_i or not i2c_sda_i:
                 i = 8
             yield clk.posedge
 
@@ -203,7 +203,7 @@ def bench():
         i = 4
         while i > 0:
             i = max(0, i-1)
-            if up_xfcp_in_tvalid or up_xfcp_out_tvalid or not i2c_scl_i or not i2c_sda_i:
+            if not up_xfcp_port.idle() or not i2c_scl_i or not i2c_sda_i:
                 i = 4
             up_xfcp_port_in_pause.next = True
             yield clk.posedge
@@ -216,7 +216,7 @@ def bench():
         i = 4
         while i > 0:
             i = max(0, i-1)
-            if up_xfcp_in_tvalid or up_xfcp_out_tvalid or not i2c_scl_i or not i2c_sda_i:
+            if not up_xfcp_port.idle() or not i2c_scl_i or not i2c_sda_i:
                 i = 4
             up_xfcp_port_out_pause.next = True
             yield clk.posedge

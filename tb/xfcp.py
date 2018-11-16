@@ -200,6 +200,9 @@ class XFCPPort(object):
             return frame
         return None
 
+    def idle(self):
+        return self.source.idle() and self.sink.idle()
+
     def wait(self, timeout=0):
         yield self.sink.wait(timeout)
 

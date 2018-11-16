@@ -298,7 +298,7 @@ def bench():
         i = 4
         while i > 0:
             i = max(0, i-1)
-            if up_xfcp_in_tvalid or up_xfcp_out_tvalid or down_xfcp_0_in_tvalid or down_xfcp_1_in_tvalid or down_xfcp_2_in_tvalid or down_xfcp_3_in_tvalid:
+            if not up_xfcp_port.idle() or not down_xfcp_port_0.idle() or not down_xfcp_port_1.idle() or not down_xfcp_port_2.idle() or not down_xfcp_port_3.idle():
                 i = 4
             yield clk.posedge
 
@@ -306,7 +306,7 @@ def bench():
         i = 2
         while i > 0:
             i = max(0, i-1)
-            if up_xfcp_in_tvalid or up_xfcp_out_tvalid or down_xfcp_0_in_tvalid or down_xfcp_1_in_tvalid or down_xfcp_2_in_tvalid or down_xfcp_3_in_tvalid:
+            if not up_xfcp_port.idle() or not down_xfcp_port_0.idle() or not down_xfcp_port_1.idle() or not down_xfcp_port_2.idle() or not down_xfcp_port_3.idle():
                 i = 2
             up_xfcp_port_in_pause.next = True
             down_xfcp_port_0_in_pause.next = True
@@ -327,7 +327,7 @@ def bench():
         i = 2
         while i > 0:
             i = max(0, i-1)
-            if up_xfcp_in_tvalid or up_xfcp_out_tvalid or down_xfcp_0_in_tvalid or down_xfcp_1_in_tvalid or down_xfcp_2_in_tvalid or down_xfcp_3_in_tvalid:
+            if not up_xfcp_port.idle() or not down_xfcp_port_0.idle() or not down_xfcp_port_1.idle() or not down_xfcp_port_2.idle() or not down_xfcp_port_3.idle():
                 i = 2
             up_xfcp_port_out_pause.next = True
             down_xfcp_port_0_out_pause.next = True
