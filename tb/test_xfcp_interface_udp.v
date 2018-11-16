@@ -38,11 +38,11 @@ reg clk = 0;
 reg rst = 0;
 reg [7:0] current_test = 0;
 
-reg [7:0] input_eth_axis_tdata = 0;
-reg input_eth_axis_tvalid = 0;
-reg input_eth_axis_tlast = 0;
-reg input_eth_axis_tuser = 0;
-reg output_eth_axis_tready = 0;
+reg [7:0] s_eth_axis_tdata = 0;
+reg s_eth_axis_tvalid = 0;
+reg s_eth_axis_tlast = 0;
+reg s_eth_axis_tuser = 0;
+reg m_eth_axis_tready = 0;
 reg [7:0] down_xfcp_in_tdata = 0;
 reg down_xfcp_in_tvalid = 0;
 reg down_xfcp_in_tlast = 0;
@@ -55,11 +55,11 @@ reg [31:0] gateway_ip = 0;
 reg [31:0] subnet_mask = 0;
 
 // Outputs
-wire input_eth_axis_tready;
-wire [7:0] output_eth_axis_tdata;
-wire output_eth_axis_tvalid;
-wire output_eth_axis_tlast;
-wire output_eth_axis_tuser;
+wire s_eth_axis_tready;
+wire [7:0] m_eth_axis_tdata;
+wire m_eth_axis_tvalid;
+wire m_eth_axis_tlast;
+wire m_eth_axis_tuser;
 wire down_xfcp_in_tready;
 wire [7:0] down_xfcp_out_tdata;
 wire down_xfcp_out_tvalid;
@@ -72,11 +72,11 @@ initial begin
         clk,
         rst,
         current_test,
-        input_eth_axis_tdata,
-        input_eth_axis_tvalid,
-        input_eth_axis_tlast,
-        input_eth_axis_tuser,
-        output_eth_axis_tready,
+        s_eth_axis_tdata,
+        s_eth_axis_tvalid,
+        s_eth_axis_tlast,
+        s_eth_axis_tuser,
+        m_eth_axis_tready,
         down_xfcp_in_tdata,
         down_xfcp_in_tvalid,
         down_xfcp_in_tlast,
@@ -89,11 +89,11 @@ initial begin
         subnet_mask
     );
     $to_myhdl(
-        input_eth_axis_tready,
-        output_eth_axis_tdata,
-        output_eth_axis_tvalid,
-        output_eth_axis_tlast,
-        output_eth_axis_tuser,
+        s_eth_axis_tready,
+        m_eth_axis_tdata,
+        m_eth_axis_tvalid,
+        m_eth_axis_tlast,
+        m_eth_axis_tuser,
         down_xfcp_in_tready,
         down_xfcp_out_tdata,
         down_xfcp_out_tvalid,
@@ -110,16 +110,16 @@ xfcp_interface_udp
 UUT (
     .clk(clk),
     .rst(rst),
-    .input_eth_axis_tdata(input_eth_axis_tdata),
-    .input_eth_axis_tvalid(input_eth_axis_tvalid),
-    .input_eth_axis_tready(input_eth_axis_tready),
-    .input_eth_axis_tlast(input_eth_axis_tlast),
-    .input_eth_axis_tuser(input_eth_axis_tuser),
-    .output_eth_axis_tdata(output_eth_axis_tdata),
-    .output_eth_axis_tvalid(output_eth_axis_tvalid),
-    .output_eth_axis_tready(output_eth_axis_tready),
-    .output_eth_axis_tlast(output_eth_axis_tlast),
-    .output_eth_axis_tuser(output_eth_axis_tuser),
+    .s_eth_axis_tdata(s_eth_axis_tdata),
+    .s_eth_axis_tvalid(s_eth_axis_tvalid),
+    .s_eth_axis_tready(s_eth_axis_tready),
+    .s_eth_axis_tlast(s_eth_axis_tlast),
+    .s_eth_axis_tuser(s_eth_axis_tuser),
+    .m_eth_axis_tdata(m_eth_axis_tdata),
+    .m_eth_axis_tvalid(m_eth_axis_tvalid),
+    .m_eth_axis_tready(m_eth_axis_tready),
+    .m_eth_axis_tlast(m_eth_axis_tlast),
+    .m_eth_axis_tuser(m_eth_axis_tuser),
     .down_xfcp_in_tdata(down_xfcp_in_tdata),
     .down_xfcp_in_tvalid(down_xfcp_in_tvalid),
     .down_xfcp_in_tready(down_xfcp_in_tready),

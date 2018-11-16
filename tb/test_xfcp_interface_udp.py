@@ -49,14 +49,12 @@ srcs.append("../lib/eth/rtl/ip_complete.v")
 srcs.append("../lib/eth/rtl/ip.v")
 srcs.append("../lib/eth/rtl/ip_eth_rx.v")
 srcs.append("../lib/eth/rtl/ip_eth_tx.v")
-srcs.append("../lib/eth/rtl/ip_arb_mux_2.v")
-srcs.append("../lib/eth/rtl/ip_mux_2.v")
+srcs.append("../lib/eth/rtl/ip_arb_mux.v")
 srcs.append("../lib/eth/rtl/arp.v")
 srcs.append("../lib/eth/rtl/arp_cache.v")
 srcs.append("../lib/eth/rtl/arp_eth_rx.v")
 srcs.append("../lib/eth/rtl/arp_eth_tx.v")
-srcs.append("../lib/eth/rtl/eth_arb_mux_2.v")
-srcs.append("../lib/eth/rtl/eth_mux_2.v")
+srcs.append("../lib/eth/rtl/eth_arb_mux.v")
 srcs.append("../lib/eth/rtl/lfsr.v")
 srcs.append("../lib/eth/lib/axis/rtl/arbiter.v")
 srcs.append("../lib/eth/lib/axis/rtl/priority_encoder.v")
@@ -77,11 +75,11 @@ def bench():
     rst = Signal(bool(0))
     current_test = Signal(intbv(0)[8:])
 
-    input_eth_axis_tdata = Signal(intbv(0)[8:])
-    input_eth_axis_tvalid = Signal(bool(0))
-    input_eth_axis_tlast = Signal(bool(0))
-    input_eth_axis_tuser = Signal(bool(0))
-    output_eth_axis_tready = Signal(bool(0))
+    s_eth_axis_tdata = Signal(intbv(0)[8:])
+    s_eth_axis_tvalid = Signal(bool(0))
+    s_eth_axis_tlast = Signal(bool(0))
+    s_eth_axis_tuser = Signal(bool(0))
+    m_eth_axis_tready = Signal(bool(0))
     down_xfcp_in_tdata = Signal(intbv(0)[8:])
     down_xfcp_in_tvalid = Signal(bool(0))
     down_xfcp_in_tlast = Signal(bool(0))
@@ -94,11 +92,11 @@ def bench():
     subnet_mask = Signal(intbv(0)[32:])
 
     # Outputs
-    input_eth_axis_tready = Signal(bool(0))
-    output_eth_axis_tdata = Signal(intbv(0)[8:])
-    output_eth_axis_tvalid = Signal(bool(0))
-    output_eth_axis_tlast = Signal(bool(0))
-    output_eth_axis_tuser = Signal(bool(0))
+    s_eth_axis_tready = Signal(bool(0))
+    m_eth_axis_tdata = Signal(intbv(0)[8:])
+    m_eth_axis_tvalid = Signal(bool(0))
+    m_eth_axis_tlast = Signal(bool(0))
+    m_eth_axis_tuser = Signal(bool(0))
     down_xfcp_in_tready = Signal(bool(0))
     down_xfcp_out_tdata = Signal(intbv(0)[8:])
     down_xfcp_out_tvalid = Signal(bool(0))
@@ -114,11 +112,11 @@ def bench():
     eth_source_logic = eth_source.create_logic(
         clk,
         rst,
-        tdata=input_eth_axis_tdata,
-        tvalid=input_eth_axis_tvalid,
-        tready=input_eth_axis_tready,
-        tlast=input_eth_axis_tlast,
-        tuser=input_eth_axis_tuser,
+        tdata=s_eth_axis_tdata,
+        tvalid=s_eth_axis_tvalid,
+        tready=s_eth_axis_tready,
+        tlast=s_eth_axis_tlast,
+        tuser=s_eth_axis_tuser,
         pause=eth_source_pause,
         name='eth_source'
     )
@@ -128,11 +126,11 @@ def bench():
     eth_sink_logic = eth_sink.create_logic(
         clk,
         rst,
-        tdata=output_eth_axis_tdata,
-        tvalid=output_eth_axis_tvalid,
-        tready=output_eth_axis_tready,
-        tlast=output_eth_axis_tlast,
-        tuser=output_eth_axis_tuser,
+        tdata=m_eth_axis_tdata,
+        tvalid=m_eth_axis_tvalid,
+        tready=m_eth_axis_tready,
+        tlast=m_eth_axis_tlast,
+        tuser=m_eth_axis_tuser,
         pause=eth_sink_pause,
         name='eth_sink'
     )
@@ -166,16 +164,16 @@ def bench():
         clk=clk,
         rst=rst,
         current_test=current_test,
-        input_eth_axis_tdata=input_eth_axis_tdata,
-        input_eth_axis_tvalid=input_eth_axis_tvalid,
-        input_eth_axis_tready=input_eth_axis_tready,
-        input_eth_axis_tlast=input_eth_axis_tlast,
-        input_eth_axis_tuser=input_eth_axis_tuser,
-        output_eth_axis_tdata=output_eth_axis_tdata,
-        output_eth_axis_tvalid=output_eth_axis_tvalid,
-        output_eth_axis_tready=output_eth_axis_tready,
-        output_eth_axis_tlast=output_eth_axis_tlast,
-        output_eth_axis_tuser=output_eth_axis_tuser,
+        s_eth_axis_tdata=s_eth_axis_tdata,
+        s_eth_axis_tvalid=s_eth_axis_tvalid,
+        s_eth_axis_tready=s_eth_axis_tready,
+        s_eth_axis_tlast=s_eth_axis_tlast,
+        s_eth_axis_tuser=s_eth_axis_tuser,
+        m_eth_axis_tdata=m_eth_axis_tdata,
+        m_eth_axis_tvalid=m_eth_axis_tvalid,
+        m_eth_axis_tready=m_eth_axis_tready,
+        m_eth_axis_tlast=m_eth_axis_tlast,
+        m_eth_axis_tuser=m_eth_axis_tuser,
         down_xfcp_in_tdata=down_xfcp_in_tdata,
         down_xfcp_in_tvalid=down_xfcp_in_tvalid,
         down_xfcp_in_tready=down_xfcp_in_tready,

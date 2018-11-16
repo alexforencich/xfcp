@@ -41,7 +41,6 @@ srcs.append("../lib/uart/rtl/uart_tx.v")
 srcs.append("../lib/eth/lib/axis/rtl/axis_cobs_encode.v")
 srcs.append("../lib/eth/lib/axis/rtl/axis_cobs_decode.v")
 srcs.append("../lib/eth/lib/axis/rtl/axis_fifo.v")
-srcs.append("../lib/eth/lib/axis/rtl/axis_frame_fifo.v")
 srcs.append("%s.v" % testbench)
 
 src = ' '.join(srcs)
