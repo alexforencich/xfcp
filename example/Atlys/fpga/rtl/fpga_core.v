@@ -236,30 +236,22 @@ wire xfcp_interface_switch_up_tready;
 wire xfcp_interface_switch_up_tlast;
 wire xfcp_interface_switch_up_tuser;
 
-xfcp_switch_2x1
-xfcp_interface_switch_inst (
+xfcp_arb #(
+    .PORTS(2)
+)
+xfcp_interface_arb_inst (
     .clk(clk),
     .rst(rst),
-    .up_xfcp_0_in_tdata(xfcp_uart_interface_down_tdata),
-    .up_xfcp_0_in_tvalid(xfcp_uart_interface_down_tvalid),
-    .up_xfcp_0_in_tready(xfcp_uart_interface_down_tready),
-    .up_xfcp_0_in_tlast(xfcp_uart_interface_down_tlast),
-    .up_xfcp_0_in_tuser(xfcp_uart_interface_down_tuser),
-    .up_xfcp_0_out_tdata(xfcp_uart_interface_up_tdata),
-    .up_xfcp_0_out_tvalid(xfcp_uart_interface_up_tvalid),
-    .up_xfcp_0_out_tready(xfcp_uart_interface_up_tready),
-    .up_xfcp_0_out_tlast(xfcp_uart_interface_up_tlast),
-    .up_xfcp_0_out_tuser(xfcp_uart_interface_up_tuser),
-    .up_xfcp_1_in_tdata(xfcp_udp_interface_down_tdata),
-    .up_xfcp_1_in_tvalid(xfcp_udp_interface_down_tvalid),
-    .up_xfcp_1_in_tready(xfcp_udp_interface_down_tready),
-    .up_xfcp_1_in_tlast(xfcp_udp_interface_down_tlast),
-    .up_xfcp_1_in_tuser(xfcp_udp_interface_down_tuser),
-    .up_xfcp_1_out_tdata(xfcp_udp_interface_up_tdata),
-    .up_xfcp_1_out_tvalid(xfcp_udp_interface_up_tvalid),
-    .up_xfcp_1_out_tready(xfcp_udp_interface_up_tready),
-    .up_xfcp_1_out_tlast(xfcp_udp_interface_up_tlast),
-    .up_xfcp_1_out_tuser(xfcp_udp_interface_up_tuser),
+    .up_xfcp_in_tdata({xfcp_udp_interface_down_tdata, xfcp_uart_interface_down_tdata}),
+    .up_xfcp_in_tvalid({xfcp_udp_interface_down_tvalid, xfcp_uart_interface_down_tvalid}),
+    .up_xfcp_in_tready({xfcp_udp_interface_down_tready, xfcp_uart_interface_down_tready}),
+    .up_xfcp_in_tlast({xfcp_udp_interface_down_tlast, xfcp_uart_interface_down_tlast}),
+    .up_xfcp_in_tuser({xfcp_udp_interface_down_tuser, xfcp_uart_interface_down_tuser}),
+    .up_xfcp_out_tdata({xfcp_udp_interface_up_tdata, xfcp_uart_interface_up_tdata}),
+    .up_xfcp_out_tvalid({xfcp_udp_interface_up_tvalid, xfcp_uart_interface_up_tvalid}),
+    .up_xfcp_out_tready({xfcp_udp_interface_up_tready, xfcp_uart_interface_up_tready}),
+    .up_xfcp_out_tlast({xfcp_udp_interface_up_tlast, xfcp_uart_interface_up_tlast}),
+    .up_xfcp_out_tuser({xfcp_udp_interface_up_tuser, xfcp_uart_interface_up_tuser}),
     .down_xfcp_in_tdata(xfcp_interface_switch_up_tdata),
     .down_xfcp_in_tvalid(xfcp_interface_switch_up_tvalid),
     .down_xfcp_in_tready(xfcp_interface_switch_up_tready),
@@ -321,7 +313,8 @@ wire xfcp_switch_port_3_up_tready;
 wire xfcp_switch_port_3_up_tlast;
 wire xfcp_switch_port_3_up_tuser;
 
-xfcp_switch_1x4 #(
+xfcp_switch #(
+    .PORTS(4),
     .XFCP_ID_TYPE(16'h0100),
     .XFCP_ID_STR("XFCP switch"),
     .XFCP_EXT_ID(0),
@@ -340,46 +333,16 @@ xfcp_switch_inst (
     .up_xfcp_out_tready(xfcp_interface_switch_up_tready),
     .up_xfcp_out_tlast(xfcp_interface_switch_up_tlast),
     .up_xfcp_out_tuser(xfcp_interface_switch_up_tuser),
-    .down_xfcp_0_in_tdata(xfcp_switch_port_0_up_tdata),
-    .down_xfcp_0_in_tvalid(xfcp_switch_port_0_up_tvalid),
-    .down_xfcp_0_in_tready(xfcp_switch_port_0_up_tready),
-    .down_xfcp_0_in_tlast(xfcp_switch_port_0_up_tlast),
-    .down_xfcp_0_in_tuser(xfcp_switch_port_0_up_tuser),
-    .down_xfcp_0_out_tdata(xfcp_switch_port_0_down_tdata),
-    .down_xfcp_0_out_tvalid(xfcp_switch_port_0_down_tvalid),
-    .down_xfcp_0_out_tready(xfcp_switch_port_0_down_tready),
-    .down_xfcp_0_out_tlast(xfcp_switch_port_0_down_tlast),
-    .down_xfcp_0_out_tuser(xfcp_switch_port_0_down_tuser),
-    .down_xfcp_1_in_tdata(xfcp_switch_port_1_up_tdata),
-    .down_xfcp_1_in_tvalid(xfcp_switch_port_1_up_tvalid),
-    .down_xfcp_1_in_tready(xfcp_switch_port_1_up_tready),
-    .down_xfcp_1_in_tlast(xfcp_switch_port_1_up_tlast),
-    .down_xfcp_1_in_tuser(xfcp_switch_port_1_up_tuser),
-    .down_xfcp_1_out_tdata(xfcp_switch_port_1_down_tdata),
-    .down_xfcp_1_out_tvalid(xfcp_switch_port_1_down_tvalid),
-    .down_xfcp_1_out_tready(xfcp_switch_port_1_down_tready),
-    .down_xfcp_1_out_tlast(xfcp_switch_port_1_down_tlast),
-    .down_xfcp_1_out_tuser(xfcp_switch_port_1_down_tuser),
-    .down_xfcp_2_in_tdata(xfcp_switch_port_2_up_tdata),
-    .down_xfcp_2_in_tvalid(xfcp_switch_port_2_up_tvalid),
-    .down_xfcp_2_in_tready(xfcp_switch_port_2_up_tready),
-    .down_xfcp_2_in_tlast(xfcp_switch_port_2_up_tlast),
-    .down_xfcp_2_in_tuser(xfcp_switch_port_2_up_tuser),
-    .down_xfcp_2_out_tdata(xfcp_switch_port_2_down_tdata),
-    .down_xfcp_2_out_tvalid(xfcp_switch_port_2_down_tvalid),
-    .down_xfcp_2_out_tready(xfcp_switch_port_2_down_tready),
-    .down_xfcp_2_out_tlast(xfcp_switch_port_2_down_tlast),
-    .down_xfcp_2_out_tuser(xfcp_switch_port_2_down_tuser),
-    .down_xfcp_3_in_tdata(xfcp_switch_port_3_up_tdata),
-    .down_xfcp_3_in_tvalid(xfcp_switch_port_3_up_tvalid),
-    .down_xfcp_3_in_tready(xfcp_switch_port_3_up_tready),
-    .down_xfcp_3_in_tlast(xfcp_switch_port_3_up_tlast),
-    .down_xfcp_3_in_tuser(xfcp_switch_port_3_up_tuser),
-    .down_xfcp_3_out_tdata(xfcp_switch_port_3_down_tdata),
-    .down_xfcp_3_out_tvalid(xfcp_switch_port_3_down_tvalid),
-    .down_xfcp_3_out_tready(xfcp_switch_port_3_down_tready),
-    .down_xfcp_3_out_tlast(xfcp_switch_port_3_down_tlast),
-    .down_xfcp_3_out_tuser(xfcp_switch_port_3_down_tuser)
+    .down_xfcp_in_tdata(  {xfcp_switch_port_3_up_tdata,    xfcp_switch_port_2_up_tdata,    xfcp_switch_port_1_up_tdata,    xfcp_switch_port_0_up_tdata   }),
+    .down_xfcp_in_tvalid( {xfcp_switch_port_3_up_tvalid,   xfcp_switch_port_2_up_tvalid,   xfcp_switch_port_1_up_tvalid,   xfcp_switch_port_0_up_tvalid  }),
+    .down_xfcp_in_tready( {xfcp_switch_port_3_up_tready,   xfcp_switch_port_2_up_tready,   xfcp_switch_port_1_up_tready,   xfcp_switch_port_0_up_tready  }),
+    .down_xfcp_in_tlast(  {xfcp_switch_port_3_up_tlast,    xfcp_switch_port_2_up_tlast,    xfcp_switch_port_1_up_tlast,    xfcp_switch_port_0_up_tlast   }),
+    .down_xfcp_in_tuser(  {xfcp_switch_port_3_up_tuser,    xfcp_switch_port_2_up_tuser,    xfcp_switch_port_1_up_tuser,    xfcp_switch_port_0_up_tuser   }),
+    .down_xfcp_out_tdata( {xfcp_switch_port_3_down_tdata,  xfcp_switch_port_2_down_tdata,  xfcp_switch_port_1_down_tdata,  xfcp_switch_port_0_down_tdata }),
+    .down_xfcp_out_tvalid({xfcp_switch_port_3_down_tvalid, xfcp_switch_port_2_down_tvalid, xfcp_switch_port_1_down_tvalid, xfcp_switch_port_0_down_tvalid}),
+    .down_xfcp_out_tready({xfcp_switch_port_3_down_tready, xfcp_switch_port_2_down_tready, xfcp_switch_port_1_down_tready, xfcp_switch_port_0_down_tready}),
+    .down_xfcp_out_tlast( {xfcp_switch_port_3_down_tlast,  xfcp_switch_port_2_down_tlast,  xfcp_switch_port_1_down_tlast,  xfcp_switch_port_0_down_tlast }),
+    .down_xfcp_out_tuser( {xfcp_switch_port_3_down_tuser,  xfcp_switch_port_2_down_tuser,  xfcp_switch_port_1_down_tuser,  xfcp_switch_port_0_down_tuser })
 );
 
 // XFCP WB RAM 0
