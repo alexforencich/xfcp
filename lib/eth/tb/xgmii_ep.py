@@ -24,6 +24,23 @@ THE SOFTWARE.
 
 from myhdl import *
 
+ETH_PRE = 0x55
+ETH_SFD = 0xD5
+
+XGMII_IDLE   = 0x07
+XGMII_LPI    = 0x06
+XGMII_START  = 0xfb
+XGMII_TERM   = 0xfd
+XGMII_ERROR  = 0xfe
+XGMII_SEQ_OS = 0x9c
+XGMII_RES0   = 0x1c
+XGMII_RES1   = 0x3c
+XGMII_RES2   = 0x7c
+XGMII_RES3   = 0xbc
+XGMII_RES4   = 0xdc
+XGMII_RES5   = 0xf7
+XGMII_SIG_OS = 0x5c
+
 class XGMIIFrame(object):
     def __init__(self, data=b'', error=None, ctrl=None):
         self.data = b''
@@ -68,7 +85,7 @@ class XGMIIFrame(object):
 
         for i in range(len(f)):
             if error[i]:
-                f[i] = 0xfe
+                f[i] = XGMII_ERROR
                 ctrl[i] = 1
 
         i = 0
@@ -89,7 +106,7 @@ class XGMIIFrame(object):
         self.error = [0]*len(self.data)
 
         for i in range(len(self.data)):
-            if c[i] and d[i] == 0xfe:
+            if c[i] and d[i] == XGMII_ERROR:
                 self.error[i] = 1
 
     def __eq__(self, other):
@@ -122,6 +139,8 @@ class XGMIISource(object):
                 rst,
                 txd,
                 txc,
+                enable=True,
+                ifg=12,
                 name=None
             ):
 
@@ -130,6 +149,7 @@ class XGMIISource(object):
         self.has_logic = True
 
         assert len(txd) in [32, 64]
+        assert len(txd) == len(txc)*8
 
         bw = int(len(txd)/8)
 
@@ -140,7 +160,6 @@ class XGMIISource(object):
             cl = []
             ifg_cnt = 0
             deficit_idle_cnt = 0
-            nt = False
 
             while True:
                 yield clk.posedge, rst.posedge
@@ -153,28 +172,23 @@ class XGMIISource(object):
                     cl = []
                     ifg_cnt = 0
                     deficit_idle_cnt = 0
-                    nt = False
-                else:
+                elif enable:
                     if ifg_cnt > bw-1:
                         ifg_cnt -= bw
                         txd.next = 0x0707070707070707 if bw == 8 else 0x07070707
                         txc.next = 0xff if bw == 8 else 0xf
-                    elif len(dl) > 0 or nt:
+                    elif dl:
                         d = 0
                         c = 0
 
                         for i in range(bw):
-                            if len(dl) > 0:
+                            if dl:
                                 d |= dl.pop(0) << (8*i)
                                 c |= cl.pop(0) << i
-                                nt = True
+                                if not dl:
+                                    ifg_cnt = max(ifg, 12) - (bw-i) + deficit_idle_cnt
                             else:
-                                if nt:
-                                    d |= 0xfd << (8*i)
-                                    nt = False
-                                    ifg_cnt = 12 - (bw-i) + deficit_idle_cnt
-                                else:
-                                    d |= 0x07 << (8*i)
+                                d |= XGMII_IDLE << (8*i)
                                 c |= 1 << i
 
                         txd.next = d
@@ -185,36 +199,32 @@ class XGMIISource(object):
                         if name is not None:
                             print("[%s] Sending frame %s" % (name, repr(frame)))
 
-                        if ifg_cnt >= 4:
-                            deficit_idle_cnt = ifg_cnt - 4
-                        else:
-                            deficit_idle_cnt = ifg_cnt
-                            ifg_cnt = 0
-
                         assert len(dl) > 0
-                        assert dl.pop(0) == 0x55
-                        cl.pop(0)
+                        assert dl[0] == ETH_PRE
+                        dl[0] = XGMII_START
+                        cl[0] = 1
+                        dl.append(XGMII_TERM)
+                        cl.append(1)
 
-                        k = 1
-                        d = 0xfb
-                        c = 1
+                        if bw == 8 and ifg_cnt >= 4:
+                            ifg_cnt = max(ifg_cnt-4, 0)
+                            dl = [XGMII_IDLE]*4+dl
+                            cl = [1]*4+cl
 
-                        if ifg_cnt > 0:
-                            k = 5
-                            d = 0xfb07070707
-                            c = 0x1f
+                        deficit_idle_cnt = ifg_cnt
+                        ifg_cnt = 0
 
-                        for i in range(k,bw):
-                            if len(dl) > 0:
+                        d = 0
+                        c = 0
+
+                        for i in range(0,bw):
+                            if dl:
                                 d |= dl.pop(0) << (8*i)
                                 c |= cl.pop(0) << i
-                                nt = True
+                                if not dl:
+                                    ifg_cnt = max(ifg, 12) - (bw-i) + deficit_idle_cnt
                             else:
-                                if nt:
-                                    d |= 0xfd << (8*i)
-                                    nt = False
-                                else:
-                                    d |= 0x07 << (8*i)
+                                d |= XGMII_IDLE << (8*i)
                                 c |= 1 << i
 
                         txd.next = d
@@ -258,6 +268,7 @@ class XGMIISink(object):
                 rst,
                 rxd,
                 rxc,
+                enable=True,
                 name=None
             ):
 
@@ -266,6 +277,7 @@ class XGMIISink(object):
         self.has_logic = True
 
         assert len(rxd) in [32, 64]
+        assert len(rxd) == len(rxc)*8
 
         bw = int(len(rxd)/8)
 
@@ -282,28 +294,32 @@ class XGMIISink(object):
                     frame = None
                     d = []
                     c = []
-                else:
+                elif enable:
                     if frame is None:
-                        if rxc & 1 and rxd & 0xff == 0xfb:
+                        if rxc & 1 and rxd & 0xff == XGMII_START:
                             # start in lane 0
                             frame = XGMIIFrame()
-                            d = [0x55]
+                            d = [ETH_PRE]
                             c = [0]
                             for i in range(1,bw):
                                 d.append((int(rxd) >> (8*i)) & 0xff)
                                 c.append((int(rxc) >> i) & 1)
-                        elif bw == 8 and (rxc >> 4) & 1 and (rxd >> 32) & 0xff == 0xfb:
+                        elif bw == 8 and (rxc >> 4) & 1 and (rxd >> 32) & 0xff == XGMII_START:
                             # start in lane 4
                             frame = XGMIIFrame()
-                            d = [0x55]
+                            d = [ETH_PRE]
                             c = [0]
-                            for i in range(5,8):
+                            for i in range(5,bw):
                                 d.append((int(rxd) >> (8*i)) & 0xff)
                                 c.append((int(rxc) >> i) & 1)
                     else:
                         for i in range(bw):
-                            if (rxc >> i) & 1 and (rxd >> (8*i)) & 0xff == 0xfd:
-                                # terminate
+                            if (rxc >> i) & 1:
+                                # got a control character; terminate frame reception
+                                if (rxd >> (8*i)) & 0xff != XGMII_TERM:
+                                    # store control character if it's not a termination
+                                    d.append((int(rxd) >> (8*i)) & 0xff)
+                                    c.append((int(rxc) >> i) & 1)
                                 frame.parse(d, c)
                                 self.queue.append(frame)
                                 self.sync.next = not self.sync
