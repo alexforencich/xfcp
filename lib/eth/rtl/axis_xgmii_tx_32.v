@@ -58,7 +58,12 @@ module axis_xgmii_tx_32 #
     /*
      * Configuration
      */
-    input  wire [7:0]  ifg_delay
+    input  wire [7:0]  ifg_delay,
+
+    /*
+     * Status
+     */
+    output wire        start_packet
 );
 
 localparam MIN_FL_NOCRC = MIN_FRAME_LENGTH-4;
@@ -123,10 +128,14 @@ wire [31:0] crc_next3;
 reg [31:0] xgmii_txd_reg = {4{XGMII_IDLE}}, xgmii_txd_next;
 reg [3:0] xgmii_txc_reg = 4'b1111, xgmii_txc_next;
 
+reg start_packet_reg = 1'b0, start_packet_next;
+
 assign s_axis_tready = s_axis_tready_reg;
 
 assign xgmii_txd = xgmii_txd_reg;
 assign xgmii_txc = xgmii_txc_reg;
+
+assign start_packet = start_packet_reg;
 
 lfsr #(
     .LFSR_WIDTH(32),
@@ -203,17 +212,6 @@ function [2:0] keep2count;
     endcase
 endfunction
 
-function [3:0] count2keep;
-    input [2:0] k;
-    case (k)
-        3'd0: count2keep = 4'b0000;
-        3'd1: count2keep = 4'b0001;
-        3'd2: count2keep = 4'b0011;
-        3'd3: count2keep = 4'b0111;
-        3'd4: count2keep = 4'b1111;
-    endcase
-endfunction
-
 // Mask input data
 integer j;
 
@@ -259,10 +257,10 @@ always @* begin
             extra_cycle = 1'b1;
         end
         default: begin
-            fcs_output_txd_0 = 32'd0;
-            fcs_output_txd_1 = 32'd0;
-            fcs_output_txc_0 = 4'd0;
-            fcs_output_txc_1 = 4'd0;
+            fcs_output_txd_0 = {4{XGMII_ERROR}};
+            fcs_output_txd_1 = {4{XGMII_ERROR}};
+            fcs_output_txc_0 = 4'b1111;
+            fcs_output_txc_1 = 4'b1111;
             ifg_offset = 8'd0;
             extra_cycle = 1'b0;
         end
@@ -288,6 +286,8 @@ always @* begin
     // XGMII idle
     xgmii_txd_next = {4{XGMII_IDLE}};
     xgmii_txc_next = 4'b1111;
+
+    start_packet_next = 1'b0;
 
     case (state_reg)
         STATE_IDLE: begin
@@ -323,6 +323,7 @@ always @* begin
             xgmii_txd_next = {ETH_SFD, {3{ETH_PRE}}};
             xgmii_txc_next = 4'b0000;
             s_axis_tready_next = 1'b1;
+            start_packet_next = 1'b1;
             state_next = STATE_PAYLOAD;
         end
         STATE_PAYLOAD: begin
@@ -530,6 +531,8 @@ always @(posedge clk) begin
         xgmii_txd_reg <= {4{XGMII_IDLE}};
         xgmii_txc_reg <= 4'b1111;
 
+        start_packet_reg <= 1'b0;
+
         crc_state <= 32'hFFFFFFFF;
     end else begin
         state_reg <= state_next;
@@ -543,6 +546,8 @@ always @(posedge clk) begin
 
         xgmii_txd_reg <= xgmii_txd_next;
         xgmii_txc_reg <= xgmii_txc_next;
+
+        start_packet_reg <= start_packet_next;
 
         // datapath
         if (reset_crc) begin

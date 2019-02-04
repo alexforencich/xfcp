@@ -121,9 +121,12 @@ class XGMIIFrame(object):
 
 
 class XGMIISource(object):
-    def __init__(self):
+    def __init__(self, ifg=12, enable_dic=True):
         self.has_logic = False
         self.queue = []
+        self.ifg = ifg
+        self.enable_dic = enable_dic
+        self.force_offset_start = False
 
     def send(self, frame):
         self.queue.append(XGMIIFrame(frame))
@@ -140,7 +143,6 @@ class XGMIISource(object):
                 txd,
                 txc,
                 enable=True,
-                ifg=12,
                 name=None
             ):
 
@@ -173,8 +175,8 @@ class XGMIISource(object):
                     ifg_cnt = 0
                     deficit_idle_cnt = 0
                 elif enable:
-                    if ifg_cnt > bw-1:
-                        ifg_cnt -= bw
+                    if ifg_cnt > bw-1 or (not self.enable_dic and ifg_cnt > 0):
+                        ifg_cnt = max(ifg_cnt - bw, 0)
                         txd.next = 0x0707070707070707 if bw == 8 else 0x07070707
                         txc.next = 0xff if bw == 8 else 0xf
                     elif dl:
@@ -186,7 +188,7 @@ class XGMIISource(object):
                                 d |= dl.pop(0) << (8*i)
                                 c |= cl.pop(0) << i
                                 if not dl:
-                                    ifg_cnt = max(ifg, 12) - (bw-i) + deficit_idle_cnt
+                                    ifg_cnt = self.ifg - (bw-i) + deficit_idle_cnt
                             else:
                                 d |= XGMII_IDLE << (8*i)
                                 c |= 1 << i
@@ -206,12 +208,12 @@ class XGMIISource(object):
                         dl.append(XGMII_TERM)
                         cl.append(1)
 
-                        if bw == 8 and ifg_cnt >= 4:
+                        if (bw == 8 and ifg_cnt >= 4) or self.force_offset_start:
                             ifg_cnt = max(ifg_cnt-4, 0)
                             dl = [XGMII_IDLE]*4+dl
                             cl = [1]*4+cl
 
-                        deficit_idle_cnt = ifg_cnt
+                        deficit_idle_cnt = max(ifg_cnt, 0)
                         ifg_cnt = 0
 
                         d = 0
@@ -222,7 +224,7 @@ class XGMIISource(object):
                                 d |= dl.pop(0) << (8*i)
                                 c |= cl.pop(0) << i
                                 if not dl:
-                                    ifg_cnt = max(ifg, 12) - (bw-i) + deficit_idle_cnt
+                                    ifg_cnt = self.ifg - (bw-i) + deficit_idle_cnt
                             else:
                                 d |= XGMII_IDLE << (8*i)
                                 c |= 1 << i
