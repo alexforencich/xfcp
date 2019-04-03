@@ -309,12 +309,14 @@ def bench():
         yield clk.posedge
 
         while s_axis_tvalid or m_axis_tvalid:
-            source_pause.next = True
-            yield clk.posedge
             yield clk.posedge
             yield clk.posedge
             source_pause.next = False
             yield clk.posedge
+            source_pause.next = True
+            yield clk.posedge
+
+        source_pause.next = False
 
         yield sink.wait()
         rx_frame = sink.recv()
@@ -484,6 +486,27 @@ def bench():
         rx_frame = sink.recv()
 
         assert rx_frame == test_frame
+
+        yield delay(100)
+
+        yield clk.posedge
+        print("test 11: many small packets")
+        current_test.next = 11
+
+        test_frame = axis_ep.AXIStreamFrame(
+            b'\xAA',
+            id=11,
+            dest=1
+        )
+
+        for k in range(64):
+            source.send(test_frame)
+
+        for k in range(64):
+            yield sink.wait()
+            rx_frame = sink.recv()
+
+            assert rx_frame == test_frame
 
         yield delay(100)
 

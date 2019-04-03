@@ -19,6 +19,13 @@ SYN_FILES += lib/eth/rtl/eth_mac_10g_fifo.v
 SYN_FILES += lib/eth/rtl/eth_mac_10g.v
 SYN_FILES += lib/eth/rtl/axis_xgmii_rx_64.v
 SYN_FILES += lib/eth/rtl/axis_xgmii_tx_64.v
+SYN_FILES += lib/eth/rtl/eth_phy_10g.v
+SYN_FILES += lib/eth/rtl/eth_phy_10g_rx.v
+SYN_FILES += lib/eth/rtl/eth_phy_10g_rx_frame_sync.v
+SYN_FILES += lib/eth/rtl/eth_phy_10g_rx_ber_mon.v
+SYN_FILES += lib/eth/rtl/eth_phy_10g_tx.v
+SYN_FILES += lib/eth/rtl/xgmii_baser_dec_64.v
+SYN_FILES += lib/eth/rtl/xgmii_baser_enc_64.v
 SYN_FILES += lib/eth/rtl/lfsr.v
 SYN_FILES += lib/eth/rtl/eth_axis_rx_64.v
 SYN_FILES += lib/eth/rtl/eth_axis_tx_64.v
@@ -47,11 +54,12 @@ SYN_FILES += lib/eth/lib/axis/rtl/axis_async_fifo.v
 
 # XDC files
 XDC_FILES = fpga.xdc
-XDC_FILES += clock.xdc
+XDC_FILES += lib/eth/syn/eth_mac_fifo.tcl
+XDC_FILES += lib/eth/lib/axis/syn/axis_async_fifo.tcl
 
 # IP
 XCI_FILES = ip/gig_ethernet_pcs_pma_0.xci
-XCI_FILES += ip/ten_gig_eth_pcs_pma_0.xci
+XCI_FILES += ip/gtwizard_ultrascale_0.xci
 
 include ../common/vivado.mk
 

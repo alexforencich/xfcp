@@ -27,7 +27,6 @@ from myhdl import *
 import os
 
 import axis_ep
-import math
 
 module = 'axis_switch'
 testbench = 'test_%s_4x4_64' % module
@@ -54,7 +53,7 @@ def bench():
     KEEP_WIDTH = (DATA_WIDTH/8)
     ID_ENABLE = 1
     ID_WIDTH = 8
-    DEST_WIDTH = math.ceil(math.log(M_COUNT+1, 2))
+    DEST_WIDTH = (M_COUNT+1).bit_length()
     USER_ENABLE = 1
     USER_WIDTH = 1
     M_BASE = [0, 1, 2, 3]
@@ -202,32 +201,27 @@ def bench():
 
     def wait_pause_source():
         while s_axis_tvalid:
-            source_pause_list[0].next = True
-            source_pause_list[1].next = True
-            source_pause_list[2].next = True
-            source_pause_list[3].next = True
             yield clk.posedge
             yield clk.posedge
+            for k in range(S_COUNT):
+                source_pause_list[k].next = False
             yield clk.posedge
-            source_pause_list[0].next = False
-            source_pause_list[1].next = False
-            source_pause_list[2].next = False
-            source_pause_list[3].next = False
+            for k in range(S_COUNT):
+                source_pause_list[k].next = True
             yield clk.posedge
+
+        for k in range(S_COUNT):
+            source_pause_list[k].next = False
 
     def wait_pause_sink():
         while s_axis_tvalid:
-            sink_pause_list[0].next = True
-            sink_pause_list[1].next = True
-            sink_pause_list[2].next = True
-            sink_pause_list[3].next = True
+            for k in range(M_COUNT):
+                sink_pause_list[k].next = True
             yield clk.posedge
             yield clk.posedge
             yield clk.posedge
-            sink_pause_list[0].next = False
-            sink_pause_list[1].next = False
-            sink_pause_list[2].next = False
-            sink_pause_list[3].next = False
+            for k in range(M_COUNT):
+                sink_pause_list[k].next = False
             yield clk.posedge
 
     @instance
