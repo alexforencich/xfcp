@@ -1,4 +1,4 @@
-# Verilog Ethernet Nexys Video Example Design
+# XFCP Nexys Video Example Design
 
 ## Introduction
 

@@ -1,4 +1,4 @@
-# Verilog Ethernet VCU108 Example Design
+# XFCP VCU108 Example Design
 
 ## Introduction
 

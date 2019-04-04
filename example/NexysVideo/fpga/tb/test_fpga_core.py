@@ -266,14 +266,14 @@ def bench():
     @always_comb
     def bus():
         # emulate I2C wired AND
-        i2c_scl_i.next = i2c_scl_o & s1_scl_o & s2_scl_o;
-        i2c_sda_i.next = i2c_sda_o & s1_sda_o & s2_sda_o;
+        i2c_scl_i.next = i2c_scl_o & s1_scl_o & s2_scl_o
+        i2c_sda_i.next = i2c_sda_o & s1_sda_o & s2_sda_o
 
-        s1_scl_i.next = i2c_scl_o & s1_scl_o & s2_scl_o;
-        s1_sda_i.next = i2c_sda_o & s1_sda_o & s2_sda_o;
+        s1_scl_i.next = i2c_scl_o & s1_scl_o & s2_scl_o
+        s1_sda_i.next = i2c_sda_o & s1_sda_o & s2_sda_o
 
-        s2_scl_i.next = i2c_scl_o & s1_scl_o & s2_scl_o;
-        s2_sda_i.next = i2c_sda_o & s1_sda_o & s2_sda_o;
+        s2_scl_i.next = i2c_scl_o & s1_scl_o & s2_scl_o
+        s2_sda_i.next = i2c_sda_o & s1_sda_o & s2_sda_o
 
     @always(delay(4))
     def clkgen():
