@@ -65,7 +65,6 @@ def cobs_decode(block):
     block = bytearray(block)
     dec = bytearray()
 
-    it = iter(bytearray(block))
     code = 0
 
     i = 0
