@@ -227,14 +227,14 @@ wire       up_xfcp_out_tready_int_early;
 
 assign up_xfcp_in_tready = up_xfcp_in_tready_reg;
 
-assign m_axil_awaddr = addr_reg;
+assign m_axil_awaddr = {addr_reg[ADDR_WIDTH_ADJ-1:ADDR_WIDTH_ADJ-VALID_ADDR_WIDTH], {ADDR_WIDTH-VALID_ADDR_WIDTH{1'b0}}};
 assign m_axil_awprot = 3'b010;
 assign m_axil_awvalid = m_axil_awvalid_reg;
 assign m_axil_wdata = data_reg;
 assign m_axil_wstrb = m_axil_wstrb_reg;
 assign m_axil_wvalid = m_axil_wvalid_reg;
 assign m_axil_bready = m_axil_bready_reg;
-assign m_axil_araddr = addr_reg;
+assign m_axil_araddr = {addr_reg[ADDR_WIDTH_ADJ-1:ADDR_WIDTH_ADJ-VALID_ADDR_WIDTH], {ADDR_WIDTH-VALID_ADDR_WIDTH{1'b0}}};
 assign m_axil_arprot = 3'b010;
 assign m_axil_arvalid = m_axil_arvalid_reg;
 assign m_axil_rready = m_axil_rready_reg;
