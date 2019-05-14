@@ -344,7 +344,7 @@ xfcp_switch #(
     .XFCP_ID_TYPE(16'h0100),
     .XFCP_ID_STR("XFCP switch"),
     .XFCP_EXT_ID(0),
-    .XFCP_EXT_ID_STR("NexysVideo")
+    .XFCP_EXT_ID_STR("KC705")
 )
 xfcp_switch_inst (
     .clk(clk),
