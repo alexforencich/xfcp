@@ -140,13 +140,14 @@ Data register:
 
 | Addr  | Name          |   Bit 15  |   Bit 14  |   Bit 13  |   Bit 12  |   Bit 11  |   Bit 10  |   Bit 9   |   Bit 8   |
 |-------|---------------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
-| 0x04  | Data          |     -     |     -     |     -     |     -     |     -     |     -     |     -     | data_last |
+| 0x04  | Data          |     -     |     -     |     -     |     -     |     -     |     -     | data_last | data_valid|
 
 | Addr  | Name          |   Bit 7   |   Bit 6   |   Bit 5   |   Bit 4   |   Bit 3   |   Bit 2   |   Bit 1   |   Bit 0   |
 |-------|---------------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
 | 0x04  | Data          |                                           data[7:0]                                           |
 
 data: I2C data, write to push on write data FIFO, read to pull from read data FIFO
+data_valid: indicates valid read data, must be accessed with atomic 16 bit reads and writes
 data_last: indicate last byte of block write (write_multiple), must be accessed with atomic 16 bit reads and writes
 
 Prescale register:
@@ -319,23 +320,35 @@ generate
 if (CMD_FIFO) begin
     axis_fifo #(
         .ADDR_WIDTH(CMD_FIFO_ADDR_WIDTH),
-        .DATA_WIDTH(7+5)
+        .DATA_WIDTH(7+5),
+        .KEEP_ENABLE(0),
+        .LAST_ENABLE(0),
+        .ID_ENABLE(0),
+        .DEST_ENABLE(0),
+        .USER_ENABLE(0),
+        .FRAME_FIFO(0)
     )
     cmd_fifo_inst (
         .clk(clk),
         .rst(rst),
         // AXI input
-        .input_axis_tdata({cmd_address_reg, cmd_start_reg, cmd_read_reg, cmd_write_reg, cmd_write_multiple_reg, cmd_stop_reg}),
-        .input_axis_tvalid(cmd_valid_reg),
-        .input_axis_tready(cmd_ready),
-        .input_axis_tlast(1'b0),
-        .input_axis_tuser(1'b0),
+        .s_axis_tdata({cmd_address_reg, cmd_start_reg, cmd_read_reg, cmd_write_reg, cmd_write_multiple_reg, cmd_stop_reg}),
+        .s_axis_tkeep(0),
+        .s_axis_tvalid(cmd_valid_reg),
+        .s_axis_tready(cmd_ready),
+        .s_axis_tlast(1'b0),
+        .s_axis_tid(0),
+        .s_axis_tdest(0),
+        .s_axis_tuser(1'b0),
         // AXI output
-        .output_axis_tdata({cmd_address_int, cmd_start_int, cmd_read_int, cmd_write_int, cmd_write_multiple_int, cmd_stop_int}),
-        .output_axis_tvalid(cmd_valid_int),
-        .output_axis_tready(cmd_ready_int),
-        .output_axis_tlast(),
-        .output_axis_tuser()
+        .m_axis_tdata({cmd_address_int, cmd_start_int, cmd_read_int, cmd_write_int, cmd_write_multiple_int, cmd_stop_int}),
+        .m_axis_tkeep(),
+        .m_axis_tvalid(cmd_valid_int),
+        .m_axis_tready(cmd_ready_int),
+        .m_axis_tlast(),
+        .m_axis_tid(),
+        .m_axis_tdest(),
+        .m_axis_tuser()
     );
 end else begin
     assign cmd_address_int = cmd_address_reg;
@@ -351,23 +364,35 @@ end
 if (WRITE_FIFO) begin
     axis_fifo #(
         .ADDR_WIDTH(WRITE_FIFO_ADDR_WIDTH),
-        .DATA_WIDTH(8)
+        .DATA_WIDTH(8),
+        .KEEP_ENABLE(0),
+        .LAST_ENABLE(1),
+        .ID_ENABLE(0),
+        .DEST_ENABLE(0),
+        .USER_ENABLE(0),
+        .FRAME_FIFO(0)
     )
     write_fifo_inst (
         .clk(clk),
         .rst(rst),
         // AXI input
-        .input_axis_tdata(data_in_reg),
-        .input_axis_tvalid(data_in_valid_reg),
-        .input_axis_tready(data_in_ready),
-        .input_axis_tlast(data_in_last_reg),
-        .input_axis_tuser(1'b0),
+        .s_axis_tdata(data_in_reg),
+        .s_axis_tkeep(0),
+        .s_axis_tvalid(data_in_valid_reg),
+        .s_axis_tready(data_in_ready),
+        .s_axis_tlast(data_in_last_reg),
+        .s_axis_tid(0),
+        .s_axis_tdest(0),
+        .s_axis_tuser(1'b0),
         // AXI output
-        .output_axis_tdata(data_in_int),
-        .output_axis_tvalid(data_in_valid_int),
-        .output_axis_tready(data_in_ready_int),
-        .output_axis_tlast(data_in_last_int),
-        .output_axis_tuser()
+        .m_axis_tdata(data_in_int),
+        .m_axis_tkeep(),
+        .m_axis_tvalid(data_in_valid_int),
+        .m_axis_tready(data_in_ready_int),
+        .m_axis_tlast(data_in_last_int),
+        .m_axis_tid(),
+        .m_axis_tdest(),
+        .m_axis_tuser()
     );
 end else begin
     assign data_in_int = data_in_reg;
@@ -379,23 +404,35 @@ end
 if (READ_FIFO) begin
     axis_fifo #(
         .ADDR_WIDTH(READ_FIFO_ADDR_WIDTH),
-        .DATA_WIDTH(8)
+        .DATA_WIDTH(8),
+        .KEEP_ENABLE(0),
+        .LAST_ENABLE(1),
+        .ID_ENABLE(0),
+        .DEST_ENABLE(0),
+        .USER_ENABLE(0),
+        .FRAME_FIFO(0)
     )
     read_fifo_inst (
         .clk(clk),
         .rst(rst),
         // AXI input
-        .input_axis_tdata(data_out_int),
-        .input_axis_tvalid(data_out_valid_int),
-        .input_axis_tready(data_out_ready_int),
-        .input_axis_tlast(data_out_last_int),
-        .input_axis_tuser(1'b0),
+        .s_axis_tdata(data_out_int),
+        .s_axis_tkeep(0),
+        .s_axis_tvalid(data_out_valid_int),
+        .s_axis_tready(data_out_ready_int),
+        .s_axis_tlast(data_out_last_int),
+        .s_axis_tid(0),
+        .s_axis_tdest(0),
+        .s_axis_tuser(0),
         // AXI output
-        .output_axis_tdata(data_out),
-        .output_axis_tvalid(data_out_valid),
-        .output_axis_tready(data_out_ready_reg),
-        .output_axis_tlast(data_out_last),
-        .output_axis_tuser()
+        .m_axis_tdata(data_out),
+        .m_axis_tkeep(),
+        .m_axis_tvalid(data_out_valid),
+        .m_axis_tready(data_out_ready_reg),
+        .m_axis_tlast(data_out_last),
+        .m_axis_tid(),
+        .m_axis_tdest(),
+        .m_axis_tuser()
     );
 end else begin
     assign data_out = data_out_int;
@@ -462,7 +499,7 @@ always @* begin
 
                         if (wbs_sel_i[1]) begin
                             // only valid with atomic 16 bit write
-                            data_in_last_next = wbs_dat_i[8];
+                            data_in_last_next = wbs_dat_i[9];
                         end else begin
                             data_in_last_next = 1'b0;
                         end
@@ -529,11 +566,12 @@ always @* begin
                 3'h4: begin
                     // data
                     wbs_dat_o_next[7:0] = data_out;
-                    wbs_dat_o_next[8] = data_out_last;
-                    wbs_dat_o_next[15:9] = 7'd0;
+                    wbs_dat_o_next[8] = data_out_valid;
+                    wbs_dat_o_next[9] = data_out_last;
+                    wbs_dat_o_next[15:10] = 6'd0;
 
                     if (wbs_sel_i[0]) begin
-                        data_out_ready_next = ~wbs_ack_o_reg;
+                        data_out_ready_next = !wbs_ack_o_reg && data_out_valid;
                     end
                 end
                 3'h6: begin
