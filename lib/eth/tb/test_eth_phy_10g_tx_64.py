@@ -37,6 +37,7 @@ testbench = 'test_%s_64' % module
 srcs = []
 
 srcs.append("../rtl/%s.v" % module)
+srcs.append("../rtl/eth_phy_10g_tx_if.v")
 srcs.append("../rtl/xgmii_baser_enc_64.v")
 srcs.append("../rtl/lfsr.v")
 srcs.append("%s.v" % testbench)
@@ -44,6 +45,17 @@ srcs.append("%s.v" % testbench)
 src = ' '.join(srcs)
 
 build_cmd = "iverilog -o %s.vvp %s" % (testbench, src)
+
+def prbs31(width=8, state=0x7fffffff):
+    while True:
+        out = 0
+        for i in range(width):
+            if bool(state & 0x08000000) ^ bool(state & 0x40000000):
+                state = ((state & 0x3fffffff) << 1) | 1
+                out = out | 2**i
+            else:
+                state = (state & 0x3fffffff) << 1
+        yield ~out & (2**width-1)
 
 def bench():
 
@@ -53,6 +65,8 @@ def bench():
     HDR_WIDTH = 2
     BIT_REVERSE = 0
     SCRAMBLER_DISABLE = 0
+    PRBS31_ENABLE = 1
+    SERDES_PIPELINE = 2
 
     # Inputs
     clk = Signal(bool(0))
@@ -61,6 +75,7 @@ def bench():
 
     xgmii_txd = Signal(intbv(0)[DATA_WIDTH:])
     xgmii_txc = Signal(intbv(0)[CTRL_WIDTH:])
+    tx_prbs31_enable = Signal(bool(0))
 
     # Outputs
     serdes_tx_data = Signal(intbv(0)[DATA_WIDTH:])
@@ -98,7 +113,8 @@ def bench():
         xgmii_txd=xgmii_txd,
         xgmii_txc=xgmii_txc,
         serdes_tx_data=serdes_tx_data,
-        serdes_tx_hdr=serdes_tx_hdr
+        serdes_tx_hdr=serdes_tx_hdr,
+        tx_prbs31_enable=tx_prbs31_enable
     )
 
     @always(delay(4))
@@ -193,6 +209,26 @@ def bench():
             assert sink.empty()
 
             yield delay(100)
+
+        yield clk.posedge
+        print("test 4: PRBS31 generation")
+        current_test.next = 4
+
+        tx_prbs31_enable.next = True
+
+        yield delay(100)
+
+        prbs_gen = prbs31(66)
+        prbs_data = [next(prbs_gen) for x in range(100)]
+
+        for k in range(20):
+            yield clk.posedge
+            data = int(serdes_tx_data) << 2 | int(serdes_tx_hdr)
+            assert data in prbs_data
+
+        tx_prbs31_enable.next = False
+
+        yield delay(100)
 
         raise StopSimulation
 

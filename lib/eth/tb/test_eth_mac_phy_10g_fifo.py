@@ -42,6 +42,8 @@ srcs.append("../rtl/axis_baser_rx_64.v")
 srcs.append("../rtl/eth_mac_phy_10g.v")
 srcs.append("../rtl/eth_mac_phy_10g_rx.v")
 srcs.append("../rtl/eth_mac_phy_10g_tx.v")
+srcs.append("../rtl/eth_phy_10g_rx_if.v")
+srcs.append("../rtl/eth_phy_10g_tx_if.v")
 srcs.append("../rtl/eth_phy_10g_rx_ber_mon.v")
 srcs.append("../rtl/eth_phy_10g_rx_frame_sync.v")
 srcs.append("../rtl/lfsr.v")
@@ -64,6 +66,9 @@ def bench():
     MIN_FRAME_LENGTH = 64
     BIT_REVERSE = 0
     SCRAMBLER_DISABLE = 0
+    PRBS31_ENABLE = 1
+    TX_SERDES_PIPELINE = 2
+    RX_SERDES_PIPELINE = 2
     SLIP_COUNT_WIDTH = 3
     COUNT_125US = 125000/6.4
     TX_FIFO_ADDR_WIDTH = 12-(KEEP_WIDTH-1).bit_length()
@@ -95,6 +100,8 @@ def bench():
     serdes_rx_data = Signal(intbv(0)[DATA_WIDTH:])
     serdes_rx_hdr = Signal(intbv(1)[HDR_WIDTH:])
     ifg_delay = Signal(intbv(0)[8:])
+    tx_prbs31_enable = Signal(bool(0))
+    rx_prbs31_enable = Signal(bool(0))
 
     serdes_rx_data_int = Signal(intbv(0)[DATA_WIDTH:])
     serdes_rx_hdr_int = Signal(intbv(1)[HDR_WIDTH:])
@@ -216,7 +223,9 @@ def bench():
         rx_fifo_overflow=rx_fifo_overflow,
         rx_fifo_bad_frame=rx_fifo_bad_frame,
         rx_fifo_good_frame=rx_fifo_good_frame,
-        ifg_delay=ifg_delay
+        ifg_delay=ifg_delay,
+        tx_prbs31_enable=tx_prbs31_enable,
+        rx_prbs31_enable=rx_prbs31_enable
     )
 
     @always(delay(4))
@@ -273,6 +282,14 @@ def bench():
         ifg_delay.next = 12
 
         # testbench stimulus
+
+        # wait for block lock
+        while not rx_block_lock:
+            yield clk.posedge
+
+        # dump garbage
+        while not axis_sink.empty():
+            axis_sink.recv()
 
         yield clk.posedge
         print("test 1: test rx packet")

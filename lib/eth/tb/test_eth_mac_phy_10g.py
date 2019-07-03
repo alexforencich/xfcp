@@ -41,6 +41,8 @@ srcs.append("../rtl/axis_baser_tx_64.v")
 srcs.append("../rtl/axis_baser_rx_64.v")
 srcs.append("../rtl/eth_mac_phy_10g_rx.v")
 srcs.append("../rtl/eth_mac_phy_10g_tx.v")
+srcs.append("../rtl/eth_phy_10g_rx_if.v")
+srcs.append("../rtl/eth_phy_10g_tx_if.v")
 srcs.append("../rtl/eth_phy_10g_rx_ber_mon.v")
 srcs.append("../rtl/eth_phy_10g_rx_frame_sync.v")
 srcs.append("../rtl/lfsr.v")
@@ -60,8 +62,21 @@ def bench():
     ENABLE_PADDING = 1
     ENABLE_DIC = 1
     MIN_FRAME_LENGTH = 64
+    PTP_PERIOD_NS = 0x6
+    PTP_PERIOD_FNS = 0x6666
+    TX_PTP_TS_ENABLE = 0
+    TX_PTP_TS_WIDTH = 96
+    TX_PTP_TAG_ENABLE = TX_PTP_TS_ENABLE
+    TX_PTP_TAG_WIDTH = 16
+    RX_PTP_TS_ENABLE = 0
+    RX_PTP_TS_WIDTH = 96
+    TX_USER_WIDTH = (TX_PTP_TAG_WIDTH if TX_PTP_TAG_ENABLE else 0) + 1
+    RX_USER_WIDTH = (RX_PTP_TS_WIDTH if RX_PTP_TS_ENABLE else 0) + 1
     BIT_REVERSE = 0
     SCRAMBLER_DISABLE = 0
+    PRBS31_ENABLE = 1
+    TX_SERDES_PIPELINE = 2
+    RX_SERDES_PIPELINE = 2
     SLIP_COUNT_WIDTH = 3
     COUNT_125US = 125000/6.4
 
@@ -78,10 +93,14 @@ def bench():
     tx_axis_tkeep = Signal(intbv(0)[KEEP_WIDTH:])
     tx_axis_tvalid = Signal(bool(0))
     tx_axis_tlast = Signal(bool(0))
-    tx_axis_tuser = Signal(bool(0))
+    tx_axis_tuser = Signal(intbv(0)[TX_USER_WIDTH:])
     serdes_rx_data = Signal(intbv(0)[DATA_WIDTH:])
     serdes_rx_hdr = Signal(intbv(1)[HDR_WIDTH:])
+    tx_ptp_ts = Signal(intbv(0)[TX_PTP_TS_WIDTH:])
+    rx_ptp_ts = Signal(intbv(0)[RX_PTP_TS_WIDTH:])
     ifg_delay = Signal(intbv(0)[8:])
+    tx_prbs31_enable = Signal(bool(0))
+    rx_prbs31_enable = Signal(bool(0))
 
     serdes_rx_data_int = Signal(intbv(0)[DATA_WIDTH:])
     serdes_rx_hdr_int = Signal(intbv(1)[HDR_WIDTH:])
@@ -92,15 +111,17 @@ def bench():
     rx_axis_tkeep = Signal(intbv(0)[KEEP_WIDTH:])
     rx_axis_tvalid = Signal(bool(0))
     rx_axis_tlast = Signal(bool(0))
-    rx_axis_tuser = Signal(bool(0))
+    rx_axis_tuser = Signal(intbv(0)[RX_USER_WIDTH:])
     serdes_tx_data = Signal(intbv(0)[DATA_WIDTH:])
     serdes_tx_hdr = Signal(intbv(1)[HDR_WIDTH:])
     serdes_rx_bitslip = Signal(bool(0))
-    tx_start_packet_0 = Signal(bool(0))
-    tx_start_packet_4 = Signal(bool(0))
+    tx_axis_ptp_ts = Signal(intbv(0)[TX_PTP_TS_WIDTH:])
+    tx_axis_ptp_ts_tag = Signal(intbv(0)[TX_PTP_TAG_WIDTH:])
+    tx_axis_ptp_ts_valid = Signal(bool(0))
+    tx_start_packet = Signal(intbv(0)[2:])
     tx_error_underflow = Signal(bool(0))
-    rx_start_packet_0 = Signal(bool(0))
-    rx_start_packet_4 = Signal(bool(0))
+    rx_start_packet = Signal(intbv(0)[2:])
+    rx_error_count = Signal(intbv(0)[7:])
     rx_error_bad_frame = Signal(bool(0))
     rx_error_bad_fcs = Signal(bool(0))
     rx_bad_block = Signal(bool(0))
@@ -185,17 +206,23 @@ def bench():
         serdes_rx_data=serdes_rx_data,
         serdes_rx_hdr=serdes_rx_hdr,
         serdes_rx_bitslip=serdes_rx_bitslip,
-        tx_start_packet_0=tx_start_packet_0,
-        tx_start_packet_4=tx_start_packet_4,
+        tx_ptp_ts=tx_ptp_ts,
+        rx_ptp_ts=rx_ptp_ts,
+        tx_axis_ptp_ts=tx_axis_ptp_ts,
+        tx_axis_ptp_ts_tag=tx_axis_ptp_ts_tag,
+        tx_axis_ptp_ts_valid=tx_axis_ptp_ts_valid,
+        tx_start_packet=tx_start_packet,
         tx_error_underflow=tx_error_underflow,
-        rx_start_packet_0=rx_start_packet_0,
-        rx_start_packet_4=rx_start_packet_4,
+        rx_start_packet=rx_start_packet,
+        rx_error_count=rx_error_count,
         rx_error_bad_frame=rx_error_bad_frame,
         rx_error_bad_fcs=rx_error_bad_fcs,
         rx_bad_block=rx_bad_block,
         rx_block_lock=rx_block_lock,
         rx_high_ber=rx_high_ber,
-        ifg_delay=ifg_delay
+        ifg_delay=ifg_delay,
+        tx_prbs31_enable=tx_prbs31_enable,
+        rx_prbs31_enable=rx_prbs31_enable
     )
 
     @always(delay(4))
@@ -249,6 +276,14 @@ def bench():
         ifg_delay.next = 12
 
         # testbench stimulus
+
+        # wait for block lock
+        while not rx_block_lock:
+            yield clk.posedge
+
+        # dump garbage
+        while not axis_sink.empty():
+            axis_sink.recv()
 
         yield clk.posedge
         print("test 1: test rx packet")

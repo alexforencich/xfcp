@@ -38,40 +38,57 @@ module eth_mac_phy_10g_tx #
     parameter ENABLE_PADDING = 1,
     parameter ENABLE_DIC = 1,
     parameter MIN_FRAME_LENGTH = 64,
+    parameter PTP_PERIOD_NS = 4'h6,
+    parameter PTP_PERIOD_FNS = 16'h6666,
+    parameter PTP_TS_ENABLE = 0,
+    parameter PTP_TS_WIDTH = 96,
+    parameter PTP_TAG_ENABLE = PTP_TS_ENABLE,
+    parameter PTP_TAG_WIDTH = 16,
+    parameter USER_WIDTH = (PTP_TAG_ENABLE ? PTP_TAG_WIDTH : 0) + 1,
     parameter BIT_REVERSE = 0,
-    parameter SCRAMBLER_DISABLE = 0
+    parameter SCRAMBLER_DISABLE = 0,
+    parameter PRBS31_ENABLE = 0,
+    parameter SERDES_PIPELINE = 0
 )
 (
-    input  wire                  clk,
-    input  wire                  rst,
+    input  wire                      clk,
+    input  wire                      rst,
 
     /*
      * AXI input
      */
-    input  wire [DATA_WIDTH-1:0] s_axis_tdata,
-    input  wire [KEEP_WIDTH-1:0] s_axis_tkeep,
-    input  wire                  s_axis_tvalid,
-    output wire                  s_axis_tready,
-    input  wire                  s_axis_tlast,
-    input  wire                  s_axis_tuser,
+    input  wire [DATA_WIDTH-1:0]     s_axis_tdata,
+    input  wire [KEEP_WIDTH-1:0]     s_axis_tkeep,
+    input  wire                      s_axis_tvalid,
+    output wire                      s_axis_tready,
+    input  wire                      s_axis_tlast,
+    input  wire [USER_WIDTH-1:0]     s_axis_tuser,
 
     /*
      * SERDES interface
      */
-    output wire [DATA_WIDTH-1:0] serdes_tx_data,
-    output wire [HDR_WIDTH-1:0]  serdes_tx_hdr,
+    output wire [DATA_WIDTH-1:0]     serdes_tx_data,
+    output wire [HDR_WIDTH-1:0]      serdes_tx_hdr,
 
     /*
-     * Configuration
+     * PTP
      */
-    input  wire [7:0]            ifg_delay,
+    input  wire [PTP_TS_WIDTH-1:0]   ptp_ts,
+    output wire [PTP_TS_WIDTH-1:0]   m_axis_ptp_ts,
+    output wire [PTP_TAG_WIDTH-1:0]  m_axis_ptp_ts_tag,
+    output wire                      m_axis_ptp_ts_valid,
 
     /*
      * Status
      */
-    output wire                  tx_start_packet_0,
-    output wire                  tx_start_packet_4,
-    output wire                  tx_error_underflow
+    output wire [1:0]                tx_start_packet,
+    output wire                      tx_error_underflow,
+
+    /*
+     * Configuration
+     */
+    input  wire [7:0]                ifg_delay,
+    input  wire                      tx_prbs31_enable
 );
 
 // bus width assertions
@@ -101,7 +118,14 @@ axis_baser_tx_64 #(
     .HDR_WIDTH(HDR_WIDTH),
     .ENABLE_PADDING(ENABLE_PADDING),
     .ENABLE_DIC(ENABLE_DIC),
-    .MIN_FRAME_LENGTH(MIN_FRAME_LENGTH)
+    .MIN_FRAME_LENGTH(MIN_FRAME_LENGTH),
+    .PTP_PERIOD_NS(PTP_PERIOD_NS),
+    .PTP_PERIOD_FNS(PTP_PERIOD_FNS),
+    .PTP_TS_ENABLE(PTP_TS_ENABLE),
+    .PTP_TS_WIDTH(PTP_TS_WIDTH),
+    .PTP_TAG_ENABLE(PTP_TAG_ENABLE),
+    .PTP_TAG_WIDTH(PTP_TAG_WIDTH),
+    .USER_WIDTH(USER_WIDTH)
 )
 axis_baser_tx_inst (
     .clk(clk),
@@ -114,57 +138,31 @@ axis_baser_tx_inst (
     .s_axis_tuser(s_axis_tuser),
     .encoded_tx_data(encoded_tx_data),
     .encoded_tx_hdr(encoded_tx_hdr),
-    .ifg_delay(ifg_delay),
-    .start_packet_0(tx_start_packet_0),
-    .start_packet_4(tx_start_packet_4),
-    .error_underflow(tx_error_underflow)
+    .ptp_ts(ptp_ts),
+    .m_axis_ptp_ts(m_axis_ptp_ts),
+    .m_axis_ptp_ts_tag(m_axis_ptp_ts_tag),
+    .m_axis_ptp_ts_valid(m_axis_ptp_ts_valid),
+    .start_packet(tx_start_packet),
+    .error_underflow(tx_error_underflow),
+    .ifg_delay(ifg_delay)
 );
 
-reg [57:0] tx_scrambler_state_reg = {58{1'b1}};
-wire [57:0] tx_scrambler_state;
-wire [DATA_WIDTH-1:0] scrambled_data;
-
-reg [DATA_WIDTH-1:0] serdes_tx_data_reg = {DATA_WIDTH{1'b0}};
-reg [HDR_WIDTH-1:0] serdes_tx_hdr_reg = {HDR_WIDTH{1'b0}};
-
-generate
-    genvar n;
-
-    if (BIT_REVERSE) begin
-        for (n = 0; n < DATA_WIDTH; n = n + 1) begin
-            assign serdes_tx_data[n] = serdes_tx_data_reg[DATA_WIDTH-n-1];
-        end
-
-        for (n = 0; n < HDR_WIDTH; n = n + 1) begin
-            assign serdes_tx_hdr[n] = serdes_tx_hdr_reg[HDR_WIDTH-n-1];
-        end
-    end else begin
-        assign serdes_tx_data = serdes_tx_data_reg;
-        assign serdes_tx_hdr = serdes_tx_hdr_reg;
-    end
-endgenerate
-
-lfsr #(
-    .LFSR_WIDTH(58),
-    .LFSR_POLY(58'h8000000001),
-    .LFSR_CONFIG("FIBONACCI"),
-    .LFSR_FEED_FORWARD(0),
-    .REVERSE(1),
+eth_phy_10g_tx_if #(
     .DATA_WIDTH(DATA_WIDTH),
-    .STYLE("AUTO")
+    .HDR_WIDTH(HDR_WIDTH),
+    .BIT_REVERSE(BIT_REVERSE),
+    .SCRAMBLER_DISABLE(SCRAMBLER_DISABLE),
+    .PRBS31_ENABLE(PRBS31_ENABLE),
+    .SERDES_PIPELINE(SERDES_PIPELINE)
 )
-scrambler_inst (
-    .data_in(encoded_tx_data),
-    .state_in(tx_scrambler_state_reg),
-    .data_out(scrambled_data),
-    .state_out(tx_scrambler_state)
+eth_phy_10g_tx_if_inst (
+    .clk(clk),
+    .rst(rst),
+    .encoded_tx_data(encoded_tx_data),
+    .encoded_tx_hdr(encoded_tx_hdr),
+    .serdes_tx_data(serdes_tx_data),
+    .serdes_tx_hdr(serdes_tx_hdr),
+    .tx_prbs31_enable(tx_prbs31_enable)
 );
-
-always @(posedge clk) begin
-    tx_scrambler_state_reg <= tx_scrambler_state;
-
-    serdes_tx_data_reg <= SCRAMBLER_DISABLE ? encoded_tx_data : scrambled_data;
-    serdes_tx_hdr_reg <= encoded_tx_hdr;
-end
 
 endmodule

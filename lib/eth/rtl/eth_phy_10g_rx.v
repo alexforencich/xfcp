@@ -27,7 +27,7 @@ THE SOFTWARE.
 `timescale 1ns / 1ps
 
 /*
- * 10G Ethernet PHY
+ * 10G Ethernet PHY RX
  */
 module eth_phy_10g_rx #
 (
@@ -36,6 +36,8 @@ module eth_phy_10g_rx #
     parameter HDR_WIDTH = 2,
     parameter BIT_REVERSE = 0,
     parameter SCRAMBLER_DISABLE = 0,
+    parameter PRBS31_ENABLE = 0,
+    parameter SERDES_PIPELINE = 0,
     parameter SLIP_COUNT_WIDTH = 3,
     parameter COUNT_125US = 125000/6.4
 )
@@ -59,9 +61,15 @@ module eth_phy_10g_rx #
     /*
      * Status
      */
+    output wire [6:0]            rx_error_count,
     output wire                  rx_bad_block,
     output wire                  rx_block_lock,
-    output wire                  rx_high_ber
+    output wire                  rx_high_ber,
+
+    /*
+     * Configuration
+     */
+    input  wire                  rx_prbs31_enable
 );
 
 // bus width assertions
@@ -82,56 +90,33 @@ initial begin
     end
 end
 
-wire [DATA_WIDTH-1:0] serdes_rx_data_int;
-wire [HDR_WIDTH-1:0]  serdes_rx_hdr_int;
+wire [DATA_WIDTH-1:0] encoded_rx_data;
+wire [HDR_WIDTH-1:0]  encoded_rx_hdr;
 
-generate
-    genvar n;
-
-    if (BIT_REVERSE) begin
-        for (n = 0; n < DATA_WIDTH; n = n + 1) begin
-            assign serdes_rx_data_int[n] = serdes_rx_data[DATA_WIDTH-n-1];
-        end
-
-        for (n = 0; n < HDR_WIDTH; n = n + 1) begin
-            assign serdes_rx_hdr_int[n] = serdes_rx_hdr[HDR_WIDTH-n-1];
-        end
-    end else begin
-        assign serdes_rx_data_int = serdes_rx_data;
-        assign serdes_rx_hdr_int = serdes_rx_hdr;
-    end
-endgenerate
-
-wire [DATA_WIDTH-1:0] descrambled_rx_data;
-
-reg [DATA_WIDTH-1:0] encoded_rx_data_reg = {DATA_WIDTH{1'b0}};
-reg [HDR_WIDTH-1:0] encoded_rx_hdr_reg = {HDR_WIDTH{1'b0}};
-
-reg [57:0] scrambler_state_reg = {58{1'b1}};
-wire [57:0] scrambler_state;
-
-lfsr #(
-    .LFSR_WIDTH(58),
-    .LFSR_POLY(58'h8000000001),
-    .LFSR_CONFIG("FIBONACCI"),
-    .LFSR_FEED_FORWARD(1),
-    .REVERSE(1),
+eth_phy_10g_rx_if #(
     .DATA_WIDTH(DATA_WIDTH),
-    .STYLE("AUTO")
+    .HDR_WIDTH(HDR_WIDTH),
+    .BIT_REVERSE(BIT_REVERSE),
+    .SCRAMBLER_DISABLE(SCRAMBLER_DISABLE),
+    .PRBS31_ENABLE(PRBS31_ENABLE),
+    .SERDES_PIPELINE(SERDES_PIPELINE),
+    .SLIP_COUNT_WIDTH(SLIP_COUNT_WIDTH),
+    .COUNT_125US(COUNT_125US)
 )
-descrambler_inst (
-    .data_in(serdes_rx_data_int),
-    .state_in(scrambler_state_reg),
-    .data_out(descrambled_rx_data),
-    .state_out(scrambler_state)
+eth_phy_10g_rx_if_inst (
+    .clk(clk),
+    .rst(rst),
+    .encoded_rx_data(encoded_rx_data),
+    .encoded_rx_hdr(encoded_rx_hdr),
+    .serdes_rx_data(serdes_rx_data),
+    .serdes_rx_hdr(serdes_rx_hdr),
+    .serdes_rx_bitslip(serdes_rx_bitslip),
+    .rx_error_count(rx_error_count),
+    .rx_bad_block(rx_bad_block),
+    .rx_block_lock(rx_block_lock),
+    .rx_high_ber(rx_high_ber),
+    .rx_prbs31_enable(rx_prbs31_enable)
 );
-
-always @(posedge clk) begin
-    scrambler_state_reg <= scrambler_state;
-
-    encoded_rx_data_reg <= SCRAMBLER_DISABLE ? serdes_rx_data_int : descrambled_rx_data;
-    encoded_rx_hdr_reg <= serdes_rx_hdr_int;
-end
 
 xgmii_baser_dec_64 #(
     .DATA_WIDTH(DATA_WIDTH),
@@ -141,34 +126,11 @@ xgmii_baser_dec_64 #(
 xgmii_baser_dec_inst (
     .clk(clk),
     .rst(rst),
-    .encoded_rx_data(encoded_rx_data_reg),
-    .encoded_rx_hdr(encoded_rx_hdr_reg),
+    .encoded_rx_data(encoded_rx_data),
+    .encoded_rx_hdr(encoded_rx_hdr),
     .xgmii_rxd(xgmii_rxd),
     .xgmii_rxc(xgmii_rxc),
     .rx_bad_block(rx_bad_block)
-);
-
-eth_phy_10g_rx_frame_sync #(
-    .HDR_WIDTH(HDR_WIDTH),
-    .SLIP_COUNT_WIDTH(SLIP_COUNT_WIDTH)
-)
-eth_phy_10g_rx_frame_sync_inst (
-    .clk(clk),
-    .rst(rst),
-    .serdes_rx_hdr(serdes_rx_hdr_int),
-    .serdes_rx_bitslip(serdes_rx_bitslip),
-    .rx_block_lock(rx_block_lock)
-);
-
-eth_phy_10g_rx_ber_mon #(
-    .HDR_WIDTH(HDR_WIDTH),
-    .COUNT_125US(COUNT_125US)
-)
-eth_phy_10g_rx_ber_mon_inst (
-    .clk(clk),
-    .rst(rst),
-    .serdes_rx_hdr(serdes_rx_hdr_int),
-    .rx_high_ber(rx_high_ber)
 );
 
 endmodule

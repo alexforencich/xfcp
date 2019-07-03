@@ -33,35 +33,44 @@ module axis_baser_rx_64 #
 (
     parameter DATA_WIDTH = 64,
     parameter KEEP_WIDTH = (DATA_WIDTH/8),
-    parameter HDR_WIDTH = 2
+    parameter HDR_WIDTH = 2,
+    parameter PTP_PERIOD_NS = 4'h6,
+    parameter PTP_PERIOD_FNS = 16'h6666,
+    parameter PTP_TS_ENABLE = 0,
+    parameter PTP_TS_WIDTH = 96,
+    parameter USER_WIDTH = (PTP_TS_ENABLE ? PTP_TS_WIDTH : 0) + 1
 )
 (
-    input  wire                  clk,
-    input  wire                  rst,
+    input  wire                     clk,
+    input  wire                     rst,
 
     /*
      * 10GBASE-R encoded input
      */
-    input  wire [DATA_WIDTH-1:0] encoded_rx_data,
-    input  wire [HDR_WIDTH-1:0]  encoded_rx_hdr,
+    input  wire [DATA_WIDTH-1:0]    encoded_rx_data,
+    input  wire [HDR_WIDTH-1:0]     encoded_rx_hdr,
 
     /*
      * AXI output
      */
-    output wire [DATA_WIDTH-1:0] m_axis_tdata,
-    output wire [KEEP_WIDTH-1:0] m_axis_tkeep,
-    output wire                  m_axis_tvalid,
-    output wire                  m_axis_tlast,
-    output wire                  m_axis_tuser,
+    output wire [DATA_WIDTH-1:0]    m_axis_tdata,
+    output wire [KEEP_WIDTH-1:0]    m_axis_tkeep,
+    output wire                     m_axis_tvalid,
+    output wire                     m_axis_tlast,
+    output wire [USER_WIDTH-1:0]    m_axis_tuser,
+
+    /*
+     * PTP
+     */
+    input  wire [PTP_TS_WIDTH-1:0]  ptp_ts,
 
     /*
      * Status
      */
-    output wire                  start_packet_0,
-    output wire                  start_packet_4,
-    output wire                  error_bad_frame,
-    output wire                  error_bad_fcs,
-    output wire                  rx_bad_block
+    output wire [1:0]               start_packet,
+    output wire                     error_bad_frame,
+    output wire                     error_bad_fcs,
+    output wire                     rx_bad_block
 );
 
 // bus width assertions
@@ -143,16 +152,16 @@ localparam [3:0]
     INPUT_TYPE_TERM_6 = 4'd14,
     INPUT_TYPE_TERM_7 = 4'd15;
 
-localparam [2:0]
-    STATE_IDLE = 3'd0,
-    STATE_PAYLOAD = 3'd1,
-    STATE_LAST = 3'd2;
+localparam [1:0]
+    STATE_IDLE = 2'd0,
+    STATE_PAYLOAD = 2'd1,
+    STATE_LAST = 2'd2;
 
-reg [2:0] state_reg = STATE_IDLE, state_next;
+reg [1:0] state_reg = STATE_IDLE, state_next;
 
 // datapath control signals
 reg reset_crc;
-reg update_crc;
+reg update_crc_last;
 
 reg lanes_swapped = 1'b0;
 reg [31:0] swap_data = 32'd0;
@@ -173,11 +182,12 @@ reg m_axis_tvalid_reg = 1'b0, m_axis_tvalid_next;
 reg m_axis_tlast_reg = 1'b0, m_axis_tlast_next;
 reg m_axis_tuser_reg = 1'b0, m_axis_tuser_next;
 
-reg start_packet_0_reg = 1'b0;
-reg start_packet_4_reg = 1'b0;
+reg [1:0] start_packet_reg = 2'b00;
 reg error_bad_frame_reg = 1'b0, error_bad_frame_next;
 reg error_bad_fcs_reg = 1'b0, error_bad_fcs_next;
 reg rx_bad_block_reg = 1'b0;
+
+reg [PTP_TS_WIDTH-1:0] ptp_ts_reg = 0;
 
 reg [31:0] crc_state = 32'hFFFFFFFF;
 reg [31:0] crc_state3 = 32'hFFFFFFFF;
@@ -200,15 +210,12 @@ assign m_axis_tdata = m_axis_tdata_reg;
 assign m_axis_tkeep = m_axis_tkeep_reg;
 assign m_axis_tvalid = m_axis_tvalid_reg;
 assign m_axis_tlast = m_axis_tlast_reg;
-assign m_axis_tuser = m_axis_tuser_reg;
+assign m_axis_tuser = PTP_TS_ENABLE ? {ptp_ts_reg, m_axis_tuser_reg} : m_axis_tuser_reg;
 
-assign start_packet_0 = start_packet_0_reg;
-assign start_packet_4 = start_packet_4_reg;
+assign start_packet = start_packet_reg;
 assign error_bad_frame = error_bad_frame_reg;
 assign error_bad_fcs = error_bad_fcs_reg;
 assign rx_bad_block = rx_bad_block_reg;
-
-wire last_cycle = state_reg == STATE_LAST;
 
 lfsr #(
     .LFSR_WIDTH(32),
@@ -221,7 +228,7 @@ lfsr #(
 )
 eth_crc_8 (
     .data_in(input_data_crc[7:0]),
-    .state_in(last_cycle ? crc_state3 : crc_state),
+    .state_in(crc_state3),
     .data_out(),
     .state_out(crc_next0)
 );
@@ -237,7 +244,7 @@ lfsr #(
 )
 eth_crc_16 (
     .data_in(input_data_crc[15:0]),
-    .state_in(last_cycle ? crc_state3 : crc_state),
+    .state_in(crc_state3),
     .data_out(),
     .state_out(crc_next1)
 );
@@ -253,7 +260,7 @@ lfsr #(
 )
 eth_crc_24 (
     .data_in(input_data_crc[23:0]),
-    .state_in(last_cycle ? crc_state3 : crc_state),
+    .state_in(crc_state3),
     .data_out(),
     .state_out(crc_next2)
 );
@@ -269,7 +276,7 @@ lfsr #(
 )
 eth_crc_32 (
     .data_in(input_data_crc[31:0]),
-    .state_in(last_cycle ? crc_state3 : crc_state),
+    .state_in(crc_state3),
     .data_out(),
     .state_out(crc_next3)
 );
@@ -294,7 +301,7 @@ always @* begin
     state_next = STATE_IDLE;
 
     reset_crc = 1'b0;
-    update_crc = 1'b0;
+    update_crc_last = 1'b0;
 
     m_axis_tdata_next = input_data_d1;
     m_axis_tkeep_next = 8'd0;
@@ -313,7 +320,6 @@ always @* begin
             if (input_type_d1 == INPUT_TYPE_START_0) begin
                 // start condition
                 reset_crc = 1'b0;
-                update_crc = 1'b1;
                 state_next = STATE_PAYLOAD;
             end else begin
                 state_next = STATE_IDLE;
@@ -321,8 +327,6 @@ always @* begin
         end
         STATE_PAYLOAD: begin
             // read payload
-            update_crc = 1'b1;
-
             m_axis_tdata_next = input_data_d1;
             m_axis_tkeep_next = 8'hff;
             m_axis_tvalid_next = 1'b1;
@@ -358,6 +362,7 @@ always @* begin
                     state_next = STATE_IDLE;
                 end else begin
                     // need extra cycle
+                    update_crc_last = 1'b1;
                     state_next = STATE_LAST;
                 end
             end else begin
@@ -406,15 +411,13 @@ always @(posedge clk) begin
 
         m_axis_tvalid_reg <= 1'b0;
 
-        start_packet_0_reg <= 1'b0;
-        start_packet_4_reg <= 1'b0;
+        start_packet_reg <= 2'b00;
         error_bad_frame_reg <= 1'b0;
         error_bad_fcs_reg <= 1'b0;
         rx_bad_block_reg <= 1'b0;
 
         crc_state <= 32'hFFFFFFFF;
         crc_state3 <= 32'hFFFFFFFF;
-        crc_valid7_save <= 1'b0;
 
         input_type_d0 <= INPUT_TYPE_IDLE;
         input_type_d1 <= INPUT_TYPE_IDLE;
@@ -428,8 +431,7 @@ always @(posedge clk) begin
 
         m_axis_tvalid_reg <= m_axis_tvalid_next;
 
-        start_packet_0_reg <= 1'b0;
-        start_packet_4_reg <= 1'b0;
+        start_packet_reg <= 2'b00;
         error_bad_frame_reg <= error_bad_frame_next;
         error_bad_fcs_reg <= error_bad_fcs_next;
         rx_bad_block_reg <= 1'b0;
@@ -438,11 +440,11 @@ always @(posedge clk) begin
 
         if (encoded_rx_hdr == SYNC_CTRL && encoded_rx_data[7:0] == BLOCK_TYPE_START_0) begin
             lanes_swapped <= 1'b0;
-            start_packet_0_reg <= 1'b1;
+            start_packet_reg <= 2'b01;
             input_type_d0 <= INPUT_TYPE_START_0;
         end else if (encoded_rx_hdr == SYNC_CTRL && (encoded_rx_data[7:0] == BLOCK_TYPE_START_4 || encoded_rx_data[7:0] == BLOCK_TYPE_OS_START)) begin
             lanes_swapped <= 1'b1;
-            start_packet_4_reg <= 1'b1;
+            start_packet_reg <= 2'b10;
             delay_type_valid <= 1'b1;
             if (delay_type_valid) begin
                 input_type_d0 <= delay_type;
@@ -514,12 +516,36 @@ always @(posedge clk) begin
         // datapath
         if (reset_crc) begin
             crc_state <= 32'hFFFFFFFF;
-            crc_state3 <= 32'hFFFFFFFF;
-            crc_valid7_save <= 1'b0;
-        end else if (update_crc) begin
+        end else begin
             crc_state <= crc_next7;
+        end
+
+        if (update_crc_last) begin
             crc_state3 <= crc_next3;
-            crc_valid7_save <= crc_valid7;
+        end else begin
+            crc_state3 <= crc_next7;
+        end
+    end
+
+    if (PTP_TS_WIDTH == 96 && $signed({1'b0, ptp_ts_reg[45:16]}) - $signed(31'd1000000000) > 0) begin
+        // ns field rollover
+        ptp_ts_reg[45:16] <= $signed({1'b0, ptp_ts_reg[45:16]}) - $signed(31'd1000000000);
+        ptp_ts_reg[95:48] <= ptp_ts_reg[95:48] + 1;
+    end
+
+    if (encoded_rx_hdr == SYNC_CTRL && encoded_rx_data[7:0] == BLOCK_TYPE_START_0) begin
+        if (PTP_TS_WIDTH == 96) begin
+            ptp_ts_reg[45:0] <= ptp_ts[45:0] + (PTP_PERIOD_NS * 2**16 + PTP_PERIOD_FNS);
+            ptp_ts_reg[95:48] <= ptp_ts[95:48];
+        end else begin
+            ptp_ts_reg <= ptp_ts + (PTP_PERIOD_NS * 2**16 + PTP_PERIOD_FNS);
+        end
+    end else if (encoded_rx_hdr == SYNC_CTRL && (encoded_rx_data[7:0] == BLOCK_TYPE_START_4 || encoded_rx_data[7:0] == BLOCK_TYPE_OS_START)) begin
+        if (PTP_TS_WIDTH == 96) begin
+            ptp_ts_reg[45:0] <= ptp_ts[45:0] + (((PTP_PERIOD_NS * 2**16 + PTP_PERIOD_FNS) * 3) >> 1);
+            ptp_ts_reg[95:48] <= ptp_ts[95:48];
+        end else begin
+            ptp_ts_reg <= ptp_ts + (((PTP_PERIOD_NS * 2**16 + PTP_PERIOD_FNS) * 3) >> 1);
         end
     end
 
@@ -557,6 +583,8 @@ always @(posedge clk) begin
             input_data_crc <= {8'd0, encoded_rx_data[63:8]};
         end
     end
+
+    crc_valid7_save <= crc_valid7;
 
     if (state_next == STATE_LAST) begin
         input_data_crc[31:0] <= input_data_crc[63:32];
