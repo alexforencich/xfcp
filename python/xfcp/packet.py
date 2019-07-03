@@ -146,8 +146,8 @@ class MemoryAccessPacket(Packet):
     def build(self):
         aw = int((self.addr_width+7)/8)
         cw = int((self.count_width+7)/8)
-        self.payload = struct.pack('<Q', self.addr)[:aw]
-        self.payload += struct.pack('<Q', self.count)[:cw]
+        self.payload = self.addr.to_bytes(aw, 'little')
+        self.payload += self.count.to_bytes(cw, 'little')
         self.payload += self.data
 
         return super(MemoryAccessPacket, self).build()
@@ -158,8 +158,8 @@ class MemoryAccessPacket(Packet):
 
         aw = int((self.addr_width+7)/8)
         cw = int((self.count_width+7)/8)
-        self.addr = struct.unpack_from('<Q', self.payload[0:aw]+b'\0'*8)[0]
-        self.count = struct.unpack_from('<Q', self.payload[aw:aw+cw]+b'\0'*8)[0]
+        self.addr = int.from_bytes(self.payload[0:aw], 'little')
+        self.count = int.from_bytes(self.payload[aw:aw+cw], 'little')
         self.data = self.payload[aw+cw:]
 
     def __repr__(self):

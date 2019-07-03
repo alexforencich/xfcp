@@ -212,11 +212,10 @@ class MemoryNode(Node):
         return pkt.data
 
     def read_words(self, addr, count, ws=2):
-        assert ws in (1, 2, 4, 8)
         data = self.read(addr*ws, count*ws)
         words = []
         for k in range(count):
-            words.append(struct.unpack_from('<Q', data[ws*k:ws*(k+1)]+b'\0'*8)[0])
+            words.append(int.from_bytes(data[ws*k:ws*(k+1)], 'little'))
         return words
 
     def read_dwords(self, addr, count):
@@ -253,11 +252,10 @@ class MemoryNode(Node):
         return pkt.count
 
     def write_words(self, addr, data, ws=2):
-        assert ws in (1, 2, 4, 8)
         words = data
         data = b''
         for w in words:
-            data += struct.pack('<Q', w)[:ws]
+            data += w.to_bytes(ws, 'little')
         return int(self.write(addr*ws, data)/ws)
 
     def write_dwords(self, addr, data):
