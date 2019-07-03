@@ -54,59 +54,59 @@ class GTYE3ChannelNode(xfcp.node.MemoryNode):
         return self.write_word(addr, (self.read_word(addr) & ~mask) | (val & mask))
 
     def reset(self):
-        self.masked_write(0xff00, 0x0001, 0x0001)
+        self.masked_write(0xfe00, 0x0001, 0x0001)
 
     def tx_reset(self):
-        self.masked_write(0xff00, 0x0002, 0x0002)
+        self.masked_write(0xfe00, 0x0002, 0x0002)
 
     def rx_reset(self):
-        self.masked_write(0xff00, 0x0004, 0x0004)
+        self.masked_write(0xfe00, 0x0004, 0x0004)
 
     def get_tx_polarity(self):
-        return bool(self.masked_read(0xff01, 0x0001))
+        return bool(self.masked_read(0xfe02, 0x0001))
 
     def set_tx_polarity(self, val):
-        self.masked_write(0xff01, 0x0001, 0x0001 if val else 0x0000)
+        self.masked_write(0xfe02, 0x0001, 0x0001 if val else 0x0000)
 
     def get_rx_polarity(self):
-        return bool(self.masked_read(0xff01, 0x0002))
+        return bool(self.masked_read(0xfe02, 0x0002))
 
     def set_rx_polarity(self, val):
-        self.masked_write(0xff01, 0x0002, 0x0002 if val else 0x0000)
+        self.masked_write(0xfe02, 0x0002, 0x0002 if val else 0x0000)
 
     def get_tx_prbs_mode(self):
-        return self.masked_read(0xff02, 0x000f)
+        return self.masked_read(0xfe04, 0x000f)
 
     def set_tx_prbs_mode(self, val):
-        self.masked_write(0xff02, 0x000f, val)
+        self.masked_write(0xfe04, 0x000f, val)
 
     def get_rx_prbs_mode(self):
-        return self.masked_read(0xff02, 0x00f0) >> 4
+        return self.masked_read(0xfe04, 0x00f0) >> 4
 
     def set_rx_prbs_mode(self, val):
-        self.masked_write(0xff02, 0x00f0, val << 4)
+        self.masked_write(0xfe04, 0x00f0, val << 4)
 
     def tx_prbs_force_error(self):
-        self.masked_write(0xff03, 0x0001, 0x0001)
+        self.masked_write(0xfe06, 0x0001, 0x0001)
 
     def rx_err_count_reset(self):
-        self.masked_write(0xff03, 0x0002, 0x0002)
+        self.masked_write(0xfe06, 0x0002, 0x0002)
 
     def is_rx_prbs_error(self):
         if self.rx_prbs_error_valid:
             self.rx_prbs_error_valid = False
             return self.rx_prbs_error
         else:
-            return bool(self.masked_read(0xff03, 0x0004))
+            return bool(self.masked_read(0xfe06, 0x0004))
 
     def is_rx_prbs_locked(self):
-        w = self.masked_read(0xff03, 0x000c)
+        w = self.masked_read(0xfe06, 0x000c)
         self.rx_prbs_error = bool(w & 0x0004)
         self.rx_prbs_error_valid = True
         return bool(w & 0x0008)
 
     def get_rx_prbs_err_count(self):
-        return self.read_dword(0x012f)
+        return self.read_dword(0x025e*2)
 
 xfcp.node.register(GTYE3ChannelNode, 0x8A83)
 

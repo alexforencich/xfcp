@@ -67,9 +67,9 @@ def main():
     n[0].write(0, b'Another RAM 0 test string!')
     print(n[0].read(0, 26))
 
-    n[1].write_dword(16, 0x12345678)
+    n[1].write_dword(64, 0x12345678)
 
-    print(hex(n[1].read_dword(16)))
+    print(hex(n[1].read_dword(64)))
 
     # enumerate i2c bus
 
@@ -78,17 +78,6 @@ def main():
         n[2].read_i2c(k, 1)
         if n[2].get_i2c_status() == 0:
             print(hex(k))
-
-    # configure oscillator
-
-    print("Set oscillator to 322.265625 MHz")
-    n[2].write_i2c(0x75, b'\x00') # U80 (0x75) disconnect all outputs
-    n[2].write_i2c(0x74, b'\x01') # U28 (0x74) connect only ouput 0 to SI570
-    n[2].write_i2c(0x5d, b'\x89\x10') # freeze DCO (137: 0x10)
-    # Freq: 322.2656250000 HS_DIV=4 N1=4 DCO=5156.2 RFREQ=0x02D1E36BF3
-    n[2].write_i2c(0x5d, b'\x07\x00\xC2\xD1\xE3\x6B\xF3')
-    n[2].write_i2c(0x5d, b'\x89\x00') # unfreeze DCO (137: 0x10)
-    n[2].write_i2c(0x5d, b'\x87\x40') # new frequency (135: 0x40)
 
     # loopback test
 

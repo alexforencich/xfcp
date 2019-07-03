@@ -67,9 +67,9 @@ def main():
     n[0].write(0, b'Another RAM 0 test string!')
     print(n[0].read(0, 26))
 
-    n[1].write_dword(16, 0x12345678)
+    n[1].write_dword(32, 0x12345678)
 
-    print(hex(n[1].read_dword(16)))
+    print(hex(n[1].read_dword(32)))
 
     # enumerate i2c bus
 
