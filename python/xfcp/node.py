@@ -90,10 +90,10 @@ class Node(object):
             self.id_pkt = self.interface.receive()
 
         self.ntype = struct.unpack_from('<H', self.id_pkt.payload, 0)[0]
-        self.name = struct.unpack_from('16s', self.id_pkt.payload, 16)[0].rstrip(b'\0').decode('utf-8')
+        self.name = struct.unpack_from('16s', self.id_pkt.payload, 16)[0].rstrip(b'\x00').decode('utf-8')
 
         if len(self.id_pkt.payload) > 32:
-            self.ext_str = struct.unpack_from('16s', self.id_pkt.payload, 48)[0].rstrip(b'\0').decode('utf-8')
+            self.ext_str = struct.unpack_from('16s', self.id_pkt.payload, 48)[0].rstrip(b'\x00').decode('utf-8')
 
         return self
 
