@@ -212,7 +212,7 @@ class MemoryNode(Node):
         return pkt.data
 
     def read_words(self, addr, count, ws=2):
-        data = self.read(addr*ws, count*ws)
+        data = self.read(addr, count*ws)
         words = []
         for k in range(count):
             words.append(int.from_bytes(data[ws*k:ws*(k+1)], 'little'))
@@ -256,7 +256,7 @@ class MemoryNode(Node):
         data = b''
         for w in words:
             data += w.to_bytes(ws, 'little')
-        return int(self.write(addr*ws, data)/ws)
+        return int(self.write(addr, data)/ws)
 
     def write_dwords(self, addr, data):
         return self.write_words(addr, data, 4)
