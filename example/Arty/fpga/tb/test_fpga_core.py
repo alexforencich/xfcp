@@ -83,6 +83,7 @@ srcs.append("../lib/axis/rtl/axis_cobs_encode.v")
 srcs.append("../lib/axis/rtl/axis_cobs_decode.v")
 srcs.append("../lib/axis/rtl/axis_fifo.v")
 srcs.append("../lib/axis/rtl/axis_async_fifo.v")
+srcs.append("../lib/axis/rtl/axis_async_fifo_adapter.v")
 srcs.append("test_%s.v" % module)
 
 src = ' '.join(srcs)

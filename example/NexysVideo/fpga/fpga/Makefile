@@ -56,6 +56,7 @@ SYN_FILES += lib/axis/rtl/axis_cobs_encode.v
 SYN_FILES += lib/axis/rtl/axis_cobs_decode.v
 SYN_FILES += lib/axis/rtl/axis_fifo.v
 SYN_FILES += lib/axis/rtl/axis_async_fifo.v
+SYN_FILES += lib/axis/rtl/axis_async_fifo_adapter.v
 
 # XDC files
 XDC_FILES = fpga.xdc

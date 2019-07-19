@@ -58,6 +58,7 @@ SYN_FILES += lib/axis/rtl/axis_cobs_encode.v
 SYN_FILES += lib/axis/rtl/axis_cobs_decode.v
 SYN_FILES += lib/axis/rtl/axis_fifo.v
 SYN_FILES += lib/axis/rtl/axis_async_fifo.v
+SYN_FILES += lib/axis/rtl/axis_async_fifo_adapter.v
 #SYN_FILES += coregen/dcm_i100_o125/dcm_i100_o125.v
 
 # UCF files
