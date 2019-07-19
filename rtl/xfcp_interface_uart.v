@@ -124,7 +124,7 @@ cobs_decode_inst (
 );
 
 axis_fifo #(
-    .ADDR_WIDTH(9),
+    .DEPTH(512),
     .DATA_WIDTH(8),
     .KEEP_ENABLE(0),
     .ID_ENABLE(0),
@@ -183,7 +183,7 @@ cobs_encode_inst (
 );
 
 axis_fifo #(
-    .ADDR_WIDTH(9),
+    .DEPTH(512),
     .DATA_WIDTH(8),
     .KEEP_ENABLE(0),
     .ID_ENABLE(0),
