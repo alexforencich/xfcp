@@ -129,6 +129,30 @@ class Node(object):
 
         return l
 
+    def format_tree(self):
+        s = ''
+        if len(self.path) > 0:
+            s += '[{}] '.format('.'.join(str(x) for x in self.path))
+        s += type(self).__name__ + ' [{}]'.format(self.name)
+        if len(self.ext_str) > 0:
+            s += ' [{}]'.format(self.ext_str)
+
+        lst = [s]
+
+        for i in range(len(self.children)):
+            lst2 = self[i].format_tree()
+            lst.append(' |__'+lst2[0])
+            for s in lst2[1:]:
+                if i == len(self.children)-1:
+                    lst.append('    '+s)
+                else:
+                    lst.append(' |  '+s)
+
+        return lst
+
+    def print_tree(self):
+        print('\n'.join(self.format_tree()))
+
     def __repr__(self):
         return '%s(interface=%s, path=%s, ntype=%d, name="%s", ext_str="%s", children=%s)' % (type(self).__name__, repr(self.interface), repr(self.path), self.ntype, self.name, self.ext_str, repr(self.children))
 
