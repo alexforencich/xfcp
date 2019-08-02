@@ -578,7 +578,7 @@ xfcp_gty_quad #(
     .COM_ADDR_WIDTH(10),
     .CH_ADDR_WIDTH(10)
 )
-(
+xfcp_qsfp_gty_quad_inst (
     .clk(gty_drp_clk),
     .rst(gty_drp_rst),
 
@@ -758,7 +758,7 @@ xfcp_gty_quad #(
     .COM_ADDR_WIDTH(10),
     .CH_ADDR_WIDTH(10)
 )
-(
+xfcp_cfp2_gty_quad_inst_1 (
     .clk(gty_drp_clk),
     .rst(gty_drp_rst),
 
@@ -833,7 +833,7 @@ xfcp_gty_quad #(
     .COM_ADDR_WIDTH(10),
     .CH_ADDR_WIDTH(10)
 )
-(
+xfcp_cfp2_gty_quad_inst_2 (
     .clk(gty_drp_clk),
     .rst(gty_drp_rst),
 
@@ -900,7 +900,7 @@ xfcp_gty_quad #(
     .COM_ADDR_WIDTH(10),
     .CH_ADDR_WIDTH(10)
 )
-(
+xfcp_cfp2_gty_quad_inst_3 (
     .clk(gty_drp_clk),
     .rst(gty_drp_rst),
 
@@ -1072,7 +1072,7 @@ xfcp_gty_quad #(
     .COM_ADDR_WIDTH(10),
     .CH_ADDR_WIDTH(10)
 )
-(
+xfcp_bullseye_gty_quad_inst(
     .clk(gty_drp_clk),
     .rst(gty_drp_rst),
 
