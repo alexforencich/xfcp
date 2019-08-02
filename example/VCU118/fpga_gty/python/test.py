@@ -28,8 +28,7 @@ from __future__ import print_function
 import argparse
 import time
 
-import xfcp.interface, xfcp.node
-import gty_node
+import xfcp.interface, xfcp.node, xfcp.gty_node
 
 def main():
     #parser = argparse.ArgumentParser(description=__doc__.strip())
@@ -81,41 +80,51 @@ def main():
 
     # loopback test
 
+    xcvr = n.find_by_type(xfcp.gty_node.GTYE3ChannelNode)
+
     print("Place transceivers in PRBS7 mode")
-    for i in range(4):
-        n[3][0][i].set_tx_prbs_mode(gty_node.PRBS_MODE_PRBS7)
-        n[3][0][i].set_rx_prbs_mode(gty_node.PRBS_MODE_PRBS7)
+    for ch in xcvr:
+        ch.set_tx_prbs_mode(xfcp.gty_node.PRBS_MODE_PRBS7)
+        ch.set_rx_prbs_mode(xfcp.gty_node.PRBS_MODE_PRBS7)
 
-    for i in range(4):
-        n[3][0][i].reset()
-
-    time.sleep(0.01)
-
-    for i in range(4):
-        n[3][0][i].rx_err_count_reset()
-        n[3][0][i].is_rx_prbs_error()
+    print("Reset transceivers")
+    for ch in xcvr:
+        ch.reset()
 
     time.sleep(0.01)
 
-    for i in range(4):
-        print("CH %d locked: %d  errors: %d  error count: %d" % (i,
-            n[3][0][i].is_rx_prbs_locked(),
-            n[3][0][i].is_rx_prbs_error(),
-            n[3][0][i].get_rx_prbs_err_count()))
+    print("Clear error counters")
+    for ch in xcvr:
+        ch.rx_err_count_reset()
+        ch.is_rx_prbs_error()
+
+    time.sleep(0.01)
+
+    for ch in xcvr:
+        print("[%s] [%s]%s locked: %d  errors: %d  error count: %d" % (
+            '.'.join(str(x) for x in ch.path),
+            ch.name,
+            ' [{}]'.format(ch.ext_str) if ch.ext_str else '',
+            ch.is_rx_prbs_locked(),
+            ch.is_rx_prbs_error(),
+            ch.get_rx_prbs_err_count()))
 
     time.sleep(0.01)
 
     print("Force errors")
-    for i in range(4):
-        n[3][0][i].tx_prbs_force_error()
+    for ch in xcvr:
+        ch.tx_prbs_force_error()
 
     time.sleep(0.01)
 
-    for i in range(4):
-        print("CH %d locked: %d  errors: %d  error count: %d" % (i,
-            n[3][0][i].is_rx_prbs_locked(),
-            n[3][0][i].is_rx_prbs_error(),
-            n[3][0][i].get_rx_prbs_err_count()))
+    for ch in xcvr:
+        print("[%s] [%s]%s locked: %d  errors: %d  error count: %d" % (
+            '.'.join(str(x) for x in ch.path),
+            ch.name,
+            ' [{}]'.format(ch.ext_str) if ch.ext_str else '',
+            ch.is_rx_prbs_locked(),
+            ch.is_rx_prbs_error(),
+            ch.get_rx_prbs_err_count()))
 
 if __name__ == "__main__":
     main()

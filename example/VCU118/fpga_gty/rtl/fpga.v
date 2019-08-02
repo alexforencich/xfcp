@@ -309,7 +309,7 @@ assign i2c_scl = i2c_scl_t ? 1'bz : i2c_scl_o;
 assign i2c_sda_i = i2c_sda;
 assign i2c_sda = i2c_sda_t ? 1'bz : i2c_sda_o;
 
-// GTY instance
+// GTY instances
 assign qsfp1_modsell = 1'b0;
 assign qsfp1_resetl = 1'b1;
 assign qsfp1_lpmode = 1'b0;
@@ -343,27 +343,27 @@ wire xfcp_mgt_fifo_down_tready;
 wire xfcp_mgt_fifo_down_tlast;
 wire xfcp_mgt_fifo_down_tuser;
 
-wire [7:0] xfcp_qsfp1_up_tdata;
-wire xfcp_qsfp1_up_tvalid;
-wire xfcp_qsfp1_up_tready;
-wire xfcp_qsfp1_up_tlast;
-wire xfcp_qsfp1_up_tuser;
-wire [7:0] xfcp_qsfp1_down_tdata;
-wire xfcp_qsfp1_down_tvalid;
-wire xfcp_qsfp1_down_tready;
-wire xfcp_qsfp1_down_tlast;
-wire xfcp_qsfp1_down_tuser;
+wire [7:0] xfcp_qsfp1_gty_up_tdata;
+wire xfcp_qsfp1_gty_up_tvalid;
+wire xfcp_qsfp1_gty_up_tready;
+wire xfcp_qsfp1_gty_up_tlast;
+wire xfcp_qsfp1_gty_up_tuser;
+wire [7:0] xfcp_qsfp1_gty_down_tdata;
+wire xfcp_qsfp1_gty_down_tvalid;
+wire xfcp_qsfp1_gty_down_tready;
+wire xfcp_qsfp1_gty_down_tlast;
+wire xfcp_qsfp1_gty_down_tuser;
 
-wire [7:0] xfcp_qsfp2_up_tdata;
-wire xfcp_qsfp2_up_tvalid;
-wire xfcp_qsfp2_up_tready;
-wire xfcp_qsfp2_up_tlast;
-wire xfcp_qsfp2_up_tuser;
-wire [7:0] xfcp_qsfp2_down_tdata;
-wire xfcp_qsfp2_down_tvalid;
-wire xfcp_qsfp2_down_tready;
-wire xfcp_qsfp2_down_tlast;
-wire xfcp_qsfp2_down_tuser;
+wire [7:0] xfcp_qsfp2_gty_up_tdata;
+wire xfcp_qsfp2_gty_up_tvalid;
+wire xfcp_qsfp2_gty_up_tready;
+wire xfcp_qsfp2_gty_up_tlast;
+wire xfcp_qsfp2_gty_up_tuser;
+wire [7:0] xfcp_qsfp2_gty_down_tdata;
+wire xfcp_qsfp2_gty_down_tvalid;
+wire xfcp_qsfp2_gty_down_tready;
+wire xfcp_qsfp2_gty_down_tlast;
+wire xfcp_qsfp2_gty_down_tuser;
 
 axis_async_fifo #(
     .DEPTH(32),
@@ -416,7 +416,7 @@ xfcp_switch #(
     .XFCP_ID_TYPE(16'h0100),
     .XFCP_ID_STR("XFCP switch"),
     .XFCP_EXT_ID(0),
-    .XFCP_EXT_ID_STR("")
+    .XFCP_EXT_ID_STR("GTY QUADs")
 )
 xfcp_switch_inst (
     .clk(gty_drp_clk),
@@ -431,743 +431,205 @@ xfcp_switch_inst (
     .up_xfcp_out_tready(xfcp_mgt_fifo_up_tready),
     .up_xfcp_out_tlast(xfcp_mgt_fifo_up_tlast),
     .up_xfcp_out_tuser(xfcp_mgt_fifo_up_tuser),
-    .down_xfcp_in_tdata(  {xfcp_qsfp2_up_tdata,    xfcp_qsfp1_up_tdata   }),
-    .down_xfcp_in_tvalid( {xfcp_qsfp2_up_tvalid,   xfcp_qsfp1_up_tvalid  }),
-    .down_xfcp_in_tready( {xfcp_qsfp2_up_tready,   xfcp_qsfp1_up_tready  }),
-    .down_xfcp_in_tlast(  {xfcp_qsfp2_up_tlast,    xfcp_qsfp1_up_tlast   }),
-    .down_xfcp_in_tuser(  {xfcp_qsfp2_up_tuser,    xfcp_qsfp1_up_tuser   }),
-    .down_xfcp_out_tdata( {xfcp_qsfp2_down_tdata,  xfcp_qsfp1_down_tdata }),
-    .down_xfcp_out_tvalid({xfcp_qsfp2_down_tvalid, xfcp_qsfp1_down_tvalid}),
-    .down_xfcp_out_tready({xfcp_qsfp2_down_tready, xfcp_qsfp1_down_tready}),
-    .down_xfcp_out_tlast( {xfcp_qsfp2_down_tlast,  xfcp_qsfp1_down_tlast }),
-    .down_xfcp_out_tuser( {xfcp_qsfp2_down_tuser,  xfcp_qsfp1_down_tuser })
+    .down_xfcp_in_tdata(  {xfcp_qsfp2_gty_up_tdata,    xfcp_qsfp1_gty_up_tdata   }),
+    .down_xfcp_in_tvalid( {xfcp_qsfp2_gty_up_tvalid,   xfcp_qsfp1_gty_up_tvalid  }),
+    .down_xfcp_in_tready( {xfcp_qsfp2_gty_up_tready,   xfcp_qsfp1_gty_up_tready  }),
+    .down_xfcp_in_tlast(  {xfcp_qsfp2_gty_up_tlast,    xfcp_qsfp1_gty_up_tlast   }),
+    .down_xfcp_in_tuser(  {xfcp_qsfp2_gty_up_tuser,    xfcp_qsfp1_gty_up_tuser   }),
+    .down_xfcp_out_tdata( {xfcp_qsfp2_gty_down_tdata,  xfcp_qsfp1_gty_down_tdata }),
+    .down_xfcp_out_tvalid({xfcp_qsfp2_gty_down_tvalid, xfcp_qsfp1_gty_down_tvalid}),
+    .down_xfcp_out_tready({xfcp_qsfp2_gty_down_tready, xfcp_qsfp1_gty_down_tready}),
+    .down_xfcp_out_tlast( {xfcp_qsfp2_gty_down_tlast,  xfcp_qsfp1_gty_down_tlast }),
+    .down_xfcp_out_tuser( {xfcp_qsfp2_gty_down_tuser,  xfcp_qsfp1_gty_down_tuser })
 );
 
-wire [7:0] xfcp_qsfp1_gty_1_up_tdata;
-wire xfcp_qsfp1_gty_1_up_tvalid;
-wire xfcp_qsfp1_gty_1_up_tready;
-wire xfcp_qsfp1_gty_1_up_tlast;
-wire xfcp_qsfp1_gty_1_up_tuser;
-wire [7:0] xfcp_qsfp1_gty_1_down_tdata;
-wire xfcp_qsfp1_gty_1_down_tvalid;
-wire xfcp_qsfp1_gty_1_down_tready;
-wire xfcp_qsfp1_gty_1_down_tlast;
-wire xfcp_qsfp1_gty_1_down_tuser;
+// QSFP GTY
+assign qsfp1_modsell = 1'b0;
+assign qsfp1_resetl = 1'b1;
+assign qsfp1_lpmode = 1'b0;
 
-wire [7:0] xfcp_qsfp1_gty_2_up_tdata;
-wire xfcp_qsfp1_gty_2_up_tvalid;
-wire xfcp_qsfp1_gty_2_up_tready;
-wire xfcp_qsfp1_gty_2_up_tlast;
-wire xfcp_qsfp1_gty_2_up_tuser;
-wire [7:0] xfcp_qsfp1_gty_2_down_tdata;
-wire xfcp_qsfp1_gty_2_down_tvalid;
-wire xfcp_qsfp1_gty_2_down_tready;
-wire xfcp_qsfp1_gty_2_down_tlast;
-wire xfcp_qsfp1_gty_2_down_tuser;
+assign qsfp2_modsell = 1'b0;
+assign qsfp2_resetl = 1'b1;
+assign qsfp2_lpmode = 1'b0;
 
-wire [7:0] xfcp_qsfp1_gty_3_up_tdata;
-wire xfcp_qsfp1_gty_3_up_tvalid;
-wire xfcp_qsfp1_gty_3_up_tready;
-wire xfcp_qsfp1_gty_3_up_tlast;
-wire xfcp_qsfp1_gty_3_up_tuser;
-wire [7:0] xfcp_qsfp1_gty_3_down_tdata;
-wire xfcp_qsfp1_gty_3_down_tvalid;
-wire xfcp_qsfp1_gty_3_down_tready;
-wire xfcp_qsfp1_gty_3_down_tlast;
-wire xfcp_qsfp1_gty_3_down_tuser;
+wire [2*10-1:0] qsfp_gty_com_drp_addr;
+wire [2*16-1:0] qsfp_gty_com_drp_do;
+wire [2*16-1:0] qsfp_gty_com_drp_di;
+wire [2-1:0] qsfp_gty_com_drp_en;
+wire [2-1:0] qsfp_gty_com_drp_we;
+wire [2-1:0] qsfp_gty_com_drp_rdy;
 
-wire [7:0] xfcp_qsfp1_gty_4_up_tdata;
-wire xfcp_qsfp1_gty_4_up_tvalid;
-wire xfcp_qsfp1_gty_4_up_tready;
-wire xfcp_qsfp1_gty_4_up_tlast;
-wire xfcp_qsfp1_gty_4_up_tuser;
-wire [7:0] xfcp_qsfp1_gty_4_down_tdata;
-wire xfcp_qsfp1_gty_4_down_tvalid;
-wire xfcp_qsfp1_gty_4_down_tready;
-wire xfcp_qsfp1_gty_4_down_tlast;
-wire xfcp_qsfp1_gty_4_down_tuser;
+wire [8*10-1:0] qsfp_gty_drp_addr;
+wire [8*16-1:0] qsfp_gty_drp_do;
+wire [8*16-1:0] qsfp_gty_drp_di;
+wire [8-1:0] qsfp_gty_drp_en;
+wire [8-1:0] qsfp_gty_drp_we;
+wire [8-1:0] qsfp_gty_drp_rdy;
 
-wire [7:0] xfcp_qsfp1_gty_5_up_tdata;
-wire xfcp_qsfp1_gty_5_up_tvalid;
-wire xfcp_qsfp1_gty_5_up_tready;
-wire xfcp_qsfp1_gty_5_up_tlast;
-wire xfcp_qsfp1_gty_5_up_tuser;
-wire [7:0] xfcp_qsfp1_gty_5_down_tdata;
-wire xfcp_qsfp1_gty_5_down_tvalid;
-wire xfcp_qsfp1_gty_5_down_tready;
-wire xfcp_qsfp1_gty_5_down_tlast;
-wire xfcp_qsfp1_gty_5_down_tuser;
+wire [8-1:0] qsfp_gty_reset;
+wire [8-1:0] qsfp_gty_tx_reset;
+wire [8-1:0] qsfp_gty_rx_reset;
 
-xfcp_switch #(
-    .PORTS(5),
-    .XFCP_ID_TYPE(16'h0100),
-    .XFCP_ID_STR("QSFP1 GTY QUAD"),
-    .XFCP_EXT_ID(0),
-    .XFCP_EXT_ID_STR("")
+wire qsfp_gty_txusrclk2;
+wire [8*4-1:0] qsfp_gty_txprbssel;
+wire [8-1:0] qsfp_gty_txprbsforceerr;
+wire [8-1:0] qsfp_gty_txpolarity;
+
+wire qsfp_gty_rxusrclk2;
+wire [8-1:0] qsfp_gty_rxpolarity;
+wire [8-1:0] qsfp_gty_rxprbscntreset;
+wire [8*4-1:0] qsfp_gty_rxprbssel;
+wire [8-1:0] qsfp_gty_rxprbserr;
+wire [8-1:0] qsfp_gty_rxprbslocked;
+
+xfcp_gty_quad #(
+    .CH(4),
+    .SW_XFCP_ID_TYPE(16'h0100),
+    .SW_XFCP_ID_STR("GTY QUAD 231"),
+    .SW_XFCP_EXT_ID(0),
+    .SW_XFCP_EXT_ID_STR("QSFP1 GTY QUAD"),
+    .COM_XFCP_ID_TYPE(16'h8A92),
+    .COM_XFCP_ID_STR("GTY COM X1Y12"),
+    .COM_XFCP_EXT_ID(0),
+    .COM_XFCP_EXT_ID_STR("QSFP1 GTY COM"),
+    .CH_0_XFCP_ID_TYPE(16'h8A93),
+    .CH_0_XFCP_ID_STR("GTY CH0 X1Y48"),
+    .CH_0_XFCP_EXT_ID(0),
+    .CH_0_XFCP_EXT_ID_STR("QSFP1 CH1"),
+    .CH_1_XFCP_ID_TYPE(16'h8A93),
+    .CH_1_XFCP_ID_STR("GTY CH1 X1Y49"),
+    .CH_1_XFCP_EXT_ID(0),
+    .CH_1_XFCP_EXT_ID_STR("QSFP1 CH2"),
+    .CH_2_XFCP_ID_TYPE(16'h8A93),
+    .CH_2_XFCP_ID_STR("GTY CH2 X1Y50"),
+    .CH_2_XFCP_EXT_ID(0),
+    .CH_2_XFCP_EXT_ID_STR("QSFP1 CH3"),
+    .CH_3_XFCP_ID_TYPE(16'h8A93),
+    .CH_3_XFCP_ID_STR("GTY CH3 X1Y51"),
+    .CH_3_XFCP_EXT_ID(0),
+    .CH_3_XFCP_EXT_ID_STR("QSFP1 CH4"),
+    .COM_ADDR_WIDTH(10),
+    .CH_ADDR_WIDTH(10)
 )
-xfcp_switch_qsfp1_inst (
+xfcp_qsfp1_gty_quad_inst (
     .clk(gty_drp_clk),
     .rst(gty_drp_rst),
-    .up_xfcp_in_tdata(xfcp_qsfp1_down_tdata),
-    .up_xfcp_in_tvalid(xfcp_qsfp1_down_tvalid),
-    .up_xfcp_in_tready(xfcp_qsfp1_down_tready),
-    .up_xfcp_in_tlast(xfcp_qsfp1_down_tlast),
-    .up_xfcp_in_tuser(xfcp_qsfp1_down_tuser),
-    .up_xfcp_out_tdata(xfcp_qsfp1_up_tdata),
-    .up_xfcp_out_tvalid(xfcp_qsfp1_up_tvalid),
-    .up_xfcp_out_tready(xfcp_qsfp1_up_tready),
-    .up_xfcp_out_tlast(xfcp_qsfp1_up_tlast),
-    .up_xfcp_out_tuser(xfcp_qsfp1_up_tuser),
-    .down_xfcp_in_tdata(  {xfcp_qsfp1_gty_5_up_tdata,    xfcp_qsfp1_gty_4_up_tdata,    xfcp_qsfp1_gty_3_up_tdata,    xfcp_qsfp1_gty_2_up_tdata,    xfcp_qsfp1_gty_1_up_tdata   }),
-    .down_xfcp_in_tvalid( {xfcp_qsfp1_gty_5_up_tvalid,   xfcp_qsfp1_gty_4_up_tvalid,   xfcp_qsfp1_gty_3_up_tvalid,   xfcp_qsfp1_gty_2_up_tvalid,   xfcp_qsfp1_gty_1_up_tvalid  }),
-    .down_xfcp_in_tready( {xfcp_qsfp1_gty_5_up_tready,   xfcp_qsfp1_gty_4_up_tready,   xfcp_qsfp1_gty_3_up_tready,   xfcp_qsfp1_gty_2_up_tready,   xfcp_qsfp1_gty_1_up_tready  }),
-    .down_xfcp_in_tlast(  {xfcp_qsfp1_gty_5_up_tlast,    xfcp_qsfp1_gty_4_up_tlast,    xfcp_qsfp1_gty_3_up_tlast,    xfcp_qsfp1_gty_2_up_tlast,    xfcp_qsfp1_gty_1_up_tlast   }),
-    .down_xfcp_in_tuser(  {xfcp_qsfp1_gty_5_up_tuser,    xfcp_qsfp1_gty_4_up_tuser,    xfcp_qsfp1_gty_3_up_tuser,    xfcp_qsfp1_gty_2_up_tuser,    xfcp_qsfp1_gty_1_up_tuser   }),
-    .down_xfcp_out_tdata( {xfcp_qsfp1_gty_5_down_tdata,  xfcp_qsfp1_gty_4_down_tdata,  xfcp_qsfp1_gty_3_down_tdata,  xfcp_qsfp1_gty_2_down_tdata,  xfcp_qsfp1_gty_1_down_tdata }),
-    .down_xfcp_out_tvalid({xfcp_qsfp1_gty_5_down_tvalid, xfcp_qsfp1_gty_4_down_tvalid, xfcp_qsfp1_gty_3_down_tvalid, xfcp_qsfp1_gty_2_down_tvalid, xfcp_qsfp1_gty_1_down_tvalid}),
-    .down_xfcp_out_tready({xfcp_qsfp1_gty_5_down_tready, xfcp_qsfp1_gty_4_down_tready, xfcp_qsfp1_gty_3_down_tready, xfcp_qsfp1_gty_2_down_tready, xfcp_qsfp1_gty_1_down_tready}),
-    .down_xfcp_out_tlast( {xfcp_qsfp1_gty_5_down_tlast,  xfcp_qsfp1_gty_4_down_tlast,  xfcp_qsfp1_gty_3_down_tlast,  xfcp_qsfp1_gty_2_down_tlast,  xfcp_qsfp1_gty_1_down_tlast }),
-    .down_xfcp_out_tuser( {xfcp_qsfp1_gty_5_down_tuser,  xfcp_qsfp1_gty_4_down_tuser,  xfcp_qsfp1_gty_3_down_tuser,  xfcp_qsfp1_gty_2_down_tuser,  xfcp_qsfp1_gty_1_down_tuser })
+
+    .up_xfcp_in_tdata(xfcp_qsfp1_gty_down_tdata),
+    .up_xfcp_in_tvalid(xfcp_qsfp1_gty_down_tvalid),
+    .up_xfcp_in_tready(xfcp_qsfp1_gty_down_tready),
+    .up_xfcp_in_tlast(xfcp_qsfp1_gty_down_tlast),
+    .up_xfcp_in_tuser(xfcp_qsfp1_gty_down_tuser),
+    .up_xfcp_out_tdata(xfcp_qsfp1_gty_up_tdata),
+    .up_xfcp_out_tvalid(xfcp_qsfp1_gty_up_tvalid),
+    .up_xfcp_out_tready(xfcp_qsfp1_gty_up_tready),
+    .up_xfcp_out_tlast(xfcp_qsfp1_gty_up_tlast),
+    .up_xfcp_out_tuser(xfcp_qsfp1_gty_up_tuser),
+
+    .gty_com_drp_addr(qsfp_gty_com_drp_addr[0*10 +: 10]),
+    .gty_com_drp_do(qsfp_gty_com_drp_do[0*16 +: 16]),
+    .gty_com_drp_di(qsfp_gty_com_drp_di[0*16 +: 16]),
+    .gty_com_drp_en(qsfp_gty_com_drp_en[0*1 +: 1]),
+    .gty_com_drp_we(qsfp_gty_com_drp_we[0*1 +: 1]),
+    .gty_com_drp_rdy(qsfp_gty_com_drp_rdy[0*1 +: 1]),
+
+    .gty_drp_addr(qsfp_gty_drp_addr[0*4*10 +: 4*10]),
+    .gty_drp_do(qsfp_gty_drp_do[0*4*16 +: 4*16]),
+    .gty_drp_di(qsfp_gty_drp_di[0*4*16 +: 4*16]),
+    .gty_drp_en(qsfp_gty_drp_en[0*4*1 +: 4*1]),
+    .gty_drp_we(qsfp_gty_drp_we[0*4*1 +: 4*1]),
+    .gty_drp_rdy(qsfp_gty_drp_rdy[0*4*1 +: 4*1]),
+
+    .gty_reset(qsfp_gty_reset[0*4*1 +: 4*1]),
+    .gty_tx_reset(qsfp_gty_tx_reset[0*4*1 +: 4*1]),
+    .gty_rx_reset(qsfp_gty_rx_reset[0*4*1 +: 4*1]),
+
+    .gty_txusrclk2({4{qsfp_gty_txusrclk2}}),
+    .gty_txprbssel(qsfp_gty_txprbssel[0*4*4 +: 4*4]),
+    .gty_txprbsforceerr(qsfp_gty_txprbsforceerr[0*4*1 +: 4*1]),
+    .gty_txpolarity(qsfp_gty_txpolarity[0*4*1 +: 4*1]),
+
+    .gty_rxusrclk2({4{qsfp_gty_rxusrclk2}}),
+    .gty_rxpolarity(qsfp_gty_rxpolarity[0*4*1 +: 4*1]),
+    .gty_rxprbscntreset(qsfp_gty_rxprbscntreset[0*4*1 +: 4*1]),
+    .gty_rxprbssel(qsfp_gty_rxprbssel[0*4*4 +: 4*4]),
+    .gty_rxprbserr(qsfp_gty_rxprbserr[0*4*1 +: 4*1]),
+    .gty_rxprbslocked(qsfp_gty_rxprbslocked[0*4*1 +: 4*1])
 );
 
-wire [7:0] xfcp_qsfp2_gty_1_up_tdata;
-wire xfcp_qsfp2_gty_1_up_tvalid;
-wire xfcp_qsfp2_gty_1_up_tready;
-wire xfcp_qsfp2_gty_1_up_tlast;
-wire xfcp_qsfp2_gty_1_up_tuser;
-wire [7:0] xfcp_qsfp2_gty_1_down_tdata;
-wire xfcp_qsfp2_gty_1_down_tvalid;
-wire xfcp_qsfp2_gty_1_down_tready;
-wire xfcp_qsfp2_gty_1_down_tlast;
-wire xfcp_qsfp2_gty_1_down_tuser;
-
-wire [7:0] xfcp_qsfp2_gty_2_up_tdata;
-wire xfcp_qsfp2_gty_2_up_tvalid;
-wire xfcp_qsfp2_gty_2_up_tready;
-wire xfcp_qsfp2_gty_2_up_tlast;
-wire xfcp_qsfp2_gty_2_up_tuser;
-wire [7:0] xfcp_qsfp2_gty_2_down_tdata;
-wire xfcp_qsfp2_gty_2_down_tvalid;
-wire xfcp_qsfp2_gty_2_down_tready;
-wire xfcp_qsfp2_gty_2_down_tlast;
-wire xfcp_qsfp2_gty_2_down_tuser;
-
-wire [7:0] xfcp_qsfp2_gty_3_up_tdata;
-wire xfcp_qsfp2_gty_3_up_tvalid;
-wire xfcp_qsfp2_gty_3_up_tready;
-wire xfcp_qsfp2_gty_3_up_tlast;
-wire xfcp_qsfp2_gty_3_up_tuser;
-wire [7:0] xfcp_qsfp2_gty_3_down_tdata;
-wire xfcp_qsfp2_gty_3_down_tvalid;
-wire xfcp_qsfp2_gty_3_down_tready;
-wire xfcp_qsfp2_gty_3_down_tlast;
-wire xfcp_qsfp2_gty_3_down_tuser;
-
-wire [7:0] xfcp_qsfp2_gty_4_up_tdata;
-wire xfcp_qsfp2_gty_4_up_tvalid;
-wire xfcp_qsfp2_gty_4_up_tready;
-wire xfcp_qsfp2_gty_4_up_tlast;
-wire xfcp_qsfp2_gty_4_up_tuser;
-wire [7:0] xfcp_qsfp2_gty_4_down_tdata;
-wire xfcp_qsfp2_gty_4_down_tvalid;
-wire xfcp_qsfp2_gty_4_down_tready;
-wire xfcp_qsfp2_gty_4_down_tlast;
-wire xfcp_qsfp2_gty_4_down_tuser;
-
-wire [7:0] xfcp_qsfp2_gty_5_up_tdata;
-wire xfcp_qsfp2_gty_5_up_tvalid;
-wire xfcp_qsfp2_gty_5_up_tready;
-wire xfcp_qsfp2_gty_5_up_tlast;
-wire xfcp_qsfp2_gty_5_up_tuser;
-wire [7:0] xfcp_qsfp2_gty_5_down_tdata;
-wire xfcp_qsfp2_gty_5_down_tvalid;
-wire xfcp_qsfp2_gty_5_down_tready;
-wire xfcp_qsfp2_gty_5_down_tlast;
-wire xfcp_qsfp2_gty_5_down_tuser;
-
-xfcp_switch #(
-    .PORTS(5),
-    .XFCP_ID_TYPE(16'h0100),
-    .XFCP_ID_STR("QSFP2 GTY QUAD"),
-    .XFCP_EXT_ID(0),
-    .XFCP_EXT_ID_STR("")
+xfcp_gty_quad #(
+    .CH(4),
+    .SW_XFCP_ID_TYPE(16'h0100),
+    .SW_XFCP_ID_STR("GTY QUAD 232"),
+    .SW_XFCP_EXT_ID(0),
+    .SW_XFCP_EXT_ID_STR("QSFP2 GTY QUAD"),
+    .COM_XFCP_ID_TYPE(16'h8A92),
+    .COM_XFCP_ID_STR("GTY COM X1Y13"),
+    .COM_XFCP_EXT_ID(0),
+    .COM_XFCP_EXT_ID_STR("QSFP2 GTY COM"),
+    .CH_0_XFCP_ID_TYPE(16'h8A93),
+    .CH_0_XFCP_ID_STR("GTY CH0 X1Y52"),
+    .CH_0_XFCP_EXT_ID(0),
+    .CH_0_XFCP_EXT_ID_STR("QSFP2 CH1"),
+    .CH_1_XFCP_ID_TYPE(16'h8A93),
+    .CH_1_XFCP_ID_STR("GTY CH1 X1Y53"),
+    .CH_1_XFCP_EXT_ID(0),
+    .CH_1_XFCP_EXT_ID_STR("QSFP2 CH2"),
+    .CH_2_XFCP_ID_TYPE(16'h8A93),
+    .CH_2_XFCP_ID_STR("GTY CH2 X1Y54"),
+    .CH_2_XFCP_EXT_ID(0),
+    .CH_2_XFCP_EXT_ID_STR("QSFP2 CH3"),
+    .CH_3_XFCP_ID_TYPE(16'h8A93),
+    .CH_3_XFCP_ID_STR("GTY CH3 X1Y55"),
+    .CH_3_XFCP_EXT_ID(0),
+    .CH_3_XFCP_EXT_ID_STR("QSFP2 CH4"),
+    .COM_ADDR_WIDTH(10),
+    .CH_ADDR_WIDTH(10)
 )
-xfcp_switch_qsfp2_inst (
+xfcp_qsfp2_gty_quad_inst (
     .clk(gty_drp_clk),
     .rst(gty_drp_rst),
-    .up_xfcp_in_tdata(xfcp_qsfp2_down_tdata),
-    .up_xfcp_in_tvalid(xfcp_qsfp2_down_tvalid),
-    .up_xfcp_in_tready(xfcp_qsfp2_down_tready),
-    .up_xfcp_in_tlast(xfcp_qsfp2_down_tlast),
-    .up_xfcp_in_tuser(xfcp_qsfp2_down_tuser),
-    .up_xfcp_out_tdata(xfcp_qsfp2_up_tdata),
-    .up_xfcp_out_tvalid(xfcp_qsfp2_up_tvalid),
-    .up_xfcp_out_tready(xfcp_qsfp2_up_tready),
-    .up_xfcp_out_tlast(xfcp_qsfp2_up_tlast),
-    .up_xfcp_out_tuser(xfcp_qsfp2_up_tuser),
-    .down_xfcp_in_tdata(  {xfcp_qsfp2_gty_5_up_tdata,    xfcp_qsfp2_gty_4_up_tdata,    xfcp_qsfp2_gty_3_up_tdata,    xfcp_qsfp2_gty_2_up_tdata,    xfcp_qsfp2_gty_1_up_tdata   }),
-    .down_xfcp_in_tvalid( {xfcp_qsfp2_gty_5_up_tvalid,   xfcp_qsfp2_gty_4_up_tvalid,   xfcp_qsfp2_gty_3_up_tvalid,   xfcp_qsfp2_gty_2_up_tvalid,   xfcp_qsfp2_gty_1_up_tvalid  }),
-    .down_xfcp_in_tready( {xfcp_qsfp2_gty_5_up_tready,   xfcp_qsfp2_gty_4_up_tready,   xfcp_qsfp2_gty_3_up_tready,   xfcp_qsfp2_gty_2_up_tready,   xfcp_qsfp2_gty_1_up_tready  }),
-    .down_xfcp_in_tlast(  {xfcp_qsfp2_gty_5_up_tlast,    xfcp_qsfp2_gty_4_up_tlast,    xfcp_qsfp2_gty_3_up_tlast,    xfcp_qsfp2_gty_2_up_tlast,    xfcp_qsfp2_gty_1_up_tlast   }),
-    .down_xfcp_in_tuser(  {xfcp_qsfp2_gty_5_up_tuser,    xfcp_qsfp2_gty_4_up_tuser,    xfcp_qsfp2_gty_3_up_tuser,    xfcp_qsfp2_gty_2_up_tuser,    xfcp_qsfp2_gty_1_up_tuser   }),
-    .down_xfcp_out_tdata( {xfcp_qsfp2_gty_5_down_tdata,  xfcp_qsfp2_gty_4_down_tdata,  xfcp_qsfp2_gty_3_down_tdata,  xfcp_qsfp2_gty_2_down_tdata,  xfcp_qsfp2_gty_1_down_tdata }),
-    .down_xfcp_out_tvalid({xfcp_qsfp2_gty_5_down_tvalid, xfcp_qsfp2_gty_4_down_tvalid, xfcp_qsfp2_gty_3_down_tvalid, xfcp_qsfp2_gty_2_down_tvalid, xfcp_qsfp2_gty_1_down_tvalid}),
-    .down_xfcp_out_tready({xfcp_qsfp2_gty_5_down_tready, xfcp_qsfp2_gty_4_down_tready, xfcp_qsfp2_gty_3_down_tready, xfcp_qsfp2_gty_2_down_tready, xfcp_qsfp2_gty_1_down_tready}),
-    .down_xfcp_out_tlast( {xfcp_qsfp2_gty_5_down_tlast,  xfcp_qsfp2_gty_4_down_tlast,  xfcp_qsfp2_gty_3_down_tlast,  xfcp_qsfp2_gty_2_down_tlast,  xfcp_qsfp2_gty_1_down_tlast }),
-    .down_xfcp_out_tuser( {xfcp_qsfp2_gty_5_down_tuser,  xfcp_qsfp2_gty_4_down_tuser,  xfcp_qsfp2_gty_3_down_tuser,  xfcp_qsfp2_gty_2_down_tuser,  xfcp_qsfp2_gty_1_down_tuser })
-);
 
-wire gty_txusrclk2;
-wire gty_rxusrclk2;
+    .up_xfcp_in_tdata(xfcp_qsfp2_gty_down_tdata),
+    .up_xfcp_in_tvalid(xfcp_qsfp2_gty_down_tvalid),
+    .up_xfcp_in_tready(xfcp_qsfp2_gty_down_tready),
+    .up_xfcp_in_tlast(xfcp_qsfp2_gty_down_tlast),
+    .up_xfcp_in_tuser(xfcp_qsfp2_gty_down_tuser),
+    .up_xfcp_out_tdata(xfcp_qsfp2_gty_up_tdata),
+    .up_xfcp_out_tvalid(xfcp_qsfp2_gty_up_tvalid),
+    .up_xfcp_out_tready(xfcp_qsfp2_gty_up_tready),
+    .up_xfcp_out_tlast(xfcp_qsfp2_gty_up_tlast),
+    .up_xfcp_out_tuser(xfcp_qsfp2_gty_up_tuser),
 
-wire [9:0] qsfp1_gty_drp_addr_1;
-wire [15:0] qsfp1_gty_drp_di_1;
-wire [15:0] qsfp1_gty_drp_do_1;
-wire qsfp1_gty_drp_rdy_1;
-wire qsfp1_gty_drp_en_1;
-wire qsfp1_gty_drp_we_1;
+    .gty_com_drp_addr(qsfp_gty_com_drp_addr[1*10 +: 10]),
+    .gty_com_drp_do(qsfp_gty_com_drp_do[1*16 +: 16]),
+    .gty_com_drp_di(qsfp_gty_com_drp_di[1*16 +: 16]),
+    .gty_com_drp_en(qsfp_gty_com_drp_en[1*1 +: 1]),
+    .gty_com_drp_we(qsfp_gty_com_drp_we[1*1 +: 1]),
+    .gty_com_drp_rdy(qsfp_gty_com_drp_rdy[1*1 +: 1]),
 
-wire qsfp1_gty_reset_1;
-wire qsfp1_gty_tx_reset_1;
-wire qsfp1_gty_rx_reset_1;
-wire [3:0] qsfp1_gty_txprbssel_1;
-wire qsfp1_gty_txprbsforceerr_1;
-wire qsfp1_gty_txpolarity_1;
-wire qsfp1_gty_rxpolarity_1;
-wire qsfp1_gty_rxprbscntreset_1;
-wire [3:0] qsfp1_gty_rxprbssel_1;
-wire qsfp1_gty_rxprbserr_1;
-wire qsfp1_gty_rxprbslocked_1;
+    .gty_drp_addr(qsfp_gty_drp_addr[1*4*10 +: 4*10]),
+    .gty_drp_do(qsfp_gty_drp_do[1*4*16 +: 4*16]),
+    .gty_drp_di(qsfp_gty_drp_di[1*4*16 +: 4*16]),
+    .gty_drp_en(qsfp_gty_drp_en[1*4*1 +: 4*1]),
+    .gty_drp_we(qsfp_gty_drp_we[1*4*1 +: 4*1]),
+    .gty_drp_rdy(qsfp_gty_drp_rdy[1*4*1 +: 4*1]),
 
-wire [9:0] qsfp1_gty_drp_addr_2;
-wire [15:0] qsfp1_gty_drp_di_2;
-wire [15:0] qsfp1_gty_drp_do_2;
-wire qsfp1_gty_drp_rdy_2;
-wire qsfp1_gty_drp_en_2;
-wire qsfp1_gty_drp_we_2;
+    .gty_reset(qsfp_gty_reset[1*4*1 +: 4*1]),
+    .gty_tx_reset(qsfp_gty_tx_reset[1*4*1 +: 4*1]),
+    .gty_rx_reset(qsfp_gty_rx_reset[1*4*1 +: 4*1]),
 
-wire qsfp1_gty_reset_2;
-wire qsfp1_gty_tx_reset_2;
-wire qsfp1_gty_rx_reset_2;
-wire [3:0] qsfp1_gty_txprbssel_2;
-wire qsfp1_gty_txprbsforceerr_2;
-wire qsfp1_gty_txpolarity_2;
-wire qsfp1_gty_rxpolarity_2;
-wire qsfp1_gty_rxprbscntreset_2;
-wire [3:0] qsfp1_gty_rxprbssel_2;
-wire qsfp1_gty_rxprbserr_2;
-wire qsfp1_gty_rxprbslocked_2;
+    .gty_txusrclk2({4{qsfp_gty_txusrclk2}}),
+    .gty_txprbssel(qsfp_gty_txprbssel[1*4*4 +: 4*4]),
+    .gty_txprbsforceerr(qsfp_gty_txprbsforceerr[1*4*1 +: 4*1]),
+    .gty_txpolarity(qsfp_gty_txpolarity[1*4*1 +: 4*1]),
 
-wire [9:0] qsfp1_gty_drp_addr_3;
-wire [15:0] qsfp1_gty_drp_di_3;
-wire [15:0] qsfp1_gty_drp_do_3;
-wire qsfp1_gty_drp_rdy_3;
-wire qsfp1_gty_drp_en_3;
-wire qsfp1_gty_drp_we_3;
-
-wire qsfp1_gty_reset_3;
-wire qsfp1_gty_tx_reset_3;
-wire qsfp1_gty_rx_reset_3;
-wire [3:0] qsfp1_gty_txprbssel_3;
-wire qsfp1_gty_txprbsforceerr_3;
-wire qsfp1_gty_txpolarity_3;
-wire qsfp1_gty_rxpolarity_3;
-wire qsfp1_gty_rxprbscntreset_3;
-wire [3:0] qsfp1_gty_rxprbssel_3;
-wire qsfp1_gty_rxprbserr_3;
-wire qsfp1_gty_rxprbslocked_3;
-
-wire [9:0] qsfp1_gty_drp_addr_4;
-wire [15:0] qsfp1_gty_drp_di_4;
-wire [15:0] qsfp1_gty_drp_do_4;
-wire qsfp1_gty_drp_rdy_4;
-wire qsfp1_gty_drp_en_4;
-wire qsfp1_gty_drp_we_4;
-
-wire qsfp1_gty_reset_4;
-wire qsfp1_gty_tx_reset_4;
-wire qsfp1_gty_rx_reset_4;
-wire [3:0] qsfp1_gty_txprbssel_4;
-wire qsfp1_gty_txprbsforceerr_4;
-wire qsfp1_gty_txpolarity_4;
-wire qsfp1_gty_rxpolarity_4;
-wire qsfp1_gty_rxprbscntreset_4;
-wire [3:0] qsfp1_gty_rxprbssel_4;
-wire qsfp1_gty_rxprbserr_4;
-wire qsfp1_gty_rxprbslocked_4;
-
-wire [9:0] qsfp1_gty_drp_addr_5;
-wire [15:0] qsfp1_gty_drp_di_5;
-wire [15:0] qsfp1_gty_drp_do_5;
-wire qsfp1_gty_drp_rdy_5;
-wire qsfp1_gty_drp_en_5;
-wire qsfp1_gty_drp_we_5;
-
-xfcp_mod_gty #(
-    .XFCP_ID_TYPE(16'h8A8B),
-    .XFCP_ID_STR("QSFP1 1 X1Y48"),
-    .XFCP_EXT_ID(0),
-    .XFCP_EXT_ID_STR(""),
-    .ADDR_WIDTH(10)
-)
-xfcp_mod_gty_qsfp1_inst_1 (
-    .clk(gty_drp_clk),
-    .rst(gty_drp_rst),
-    .up_xfcp_in_tdata(xfcp_qsfp1_gty_1_down_tdata),
-    .up_xfcp_in_tvalid(xfcp_qsfp1_gty_1_down_tvalid),
-    .up_xfcp_in_tready(xfcp_qsfp1_gty_1_down_tready),
-    .up_xfcp_in_tlast(xfcp_qsfp1_gty_1_down_tlast),
-    .up_xfcp_in_tuser(xfcp_qsfp1_gty_1_down_tuser),
-    .up_xfcp_out_tdata(xfcp_qsfp1_gty_1_up_tdata),
-    .up_xfcp_out_tvalid(xfcp_qsfp1_gty_1_up_tvalid),
-    .up_xfcp_out_tready(xfcp_qsfp1_gty_1_up_tready),
-    .up_xfcp_out_tlast(xfcp_qsfp1_gty_1_up_tlast),
-    .up_xfcp_out_tuser(xfcp_qsfp1_gty_1_up_tuser),
-    .gty_drp_addr(qsfp1_gty_drp_addr_1),
-    .gty_drp_do(qsfp1_gty_drp_di_1),
-    .gty_drp_di(qsfp1_gty_drp_do_1),
-    .gty_drp_en(qsfp1_gty_drp_en_1),
-    .gty_drp_we(qsfp1_gty_drp_we_1),
-    .gty_drp_rdy(qsfp1_gty_drp_rdy_1),
-    .gty_reset(qsfp1_gty_reset_1),
-    .gty_tx_reset(qsfp1_gty_tx_reset_1),
-    .gty_rx_reset(qsfp1_gty_rx_reset_1),
-    .gty_txusrclk2(gty_txusrclk2),
-    .gty_txprbssel(qsfp1_gty_txprbssel_1),
-    .gty_txprbsforceerr(qsfp1_gty_txprbsforceerr_1),
-    .gty_txpolarity(qsfp1_gty_txpolarity_1),
-    .gty_rxusrclk2(gty_rxusrclk2),
-    .gty_rxpolarity(qsfp1_gty_rxpolarity_1),
-    .gty_rxprbscntreset(qsfp1_gty_rxprbscntreset_1),
-    .gty_rxprbssel(qsfp1_gty_rxprbssel_1),
-    .gty_rxprbserr(qsfp1_gty_rxprbserr_1),
-    .gty_rxprbslocked(qsfp1_gty_rxprbslocked_1)
-);
-
-xfcp_mod_gty #(
-    .XFCP_ID_TYPE(16'h8A8B),
-    .XFCP_ID_STR("QSFP1 2 X1Y49"),
-    .XFCP_EXT_ID(0),
-    .XFCP_EXT_ID_STR(""),
-    .ADDR_WIDTH(10)
-)
-xfcp_mod_gty_qsfp1_inst_2 (
-    .clk(gty_drp_clk),
-    .rst(gty_drp_rst),
-    .up_xfcp_in_tdata(xfcp_qsfp1_gty_2_down_tdata),
-    .up_xfcp_in_tvalid(xfcp_qsfp1_gty_2_down_tvalid),
-    .up_xfcp_in_tready(xfcp_qsfp1_gty_2_down_tready),
-    .up_xfcp_in_tlast(xfcp_qsfp1_gty_2_down_tlast),
-    .up_xfcp_in_tuser(xfcp_qsfp1_gty_2_down_tuser),
-    .up_xfcp_out_tdata(xfcp_qsfp1_gty_2_up_tdata),
-    .up_xfcp_out_tvalid(xfcp_qsfp1_gty_2_up_tvalid),
-    .up_xfcp_out_tready(xfcp_qsfp1_gty_2_up_tready),
-    .up_xfcp_out_tlast(xfcp_qsfp1_gty_2_up_tlast),
-    .up_xfcp_out_tuser(xfcp_qsfp1_gty_2_up_tuser),
-    .gty_drp_addr(qsfp1_gty_drp_addr_2),
-    .gty_drp_do(qsfp1_gty_drp_di_2),
-    .gty_drp_di(qsfp1_gty_drp_do_2),
-    .gty_drp_en(qsfp1_gty_drp_en_2),
-    .gty_drp_we(qsfp1_gty_drp_we_2),
-    .gty_drp_rdy(qsfp1_gty_drp_rdy_2),
-    .gty_reset(qsfp1_gty_reset_2),
-    .gty_tx_reset(qsfp1_gty_tx_reset_2),
-    .gty_rx_reset(qsfp1_gty_rx_reset_2),
-    .gty_txusrclk2(gty_txusrclk2),
-    .gty_txprbssel(qsfp1_gty_txprbssel_2),
-    .gty_txprbsforceerr(qsfp1_gty_txprbsforceerr_2),
-    .gty_txpolarity(qsfp1_gty_txpolarity_2),
-    .gty_rxusrclk2(gty_rxusrclk2),
-    .gty_rxpolarity(qsfp1_gty_rxpolarity_2),
-    .gty_rxprbscntreset(qsfp1_gty_rxprbscntreset_2),
-    .gty_rxprbssel(qsfp1_gty_rxprbssel_2),
-    .gty_rxprbserr(qsfp1_gty_rxprbserr_2),
-    .gty_rxprbslocked(qsfp1_gty_rxprbslocked_2)
-);
-
-xfcp_mod_gty #(
-    .XFCP_ID_TYPE(16'h8A8B),
-    .XFCP_ID_STR("QSFP1 3 X1Y50"),
-    .XFCP_EXT_ID(0),
-    .XFCP_EXT_ID_STR(""),
-    .ADDR_WIDTH(10)
-)
-xfcp_mod_gty_qsfp1_inst_3 (
-    .clk(gty_drp_clk),
-    .rst(gty_drp_rst),
-    .up_xfcp_in_tdata(xfcp_qsfp1_gty_3_down_tdata),
-    .up_xfcp_in_tvalid(xfcp_qsfp1_gty_3_down_tvalid),
-    .up_xfcp_in_tready(xfcp_qsfp1_gty_3_down_tready),
-    .up_xfcp_in_tlast(xfcp_qsfp1_gty_3_down_tlast),
-    .up_xfcp_in_tuser(xfcp_qsfp1_gty_3_down_tuser),
-    .up_xfcp_out_tdata(xfcp_qsfp1_gty_3_up_tdata),
-    .up_xfcp_out_tvalid(xfcp_qsfp1_gty_3_up_tvalid),
-    .up_xfcp_out_tready(xfcp_qsfp1_gty_3_up_tready),
-    .up_xfcp_out_tlast(xfcp_qsfp1_gty_3_up_tlast),
-    .up_xfcp_out_tuser(xfcp_qsfp1_gty_3_up_tuser),
-    .gty_drp_addr(qsfp1_gty_drp_addr_3),
-    .gty_drp_do(qsfp1_gty_drp_di_3),
-    .gty_drp_di(qsfp1_gty_drp_do_3),
-    .gty_drp_en(qsfp1_gty_drp_en_3),
-    .gty_drp_we(qsfp1_gty_drp_we_3),
-    .gty_drp_rdy(qsfp1_gty_drp_rdy_3),
-    .gty_reset(qsfp1_gty_reset_3),
-    .gty_tx_reset(qsfp1_gty_tx_reset_3),
-    .gty_rx_reset(qsfp1_gty_rx_reset_3),
-    .gty_txusrclk2(gty_txusrclk2),
-    .gty_txprbssel(qsfp1_gty_txprbssel_3),
-    .gty_txprbsforceerr(qsfp1_gty_txprbsforceerr_3),
-    .gty_txpolarity(qsfp1_gty_txpolarity_3),
-    .gty_rxusrclk2(gty_rxusrclk2),
-    .gty_rxpolarity(qsfp1_gty_rxpolarity_3),
-    .gty_rxprbscntreset(qsfp1_gty_rxprbscntreset_3),
-    .gty_rxprbssel(qsfp1_gty_rxprbssel_3),
-    .gty_rxprbserr(qsfp1_gty_rxprbserr_3),
-    .gty_rxprbslocked(qsfp1_gty_rxprbslocked_3)
-);
-
-xfcp_mod_gty #(
-    .XFCP_ID_TYPE(16'h8A8B),
-    .XFCP_ID_STR("QSFP1 4 X1Y51"),
-    .XFCP_EXT_ID(0),
-    .XFCP_EXT_ID_STR(""),
-    .ADDR_WIDTH(10)
-)
-xfcp_mod_gty_qsfp1_inst_4 (
-    .clk(gty_drp_clk),
-    .rst(gty_drp_rst),
-    .up_xfcp_in_tdata(xfcp_qsfp1_gty_4_down_tdata),
-    .up_xfcp_in_tvalid(xfcp_qsfp1_gty_4_down_tvalid),
-    .up_xfcp_in_tready(xfcp_qsfp1_gty_4_down_tready),
-    .up_xfcp_in_tlast(xfcp_qsfp1_gty_4_down_tlast),
-    .up_xfcp_in_tuser(xfcp_qsfp1_gty_4_down_tuser),
-    .up_xfcp_out_tdata(xfcp_qsfp1_gty_4_up_tdata),
-    .up_xfcp_out_tvalid(xfcp_qsfp1_gty_4_up_tvalid),
-    .up_xfcp_out_tready(xfcp_qsfp1_gty_4_up_tready),
-    .up_xfcp_out_tlast(xfcp_qsfp1_gty_4_up_tlast),
-    .up_xfcp_out_tuser(xfcp_qsfp1_gty_4_up_tuser),
-    .gty_drp_addr(qsfp1_gty_drp_addr_4),
-    .gty_drp_do(qsfp1_gty_drp_di_4),
-    .gty_drp_di(qsfp1_gty_drp_do_4),
-    .gty_drp_en(qsfp1_gty_drp_en_4),
-    .gty_drp_we(qsfp1_gty_drp_we_4),
-    .gty_drp_rdy(qsfp1_gty_drp_rdy_4),
-    .gty_reset(qsfp1_gty_reset_4),
-    .gty_tx_reset(qsfp1_gty_tx_reset_4),
-    .gty_rx_reset(qsfp1_gty_rx_reset_4),
-    .gty_txusrclk2(gty_txusrclk2),
-    .gty_txprbssel(qsfp1_gty_txprbssel_4),
-    .gty_txprbsforceerr(qsfp1_gty_txprbsforceerr_4),
-    .gty_txpolarity(qsfp1_gty_txpolarity_4),
-    .gty_rxusrclk2(gty_rxusrclk2),
-    .gty_rxpolarity(qsfp1_gty_rxpolarity_4),
-    .gty_rxprbscntreset(qsfp1_gty_rxprbscntreset_4),
-    .gty_rxprbssel(qsfp1_gty_rxprbssel_4),
-    .gty_rxprbserr(qsfp1_gty_rxprbserr_4),
-    .gty_rxprbslocked(qsfp1_gty_rxprbslocked_4)
-);
-
-xfcp_mod_drp #(
-    .XFCP_ID_TYPE(16'h8A8A),
-    .XFCP_ID_STR("QSFP1 COM X1Y12"),
-    .XFCP_EXT_ID(0),
-    .XFCP_EXT_ID_STR(""),
-    .ADDR_WIDTH(10)
-)
-xfcp_mod_drp_qsfp1_inst (
-    .clk(gty_drp_clk),
-    .rst(gty_drp_rst),
-    .up_xfcp_in_tdata(xfcp_qsfp1_gty_5_down_tdata),
-    .up_xfcp_in_tvalid(xfcp_qsfp1_gty_5_down_tvalid),
-    .up_xfcp_in_tready(xfcp_qsfp1_gty_5_down_tready),
-    .up_xfcp_in_tlast(xfcp_qsfp1_gty_5_down_tlast),
-    .up_xfcp_in_tuser(xfcp_qsfp1_gty_5_down_tuser),
-    .up_xfcp_out_tdata(xfcp_qsfp1_gty_5_up_tdata),
-    .up_xfcp_out_tvalid(xfcp_qsfp1_gty_5_up_tvalid),
-    .up_xfcp_out_tready(xfcp_qsfp1_gty_5_up_tready),
-    .up_xfcp_out_tlast(xfcp_qsfp1_gty_5_up_tlast),
-    .up_xfcp_out_tuser(xfcp_qsfp1_gty_5_up_tuser),
-    .drp_addr(qsfp1_gty_drp_addr_5),
-    .drp_do(qsfp1_gty_drp_di_5),
-    .drp_di(qsfp1_gty_drp_do_5),
-    .drp_en(qsfp1_gty_drp_en_5),
-    .drp_we(qsfp1_gty_drp_we_5),
-    .drp_rdy(qsfp1_gty_drp_rdy_5)
-);
-
-wire [9:0] qsfp2_gty_drp_addr_1;
-wire [15:0] qsfp2_gty_drp_di_1;
-wire [15:0] qsfp2_gty_drp_do_1;
-wire qsfp2_gty_drp_rdy_1;
-wire qsfp2_gty_drp_en_1;
-wire qsfp2_gty_drp_we_1;
-
-wire qsfp2_gty_reset_1;
-wire qsfp2_gty_tx_reset_1;
-wire qsfp2_gty_rx_reset_1;
-wire [3:0] qsfp2_gty_txprbssel_1;
-wire qsfp2_gty_txprbsforceerr_1;
-wire qsfp2_gty_txpolarity_1;
-wire qsfp2_gty_rxpolarity_1;
-wire qsfp2_gty_rxprbscntreset_1;
-wire [3:0] qsfp2_gty_rxprbssel_1;
-wire qsfp2_gty_rxprbserr_1;
-wire qsfp2_gty_rxprbslocked_1;
-
-wire [9:0] qsfp2_gty_drp_addr_2;
-wire [15:0] qsfp2_gty_drp_di_2;
-wire [15:0] qsfp2_gty_drp_do_2;
-wire qsfp2_gty_drp_rdy_2;
-wire qsfp2_gty_drp_en_2;
-wire qsfp2_gty_drp_we_2;
-
-wire qsfp2_gty_reset_2;
-wire qsfp2_gty_tx_reset_2;
-wire qsfp2_gty_rx_reset_2;
-wire [3:0] qsfp2_gty_txprbssel_2;
-wire qsfp2_gty_txprbsforceerr_2;
-wire qsfp2_gty_txpolarity_2;
-wire qsfp2_gty_rxpolarity_2;
-wire qsfp2_gty_rxprbscntreset_2;
-wire [3:0] qsfp2_gty_rxprbssel_2;
-wire qsfp2_gty_rxprbserr_2;
-wire qsfp2_gty_rxprbslocked_2;
-
-wire [9:0] qsfp2_gty_drp_addr_3;
-wire [15:0] qsfp2_gty_drp_di_3;
-wire [15:0] qsfp2_gty_drp_do_3;
-wire qsfp2_gty_drp_rdy_3;
-wire qsfp2_gty_drp_en_3;
-wire qsfp2_gty_drp_we_3;
-
-wire qsfp2_gty_reset_3;
-wire qsfp2_gty_tx_reset_3;
-wire qsfp2_gty_rx_reset_3;
-wire [3:0] qsfp2_gty_txprbssel_3;
-wire qsfp2_gty_txprbsforceerr_3;
-wire qsfp2_gty_txpolarity_3;
-wire qsfp2_gty_rxpolarity_3;
-wire qsfp2_gty_rxprbscntreset_3;
-wire [3:0] qsfp2_gty_rxprbssel_3;
-wire qsfp2_gty_rxprbserr_3;
-wire qsfp2_gty_rxprbslocked_3;
-
-wire [9:0] qsfp2_gty_drp_addr_4;
-wire [15:0] qsfp2_gty_drp_di_4;
-wire [15:0] qsfp2_gty_drp_do_4;
-wire qsfp2_gty_drp_rdy_4;
-wire qsfp2_gty_drp_en_4;
-wire qsfp2_gty_drp_we_4;
-
-wire qsfp2_gty_reset_4;
-wire qsfp2_gty_tx_reset_4;
-wire qsfp2_gty_rx_reset_4;
-wire [3:0] qsfp2_gty_txprbssel_4;
-wire qsfp2_gty_txprbsforceerr_4;
-wire qsfp2_gty_txpolarity_4;
-wire qsfp2_gty_rxpolarity_4;
-wire qsfp2_gty_rxprbscntreset_4;
-wire [3:0] qsfp2_gty_rxprbssel_4;
-wire qsfp2_gty_rxprbserr_4;
-wire qsfp2_gty_rxprbslocked_4;
-
-wire [9:0] qsfp2_gty_drp_addr_5;
-wire [15:0] qsfp2_gty_drp_di_5;
-wire [15:0] qsfp2_gty_drp_do_5;
-wire qsfp2_gty_drp_rdy_5;
-wire qsfp2_gty_drp_en_5;
-wire qsfp2_gty_drp_we_5;
-
-xfcp_mod_gty #(
-    .XFCP_ID_TYPE(16'h8A8B),
-    .XFCP_ID_STR("QSFP2 1 X1Y52"),
-    .XFCP_EXT_ID(0),
-    .XFCP_EXT_ID_STR(""),
-    .ADDR_WIDTH(10)
-)
-xfcp_mod_gty_qsfp2_inst_1 (
-    .clk(gty_drp_clk),
-    .rst(gty_drp_rst),
-    .up_xfcp_in_tdata(xfcp_qsfp2_gty_1_down_tdata),
-    .up_xfcp_in_tvalid(xfcp_qsfp2_gty_1_down_tvalid),
-    .up_xfcp_in_tready(xfcp_qsfp2_gty_1_down_tready),
-    .up_xfcp_in_tlast(xfcp_qsfp2_gty_1_down_tlast),
-    .up_xfcp_in_tuser(xfcp_qsfp2_gty_1_down_tuser),
-    .up_xfcp_out_tdata(xfcp_qsfp2_gty_1_up_tdata),
-    .up_xfcp_out_tvalid(xfcp_qsfp2_gty_1_up_tvalid),
-    .up_xfcp_out_tready(xfcp_qsfp2_gty_1_up_tready),
-    .up_xfcp_out_tlast(xfcp_qsfp2_gty_1_up_tlast),
-    .up_xfcp_out_tuser(xfcp_qsfp2_gty_1_up_tuser),
-    .gty_drp_addr(qsfp2_gty_drp_addr_1),
-    .gty_drp_do(qsfp2_gty_drp_di_1),
-    .gty_drp_di(qsfp2_gty_drp_do_1),
-    .gty_drp_en(qsfp2_gty_drp_en_1),
-    .gty_drp_we(qsfp2_gty_drp_we_1),
-    .gty_drp_rdy(qsfp2_gty_drp_rdy_1),
-    .gty_reset(qsfp2_gty_reset_1),
-    .gty_tx_reset(qsfp2_gty_tx_reset_1),
-    .gty_rx_reset(qsfp2_gty_rx_reset_1),
-    .gty_txusrclk2(gty_txusrclk2),
-    .gty_txprbssel(qsfp2_gty_txprbssel_1),
-    .gty_txprbsforceerr(qsfp2_gty_txprbsforceerr_1),
-    .gty_txpolarity(qsfp2_gty_txpolarity_1),
-    .gty_rxusrclk2(gty_rxusrclk2),
-    .gty_rxpolarity(qsfp2_gty_rxpolarity_1),
-    .gty_rxprbscntreset(qsfp2_gty_rxprbscntreset_1),
-    .gty_rxprbssel(qsfp2_gty_rxprbssel_1),
-    .gty_rxprbserr(qsfp2_gty_rxprbserr_1),
-    .gty_rxprbslocked(qsfp2_gty_rxprbslocked_1)
-);
-
-xfcp_mod_gty #(
-    .XFCP_ID_TYPE(16'h8A8B),
-    .XFCP_ID_STR("QSFP2 2 X1Y53"),
-    .XFCP_EXT_ID(0),
-    .XFCP_EXT_ID_STR(""),
-    .ADDR_WIDTH(10)
-)
-xfcp_mod_gty_qsfp2_inst_2 (
-    .clk(gty_drp_clk),
-    .rst(gty_drp_rst),
-    .up_xfcp_in_tdata(xfcp_qsfp2_gty_2_down_tdata),
-    .up_xfcp_in_tvalid(xfcp_qsfp2_gty_2_down_tvalid),
-    .up_xfcp_in_tready(xfcp_qsfp2_gty_2_down_tready),
-    .up_xfcp_in_tlast(xfcp_qsfp2_gty_2_down_tlast),
-    .up_xfcp_in_tuser(xfcp_qsfp2_gty_2_down_tuser),
-    .up_xfcp_out_tdata(xfcp_qsfp2_gty_2_up_tdata),
-    .up_xfcp_out_tvalid(xfcp_qsfp2_gty_2_up_tvalid),
-    .up_xfcp_out_tready(xfcp_qsfp2_gty_2_up_tready),
-    .up_xfcp_out_tlast(xfcp_qsfp2_gty_2_up_tlast),
-    .up_xfcp_out_tuser(xfcp_qsfp2_gty_2_up_tuser),
-    .gty_drp_addr(qsfp2_gty_drp_addr_2),
-    .gty_drp_do(qsfp2_gty_drp_di_2),
-    .gty_drp_di(qsfp2_gty_drp_do_2),
-    .gty_drp_en(qsfp2_gty_drp_en_2),
-    .gty_drp_we(qsfp2_gty_drp_we_2),
-    .gty_drp_rdy(qsfp2_gty_drp_rdy_2),
-    .gty_reset(qsfp2_gty_reset_2),
-    .gty_tx_reset(qsfp2_gty_tx_reset_2),
-    .gty_rx_reset(qsfp2_gty_rx_reset_2),
-    .gty_txusrclk2(gty_txusrclk2),
-    .gty_txprbssel(qsfp2_gty_txprbssel_2),
-    .gty_txprbsforceerr(qsfp2_gty_txprbsforceerr_2),
-    .gty_txpolarity(qsfp2_gty_txpolarity_2),
-    .gty_rxusrclk2(gty_rxusrclk2),
-    .gty_rxpolarity(qsfp2_gty_rxpolarity_2),
-    .gty_rxprbscntreset(qsfp2_gty_rxprbscntreset_2),
-    .gty_rxprbssel(qsfp2_gty_rxprbssel_2),
-    .gty_rxprbserr(qsfp2_gty_rxprbserr_2),
-    .gty_rxprbslocked(qsfp2_gty_rxprbslocked_2)
-);
-
-xfcp_mod_gty #(
-    .XFCP_ID_TYPE(16'h8A8B),
-    .XFCP_ID_STR("QSFP2 3 X1Y54"),
-    .XFCP_EXT_ID(0),
-    .XFCP_EXT_ID_STR(""),
-    .ADDR_WIDTH(10)
-)
-xfcp_mod_gty_qsfp2_inst_3 (
-    .clk(gty_drp_clk),
-    .rst(gty_drp_rst),
-    .up_xfcp_in_tdata(xfcp_qsfp2_gty_3_down_tdata),
-    .up_xfcp_in_tvalid(xfcp_qsfp2_gty_3_down_tvalid),
-    .up_xfcp_in_tready(xfcp_qsfp2_gty_3_down_tready),
-    .up_xfcp_in_tlast(xfcp_qsfp2_gty_3_down_tlast),
-    .up_xfcp_in_tuser(xfcp_qsfp2_gty_3_down_tuser),
-    .up_xfcp_out_tdata(xfcp_qsfp2_gty_3_up_tdata),
-    .up_xfcp_out_tvalid(xfcp_qsfp2_gty_3_up_tvalid),
-    .up_xfcp_out_tready(xfcp_qsfp2_gty_3_up_tready),
-    .up_xfcp_out_tlast(xfcp_qsfp2_gty_3_up_tlast),
-    .up_xfcp_out_tuser(xfcp_qsfp2_gty_3_up_tuser),
-    .gty_drp_addr(qsfp2_gty_drp_addr_3),
-    .gty_drp_do(qsfp2_gty_drp_di_3),
-    .gty_drp_di(qsfp2_gty_drp_do_3),
-    .gty_drp_en(qsfp2_gty_drp_en_3),
-    .gty_drp_we(qsfp2_gty_drp_we_3),
-    .gty_drp_rdy(qsfp2_gty_drp_rdy_3),
-    .gty_reset(qsfp2_gty_reset_3),
-    .gty_tx_reset(qsfp2_gty_tx_reset_3),
-    .gty_rx_reset(qsfp2_gty_rx_reset_3),
-    .gty_txusrclk2(gty_txusrclk2),
-    .gty_txprbssel(qsfp2_gty_txprbssel_3),
-    .gty_txprbsforceerr(qsfp2_gty_txprbsforceerr_3),
-    .gty_txpolarity(qsfp2_gty_txpolarity_3),
-    .gty_rxusrclk2(gty_rxusrclk2),
-    .gty_rxpolarity(qsfp2_gty_rxpolarity_3),
-    .gty_rxprbscntreset(qsfp2_gty_rxprbscntreset_3),
-    .gty_rxprbssel(qsfp2_gty_rxprbssel_3),
-    .gty_rxprbserr(qsfp2_gty_rxprbserr_3),
-    .gty_rxprbslocked(qsfp2_gty_rxprbslocked_3)
-);
-
-xfcp_mod_gty #(
-    .XFCP_ID_TYPE(16'h8A8B),
-    .XFCP_ID_STR("QSFP2 4 X1Y55"),
-    .XFCP_EXT_ID(0),
-    .XFCP_EXT_ID_STR(""),
-    .ADDR_WIDTH(10)
-)
-xfcp_mod_gty_qsfp2_inst_4 (
-    .clk(gty_drp_clk),
-    .rst(gty_drp_rst),
-    .up_xfcp_in_tdata(xfcp_qsfp2_gty_4_down_tdata),
-    .up_xfcp_in_tvalid(xfcp_qsfp2_gty_4_down_tvalid),
-    .up_xfcp_in_tready(xfcp_qsfp2_gty_4_down_tready),
-    .up_xfcp_in_tlast(xfcp_qsfp2_gty_4_down_tlast),
-    .up_xfcp_in_tuser(xfcp_qsfp2_gty_4_down_tuser),
-    .up_xfcp_out_tdata(xfcp_qsfp2_gty_4_up_tdata),
-    .up_xfcp_out_tvalid(xfcp_qsfp2_gty_4_up_tvalid),
-    .up_xfcp_out_tready(xfcp_qsfp2_gty_4_up_tready),
-    .up_xfcp_out_tlast(xfcp_qsfp2_gty_4_up_tlast),
-    .up_xfcp_out_tuser(xfcp_qsfp2_gty_4_up_tuser),
-    .gty_drp_addr(qsfp2_gty_drp_addr_4),
-    .gty_drp_do(qsfp2_gty_drp_di_4),
-    .gty_drp_di(qsfp2_gty_drp_do_4),
-    .gty_drp_en(qsfp2_gty_drp_en_4),
-    .gty_drp_we(qsfp2_gty_drp_we_4),
-    .gty_drp_rdy(qsfp2_gty_drp_rdy_4),
-    .gty_reset(qsfp2_gty_reset_4),
-    .gty_tx_reset(qsfp2_gty_tx_reset_4),
-    .gty_rx_reset(qsfp2_gty_rx_reset_4),
-    .gty_txusrclk2(gty_txusrclk2),
-    .gty_txprbssel(qsfp2_gty_txprbssel_4),
-    .gty_txprbsforceerr(qsfp2_gty_txprbsforceerr_4),
-    .gty_txpolarity(qsfp2_gty_txpolarity_4),
-    .gty_rxusrclk2(gty_rxusrclk2),
-    .gty_rxpolarity(qsfp2_gty_rxpolarity_4),
-    .gty_rxprbscntreset(qsfp2_gty_rxprbscntreset_4),
-    .gty_rxprbssel(qsfp2_gty_rxprbssel_4),
-    .gty_rxprbserr(qsfp2_gty_rxprbserr_4),
-    .gty_rxprbslocked(qsfp2_gty_rxprbslocked_4)
-);
-
-xfcp_mod_drp #(
-    .XFCP_ID_TYPE(16'h8A8A),
-    .XFCP_ID_STR("QSFP2 COM X1Y13"),
-    .XFCP_EXT_ID(0),
-    .XFCP_EXT_ID_STR(""),
-    .ADDR_WIDTH(10)
-)
-xfcp_mod_drp_qsfp2_inst (
-    .clk(gty_drp_clk),
-    .rst(gty_drp_rst),
-    .up_xfcp_in_tdata(xfcp_qsfp2_gty_5_down_tdata),
-    .up_xfcp_in_tvalid(xfcp_qsfp2_gty_5_down_tvalid),
-    .up_xfcp_in_tready(xfcp_qsfp2_gty_5_down_tready),
-    .up_xfcp_in_tlast(xfcp_qsfp2_gty_5_down_tlast),
-    .up_xfcp_in_tuser(xfcp_qsfp2_gty_5_down_tuser),
-    .up_xfcp_out_tdata(xfcp_qsfp2_gty_5_up_tdata),
-    .up_xfcp_out_tvalid(xfcp_qsfp2_gty_5_up_tvalid),
-    .up_xfcp_out_tready(xfcp_qsfp2_gty_5_up_tready),
-    .up_xfcp_out_tlast(xfcp_qsfp2_gty_5_up_tlast),
-    .up_xfcp_out_tuser(xfcp_qsfp2_gty_5_up_tuser),
-    .drp_addr(qsfp2_gty_drp_addr_5),
-    .drp_do(qsfp2_gty_drp_di_5),
-    .drp_di(qsfp2_gty_drp_do_5),
-    .drp_en(qsfp2_gty_drp_en_5),
-    .drp_we(qsfp2_gty_drp_we_5),
-    .drp_rdy(qsfp2_gty_drp_rdy_5)
+    .gty_rxusrclk2({4{qsfp_gty_rxusrclk2}}),
+    .gty_rxpolarity(qsfp_gty_rxpolarity[1*4*1 +: 4*1]),
+    .gty_rxprbscntreset(qsfp_gty_rxprbscntreset[1*4*1 +: 4*1]),
+    .gty_rxprbssel(qsfp_gty_rxprbssel[1*4*4 +: 4*4]),
+    .gty_rxprbserr(qsfp_gty_rxprbserr[1*4*1 +: 4*1]),
+    .gty_rxprbslocked(qsfp_gty_rxprbslocked[1*4*1 +: 4*1])
 );
 
 wire qsfp1_mgt_refclk_0;
@@ -1188,50 +650,50 @@ gtwizard_ultrascale_0 gtwizard_ultrascale_0_inst (
     .gtwiz_userclk_tx_reset_in           (gty_drp_rst),
     .gtwiz_userclk_tx_srcclk_out         (),
     .gtwiz_userclk_tx_usrclk_out         (),
-    .gtwiz_userclk_tx_usrclk2_out        (gty_txusrclk2),
+    .gtwiz_userclk_tx_usrclk2_out        (qsfp_gty_txusrclk2),
     .gtwiz_userclk_tx_active_out         (),
     .gtwiz_userclk_rx_reset_in           (gty_drp_rst),
     .gtwiz_userclk_rx_srcclk_out         (),
     .gtwiz_userclk_rx_usrclk_out         (),
-    .gtwiz_userclk_rx_usrclk2_out        (gty_rxusrclk2),
+    .gtwiz_userclk_rx_usrclk2_out        (qsfp_gty_rxusrclk2),
     .gtwiz_userclk_rx_active_out         (),
     .gtwiz_reset_clk_freerun_in          (gty_drp_clk),
-    .gtwiz_reset_all_in                  (gty_drp_rst | qsfp2_gty_reset_1 | qsfp2_gty_reset_2 | qsfp2_gty_reset_3 | qsfp2_gty_reset_4 | qsfp1_gty_reset_1 | qsfp1_gty_reset_2 | qsfp1_gty_reset_3 | qsfp1_gty_reset_4),
-    .gtwiz_reset_tx_pll_and_datapath_in  (qsfp2_gty_tx_reset_1 | qsfp2_gty_tx_reset_2 | qsfp2_gty_tx_reset_3 | qsfp2_gty_tx_reset_4 | qsfp1_gty_tx_reset_1 | qsfp1_gty_tx_reset_2 | qsfp1_gty_tx_reset_3 | qsfp1_gty_tx_reset_4),
+    .gtwiz_reset_all_in                  (gty_drp_rst || qsfp_gty_reset),
+    .gtwiz_reset_tx_pll_and_datapath_in  (|qsfp_gty_tx_reset),
     .gtwiz_reset_tx_datapath_in          (1'b0),
-    .gtwiz_reset_rx_pll_and_datapath_in  (qsfp2_gty_rx_reset_1 | qsfp2_gty_rx_reset_2 | qsfp2_gty_rx_reset_3 | qsfp2_gty_rx_reset_4 | qsfp1_gty_rx_reset_1 | qsfp1_gty_rx_reset_2 | qsfp1_gty_rx_reset_3 | qsfp1_gty_rx_reset_4),
+    .gtwiz_reset_rx_pll_and_datapath_in  (|qsfp_gty_rx_reset),
     .gtwiz_reset_rx_datapath_in          (1'b0),
     .gtwiz_reset_rx_cdr_stable_out       (),
     .gtwiz_reset_tx_done_out             (),
     .gtwiz_reset_rx_done_out             (),
     .gtwiz_userdata_tx_in                ({8{64'd0}}),
     .gtwiz_userdata_rx_out               (),
-    .drpaddr_common_in                   ({qsfp2_gty_drp_addr_5, qsfp1_gty_drp_addr_5}),
+    .drpaddr_common_in                   (qsfp_gty_com_drp_addr),
     .drpclk_common_in                    ({2{gty_drp_clk}}),
-    .drpdi_common_in                     ({qsfp2_gty_drp_di_5, qsfp1_gty_drp_di_5}),
-    .drpen_common_in                     ({qsfp2_gty_drp_en_5, qsfp1_gty_drp_en_5}),
-    .drpwe_common_in                     ({qsfp2_gty_drp_we_5, qsfp1_gty_drp_we_5}),
+    .drpdi_common_in                     (qsfp_gty_com_drp_do),
+    .drpen_common_in                     (qsfp_gty_com_drp_en),
+    .drpwe_common_in                     (qsfp_gty_com_drp_we),
     .gtrefclk00_in                       ({2{qsfp1_mgt_refclk_0}}),
-    .drpdo_common_out                    ({qsfp2_gty_drp_do_5, qsfp1_gty_drp_do_5}),
-    .drprdy_common_out                   ({qsfp2_gty_drp_rdy_5, qsfp1_gty_drp_rdy_5}),
+    .drpdo_common_out                    (qsfp_gty_com_drp_di),
+    .drprdy_common_out                   (qsfp_gty_com_drp_rdy),
     .qpll0outclk_out                     (),
     .qpll0outrefclk_out                  (),
-    .drpaddr_in                          ({qsfp2_gty_drp_addr_4, qsfp2_gty_drp_addr_3, qsfp2_gty_drp_addr_2, qsfp2_gty_drp_addr_1, qsfp1_gty_drp_addr_4, qsfp1_gty_drp_addr_3, qsfp1_gty_drp_addr_2, qsfp1_gty_drp_addr_1}),
+    .drpaddr_in                          (qsfp_gty_drp_addr),
     .drpclk_in                           ({8{gty_drp_clk}}),
-    .drpdi_in                            ({qsfp2_gty_drp_di_4, qsfp2_gty_drp_di_3, qsfp2_gty_drp_di_2, qsfp2_gty_drp_di_1, qsfp1_gty_drp_di_4, qsfp1_gty_drp_di_3, qsfp1_gty_drp_di_2, qsfp1_gty_drp_di_1}),
-    .drpen_in                            ({qsfp2_gty_drp_en_4, qsfp2_gty_drp_en_3, qsfp2_gty_drp_en_2, qsfp2_gty_drp_en_1, qsfp1_gty_drp_en_4, qsfp1_gty_drp_en_3, qsfp1_gty_drp_en_2, qsfp1_gty_drp_en_1}),
-    .drpwe_in                            ({qsfp2_gty_drp_we_4, qsfp2_gty_drp_we_3, qsfp2_gty_drp_we_2, qsfp2_gty_drp_we_1, qsfp1_gty_drp_we_4, qsfp1_gty_drp_we_3, qsfp1_gty_drp_we_2, qsfp1_gty_drp_we_1}),
-    .rxpolarity_in                       ({qsfp2_gty_rxpolarity_4, qsfp2_gty_rxpolarity_3, qsfp2_gty_rxpolarity_2, qsfp2_gty_rxpolarity_1, qsfp1_gty_rxpolarity_4, qsfp1_gty_rxpolarity_3, qsfp1_gty_rxpolarity_2, qsfp1_gty_rxpolarity_1}),
-    .rxprbscntreset_in                   ({qsfp2_gty_rxprbscntreset_4, qsfp2_gty_rxprbscntreset_3, qsfp2_gty_rxprbscntreset_2, qsfp2_gty_rxprbscntreset_1, qsfp1_gty_rxprbscntreset_4, qsfp1_gty_rxprbscntreset_3, qsfp1_gty_rxprbscntreset_2, qsfp1_gty_rxprbscntreset_1}),
-    .rxprbssel_in                        ({qsfp2_gty_rxprbssel_4, qsfp2_gty_rxprbssel_3, qsfp2_gty_rxprbssel_2, qsfp2_gty_rxprbssel_1, qsfp1_gty_rxprbssel_4, qsfp1_gty_rxprbssel_3, qsfp1_gty_rxprbssel_2, qsfp1_gty_rxprbssel_1}),
-    .txpolarity_in                       ({qsfp2_gty_txpolarity_4, qsfp2_gty_txpolarity_3, qsfp2_gty_txpolarity_2, qsfp2_gty_txpolarity_1, qsfp1_gty_txpolarity_4, qsfp1_gty_txpolarity_3, qsfp1_gty_txpolarity_2, qsfp1_gty_txpolarity_1}),
-    .txprbsforceerr_in                   ({qsfp2_gty_txprbsforceerr_4, qsfp2_gty_txprbsforceerr_3, qsfp2_gty_txprbsforceerr_2, qsfp2_gty_txprbsforceerr_1, qsfp1_gty_txprbsforceerr_4, qsfp1_gty_txprbsforceerr_3, qsfp1_gty_txprbsforceerr_2, qsfp1_gty_txprbsforceerr_1}),
-    .txprbssel_in                        ({qsfp2_gty_txprbssel_4, qsfp2_gty_txprbssel_3, qsfp2_gty_txprbssel_2, qsfp2_gty_txprbssel_1, qsfp1_gty_txprbssel_4, qsfp1_gty_txprbssel_3, qsfp1_gty_txprbssel_2, qsfp1_gty_txprbssel_1}),
-    .drpdo_out                           ({qsfp2_gty_drp_do_4, qsfp2_gty_drp_do_3, qsfp2_gty_drp_do_2, qsfp2_gty_drp_do_1, qsfp1_gty_drp_do_4, qsfp1_gty_drp_do_3, qsfp1_gty_drp_do_2, qsfp1_gty_drp_do_1}),
-    .drprdy_out                          ({qsfp2_gty_drp_rdy_4, qsfp2_gty_drp_rdy_3, qsfp2_gty_drp_rdy_2, qsfp2_gty_drp_rdy_1, qsfp1_gty_drp_rdy_4, qsfp1_gty_drp_rdy_3, qsfp1_gty_drp_rdy_2, qsfp1_gty_drp_rdy_1}),
+    .drpdi_in                            (qsfp_gty_drp_do),
+    .drpen_in                            (qsfp_gty_drp_en),
+    .drpwe_in                            (qsfp_gty_drp_we),
+    .rxpolarity_in                       (qsfp_gty_rxpolarity),
+    .rxprbscntreset_in                   (qsfp_gty_rxprbscntreset),
+    .rxprbssel_in                        (qsfp_gty_rxprbssel),
+    .txpolarity_in                       (qsfp_gty_txpolarity),
+    .txprbsforceerr_in                   (qsfp_gty_txprbsforceerr),
+    .txprbssel_in                        (qsfp_gty_txprbssel),
+    .drpdo_out                           (qsfp_gty_drp_di),
+    .drprdy_out                          (qsfp_gty_drp_rdy),
     .rxpmaresetdone_out                  (),
-    .rxprbserr_out                       ({qsfp2_gty_rxprbserr_4, qsfp2_gty_rxprbserr_3, qsfp2_gty_rxprbserr_2, qsfp2_gty_rxprbserr_1, qsfp1_gty_rxprbserr_4, qsfp1_gty_rxprbserr_3, qsfp1_gty_rxprbserr_2, qsfp1_gty_rxprbserr_1}),
-    .rxprbslocked_out                    ({qsfp2_gty_rxprbslocked_4, qsfp2_gty_rxprbslocked_3, qsfp2_gty_rxprbslocked_2, qsfp2_gty_rxprbslocked_1, qsfp1_gty_rxprbslocked_4, qsfp1_gty_rxprbslocked_3, qsfp1_gty_rxprbslocked_2, qsfp1_gty_rxprbslocked_1}),
+    .rxprbserr_out                       (qsfp_gty_rxprbserr),
+    .rxprbslocked_out                    (qsfp_gty_rxprbslocked),
     .txpmaresetdone_out                  (),
     .txprgdivresetdone_out               ()
 );

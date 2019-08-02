@@ -11,13 +11,14 @@ SYN_FILES += rtl/debounce_switch.v
 SYN_FILES += rtl/sync_reset.v
 SYN_FILES += rtl/sync_signal.v
 SYN_FILES += rtl/mdio_master.v
-SYN_FILES += rtl/xfcp_mod_gty.v
 SYN_FILES += lib/xfcp/rtl/xfcp_interface_uart.v
 SYN_FILES += lib/xfcp/rtl/xfcp_mod_i2c_master.v
 SYN_FILES += lib/xfcp/rtl/xfcp_interface_udp.v
 SYN_FILES += lib/xfcp/rtl/xfcp_mod_i2c_master.v
 SYN_FILES += lib/xfcp/rtl/xfcp_mod_wb.v
 SYN_FILES += lib/xfcp/rtl/xfcp_mod_drp.v
+SYN_FILES += lib/xfcp/rtl/xfcp_mod_gty.v
+SYN_FILES += lib/xfcp/rtl/xfcp_gty_quad.v
 SYN_FILES += lib/xfcp/rtl/wb_drp.v
 SYN_FILES += lib/xfcp/rtl/xfcp_arb.v
 SYN_FILES += lib/xfcp/rtl/xfcp_switch.v
@@ -60,6 +61,7 @@ SYN_FILES += lib/axis/rtl/axis_async_fifo_adapter.v
 XDC_FILES = fpga.xdc
 XDC_FILES += lib/eth/syn/eth_mac_fifo.tcl
 XDC_FILES += lib/axis/syn/axis_async_fifo.tcl
+XDC_FILES += lib/xfcp/syn/xfcp_mod_gty.tcl
 
 # IP
 XCI_FILES = ip/gig_ethernet_pcs_pma_0.xci

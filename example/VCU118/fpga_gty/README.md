@@ -1,8 +1,9 @@
-# XFCP VCU118 Example Design
+# XFCP VCU118 GTY Example Design
 
 ## Introduction
 
-This example design targets the Xilinx VCU118 FPGA board.
+This example design targets the Xilinx VCU118 FPGA board.  It brings up several
+GTY transceiver instances for testing.
 
 The design by default listens on the serial port and on UDP port 14000 at IP
 address 192.168.1.128.
