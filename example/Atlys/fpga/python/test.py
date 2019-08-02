@@ -54,7 +54,7 @@ def main():
     n = intf.enumerate()
 
     print("XFCP node tree:")
-    print('\n'.join(format_tree(n)))
+    n.print_tree()
 
     print("Testing XFCP RAMs")
     n[0].write(0, b'RAM 0 test string!')
@@ -72,30 +72,6 @@ def main():
     n[1].write_dword(16, 0x12345678)
 
     print(hex(n[1].read_dword(16)))
-
-def node_string(node):
-    s = ''
-    if len(node.path) > 0: s += '[%s] ' % '.'.join(str(x) for x in node.path)
-    s += type(node).__name__
-    s += ' [%s]' % node.name
-    if len(node.ext_str) > 0:
-        s += ' [%s]' % node.ext_str
-    return s
-
-def format_tree(node):
-    s = node_string(node)
-    lst = [s]
-    for ni in range(len(node)):
-        lst2 = format_tree(node[ni])
-        for i in range(len(lst2)):
-            if i == 0:
-                lst.append(' |__'+lst2[i])
-            else:
-                if ni == len(node)-1:
-                    lst.append('    '+lst2[i])
-                else:
-                    lst.append(' |  '+lst2[i])
-    return lst
 
 if __name__ == "__main__":
     main()
