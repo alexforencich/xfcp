@@ -366,7 +366,7 @@ wire xfcp_qsfp2_down_tlast;
 wire xfcp_qsfp2_down_tuser;
 
 axis_async_fifo #(
-    .ADDR_WIDTH(5),
+    .DEPTH(32),
     .DATA_WIDTH(8)
 )
 xfcp_mgt_fifo_down (
@@ -389,7 +389,7 @@ xfcp_mgt_fifo_down (
 );
 
 axis_async_fifo #(
-    .ADDR_WIDTH(5),
+    .DEPTH(32),
     .DATA_WIDTH(8)
 )
 xfcp_mgt_fifo_up (
