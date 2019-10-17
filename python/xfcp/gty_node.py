@@ -448,6 +448,42 @@ class GTYE3ChannelNode(node.MemoryNode):
         self.rx_prbs_error_valid = True
         return bool(w & 0x0008)
 
+    def get_tx_elecidle(self):
+        return bool(self.masked_read(0xfe08, 0x0001))
+
+    def set_tx_elecidle(self, val):
+        self.masked_write(0xfe08, 0x0001, 0x0001 if val else 0x0000)
+
+    def get_tx_inhibit(self):
+        return bool(self.masked_read(0xfe08, 0x0002))
+
+    def set_tx_inhibit(self, val):
+        self.masked_write(0xfe08, 0x0002, 0x0002 if val else 0x0000)
+
+    def get_tx_diffctrl(self):
+        return self.masked_read(0xfe0a, 0x001f)
+
+    def set_tx_diffctrl(self, val):
+        self.masked_write(0xfe0a, 0x001f, val)
+
+    def get_tx_maincursor(self):
+        return self.masked_read(0xfe0c, 0x007f)
+
+    def set_tx_maincursor(self, val):
+        self.masked_write(0xfe0c, 0x007f, val)
+
+    def get_tx_postcursor(self):
+        return self.masked_read(0xfe0c, 0x001f)
+
+    def set_tx_postcursor(self, val):
+        self.masked_write(0xfe0c, 0x001f, val)
+
+    def get_tx_precursor(self):
+        return self.masked_read(0xfe0e, 0x001f)
+
+    def set_tx_precursor(self, val):
+        self.masked_write(0xfe0e, 0x001f, val)
+
     def get_rx_prbs_err_count(self):
         return self.read_dword(0x025e*2)
 

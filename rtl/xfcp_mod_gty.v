@@ -74,6 +74,12 @@ module xfcp_mod_gty #
     output wire [3:0]             gty_txprbssel,
     output wire                   gty_txprbsforceerr,
     output wire                   gty_txpolarity,
+    output wire                   gty_txelecidle,
+    output wire                   gty_txinhibit,
+    output wire [4:0]             gty_txdiffctrl,
+    output wire [6:0]             gty_txmaincursor,
+    output wire [4:0]             gty_txpostcursor,
+    output wire [4:0]             gty_txprecursor,
 
     input  wire                   gty_rxusrclk2,
     output wire                   gty_rxpolarity,
@@ -130,6 +136,18 @@ reg gty_txprbsforceerr_reg = 1'b0, gty_txprbsforceerr_next;
 reg gty_txprbsforceerr_sync_1_reg = 1'b0, gty_txprbsforceerr_sync_2_reg = 1'b0, gty_txprbsforceerr_sync_3_reg = 1'b0;
 reg gty_txpolarity_reg = 1'b0, gty_txpolarity_next;
 reg gty_txpolarity_sync_reg = 1'b0;
+reg gty_txelecidle_reg = 1'b0, gty_txelecidle_next;
+reg gty_txelecidle_sync_reg = 1'b0;
+reg gty_txinhibit_reg = 1'b0, gty_txinhibit_next;
+reg gty_txinhibit_sync_reg = 1'b0;
+reg [4:0] gty_txdiffctrl_reg = 5'd16, gty_txdiffctrl_next;
+reg [4:0] gty_txdiffctrl_sync_reg = 5'd16;
+reg [6:0] gty_txmaincursor_reg = 7'd64, gty_txmaincursor_next;
+reg [6:0] gty_txmaincursor_sync_reg = 7'd64;
+reg [4:0] gty_txpostcursor_reg = 5'd0, gty_txpostcursor_next;
+reg [4:0] gty_txpostcursor_sync_reg = 5'd0;
+reg [4:0] gty_txprecursor_reg = 5'd0, gty_txprecursor_next;
+reg [4:0] gty_txprecursor_sync_reg = 5'd0;
 
 always @(posedge gty_txusrclk2) begin
     gty_txprbssel_sync_reg <= gty_txprbssel_reg;
@@ -137,6 +155,12 @@ always @(posedge gty_txusrclk2) begin
     gty_txprbsforceerr_sync_2_reg <= gty_txprbsforceerr_sync_1_reg;
     gty_txprbsforceerr_sync_3_reg <= gty_txprbsforceerr_sync_2_reg;
     gty_txpolarity_sync_reg <= gty_txpolarity_reg;
+    gty_txelecidle_sync_reg <= gty_txelecidle_reg;
+    gty_txinhibit_sync_reg <= gty_txinhibit_reg;
+    gty_txdiffctrl_sync_reg <= gty_txdiffctrl_reg;
+    gty_txmaincursor_sync_reg <= gty_txmaincursor_reg;
+    gty_txpostcursor_sync_reg <= gty_txpostcursor_reg;
+    gty_txprecursor_sync_reg <= gty_txprecursor_reg;
 end
 
 assign gty_txprbssel = gty_txprbssel_sync_reg;
@@ -191,6 +215,12 @@ always @* begin
     gty_txprbssel_next = gty_txprbssel_reg;
     gty_txprbsforceerr_next = gty_txprbsforceerr_reg;
     gty_txpolarity_next = gty_txpolarity_reg;
+    gty_txelecidle_next = gty_txelecidle_reg;
+    gty_txinhibit_next = gty_txinhibit_reg;
+    gty_txdiffctrl_next = gty_txdiffctrl_reg;
+    gty_txmaincursor_next = gty_txmaincursor_reg;
+    gty_txpostcursor_next = gty_txpostcursor_reg;
+    gty_txprecursor_next = gty_txprecursor_reg;
 
     gty_rxpolarity_next = gty_rxpolarity_reg;
     gty_rxprbscntreset_next = gty_rxprbscntreset_reg;
@@ -218,6 +248,22 @@ always @* begin
                     gty_txprbsforceerr_next = gty_txprbsforceerr_reg ^ wb_dat_m[0];
                     gty_rxprbscntreset_next = gty_rxprbscntreset_reg ^ wb_dat_m[1];
                 end
+                8'h04: begin
+                    gty_txelecidle_next = wb_dat_m[0];
+                    gty_txinhibit_next = wb_dat_m[1];
+                end
+                8'h05: begin
+                    gty_txdiffctrl_next = wb_dat_m[4:0];
+                end
+                8'h06: begin
+                    gty_txmaincursor_next = wb_dat_m[6:0];
+                end
+                8'h07: begin
+                    gty_txpostcursor_next = wb_dat_m[4:0];
+                end
+                8'h08: begin
+                    gty_txprecursor_next = wb_dat_m[4:0];
+                end
             endcase
             wb_ack_int_next = 1'b1;
         end else begin
@@ -237,6 +283,22 @@ always @* begin
 
                     gty_rxprbserr_next = gty_rxprbserr_sync_3_reg;
                 end
+                8'h04: begin
+                    wb_dat_int_next[0] = gty_txelecidle_reg;
+                    wb_dat_int_next[1] = gty_txinhibit_reg;
+                end
+                8'h05: begin
+                    wb_dat_int_next[4:0] = gty_txdiffctrl_reg;
+                end
+                8'h06: begin
+                    wb_dat_int_next[6:0] = gty_txmaincursor_reg;
+                end
+                8'h07: begin
+                    wb_dat_int_next[4:0] = gty_txpostcursor_reg;
+                end
+                8'h08: begin
+                    wb_dat_int_next[4:0] = gty_txprecursor_reg;
+                end
             endcase
             wb_ack_int_next = 1'b1;
         end
@@ -252,6 +314,12 @@ always @(posedge clk) begin
         gty_txprbssel_reg <= 4'd0;
         gty_txprbsforceerr_reg <= 1'b0;
         gty_txpolarity_reg <= 1'b0;
+        gty_txelecidle_reg <= 1'b0;
+        gty_txinhibit_reg <= 1'b0;
+        gty_txdiffctrl_reg <= 5'd16;
+        gty_txmaincursor_reg <= 7'd64;
+        gty_txpostcursor_reg <= 5'd0;
+        gty_txprecursor_reg <= 5'd0;
         gty_rxpolarity_reg <= 1'b0;
         gty_rxprbscntreset_reg <= 1'b0;
         gty_rxprbssel_reg <= 4'd0;
@@ -264,6 +332,12 @@ always @(posedge clk) begin
         gty_txprbssel_reg <= gty_txprbssel_next;
         gty_txprbsforceerr_reg <= gty_txprbsforceerr_next;
         gty_txpolarity_reg <= gty_txpolarity_next;
+        gty_txelecidle_reg <= gty_txelecidle_next;
+        gty_txinhibit_reg <= gty_txinhibit_next;
+        gty_txdiffctrl_reg <= gty_txdiffctrl_next;
+        gty_txmaincursor_reg <= gty_txmaincursor_next;
+        gty_txpostcursor_reg <= gty_txpostcursor_next;
+        gty_txprecursor_reg <= gty_txprecursor_next;
         gty_rxpolarity_reg <= gty_rxpolarity_next;
         gty_rxprbscntreset_reg <= gty_rxprbscntreset_next;
         gty_rxprbssel_reg <= gty_rxprbssel_next;

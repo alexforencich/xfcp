@@ -63,6 +63,66 @@ foreach inst [get_cells -hier -filter {(ORIG_REF_NAME == xfcp_mod_gty || REF_NAM
         set_max_delay -from [get_cells $inst/gty_txpolarity_reg_reg] -to [get_cells $inst/gty_txpolarity_sync_reg_reg] -datapath_only [get_property -min PERIOD $src_clk]
     }
 
+    set sync_ffs [get_cells -hier -regexp ".*/gty_txelecidle_(sync)?_reg_reg" -filter "PARENT == $inst"]
+
+    if {[llength $sync_ffs]} {
+        set_property ASYNC_REG TRUE $sync_ffs
+
+        set src_clk [get_clocks -of_objects [get_pins $inst/gty_txelecidle_reg_reg/C]]
+
+        set_max_delay -from [get_cells $inst/gty_txelecidle_reg_reg] -to [get_cells $inst/gty_txelecidle_sync_reg_reg] -datapath_only [get_property -min PERIOD $src_clk]
+    }
+
+    set sync_ffs [get_cells -hier -regexp ".*/gty_txinhibit_(sync)?_reg_reg" -filter "PARENT == $inst"]
+
+    if {[llength $sync_ffs]} {
+        set_property ASYNC_REG TRUE $sync_ffs
+
+        set src_clk [get_clocks -of_objects [get_pins $inst/gty_txinhibit_reg_reg/C]]
+
+        set_max_delay -from [get_cells $inst/gty_txinhibit_reg_reg] -to [get_cells $inst/gty_txinhibit_sync_reg_reg] -datapath_only [get_property -min PERIOD $src_clk]
+    }
+
+    set sync_ffs [get_cells -hier -regexp ".*/gty_txdiffctrl_(sync)?_reg_reg\\\[\\d+\\\]" -filter "PARENT == $inst"]
+
+    if {[llength $sync_ffs]} {
+        set_property ASYNC_REG TRUE $sync_ffs
+
+        set src_clk [get_clocks -of_objects [get_pins $inst/gty_txdiffctrl_reg_reg[*]/C]]
+
+        set_max_delay -from [get_cells $inst/gty_txdiffctrl_reg_reg[*]] -to [get_cells $inst/gty_txdiffctrl_sync_reg_reg[*]] -datapath_only [get_property -min PERIOD $src_clk]
+    }
+
+    set sync_ffs [get_cells -hier -regexp ".*/gty_txmaincursor_(sync)?_reg_reg\\\[\\d+\\\]" -filter "PARENT == $inst"]
+
+    if {[llength $sync_ffs]} {
+        set_property ASYNC_REG TRUE $sync_ffs
+
+        set src_clk [get_clocks -of_objects [get_pins $inst/gty_txmaincursor_reg_reg[*]/C]]
+
+        set_max_delay -from [get_cells $inst/gty_txmaincursor_reg_reg[*]] -to [get_cells $inst/gty_txmaincursor_sync_reg_reg[*]] -datapath_only [get_property -min PERIOD $src_clk]
+    }
+
+    set sync_ffs [get_cells -hier -regexp ".*/gty_txpostcursor_(sync)?_reg_reg\\\[\\d+\\\]" -filter "PARENT == $inst"]
+
+    if {[llength $sync_ffs]} {
+        set_property ASYNC_REG TRUE $sync_ffs
+
+        set src_clk [get_clocks -of_objects [get_pins $inst/gty_txpostcursor_reg_reg[*]/C]]
+
+        set_max_delay -from [get_cells $inst/gty_txpostcursor_reg_reg[*]] -to [get_cells $inst/gty_txpostcursor_sync_reg_reg[*]] -datapath_only [get_property -min PERIOD $src_clk]
+    }
+
+    set sync_ffs [get_cells -hier -regexp ".*/gty_txprecursor_(sync)?_reg_reg\\\[\\d+\\\]" -filter "PARENT == $inst"]
+
+    if {[llength $sync_ffs]} {
+        set_property ASYNC_REG TRUE $sync_ffs
+
+        set src_clk [get_clocks -of_objects [get_pins $inst/gty_txprecursor_reg_reg[*]/C]]
+
+        set_max_delay -from [get_cells $inst/gty_txprecursor_reg_reg[*]] -to [get_cells $inst/gty_txprecursor_sync_reg_reg[*]] -datapath_only [get_property -min PERIOD $src_clk]
+    }
+
     # RX
 
     set sync_ffs [get_cells -hier -regexp ".*/gty_rxpolarity_(sync)?_reg_reg" -filter "PARENT == $inst"]
