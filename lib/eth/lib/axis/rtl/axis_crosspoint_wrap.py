@@ -79,14 +79,25 @@ THE SOFTWARE.
  */
 module {{name}} #
 (
+    // Width of AXI stream interfaces in bits
     parameter DATA_WIDTH = 8,
+    // Propagate tkeep signal
     parameter KEEP_ENABLE = (DATA_WIDTH>8),
+    // tkeep signal width (words per cycle)
     parameter KEEP_WIDTH = (DATA_WIDTH/8),
+    // Propagate tlast signal
     parameter LAST_ENABLE = 1,
+    // Propagate tid signal
     parameter ID_ENABLE = 0,
+    // tid signal width
     parameter ID_WIDTH = 8,
-    parameter DEST_WIDTH = {{cm}},
+    // Propagate tdest signal
+    parameter DEST_ENABLE = 0,
+    // tdest signal width
+    parameter DEST_WIDTH = 8,
+    // Propagate tuser signal
     parameter USER_ENABLE = 1,
+    // tuser signal width
     parameter USER_WIDTH = 1
 )
 (
@@ -115,8 +126,14 @@ module {{name}} #
     output wire                  m{{'%02d'%p}}_axis_tlast,
     output wire [ID_WIDTH-1:0]   m{{'%02d'%p}}_axis_tid,
     output wire [DEST_WIDTH-1:0] m{{'%02d'%p}}_axis_tdest,
-    output wire [USER_WIDTH-1:0] m{{'%02d'%p}}_axis_tuser{% if not loop.last %},{% endif %}
-{% endfor -%}
+    output wire [USER_WIDTH-1:0] m{{'%02d'%p}}_axis_tuser,
+{% endfor %}
+    /*
+     * Control
+     */
+{%- for p in range(n) %}
+    input  wire [{{cm-1}}:0]            m{{'%02d'%p}}_select{% if not loop.last %},{% endif %}
+{%- endfor %}
 );
 
 axis_crosspoint #(
@@ -128,6 +145,7 @@ axis_crosspoint #(
     .LAST_ENABLE(LAST_ENABLE),
     .ID_ENABLE(ID_ENABLE),
     .ID_WIDTH(ID_WIDTH),
+    .DEST_ENABLE(DEST_ENABLE),
     .DEST_WIDTH(DEST_WIDTH),
     .USER_ENABLE(USER_ENABLE),
     .USER_WIDTH(USER_WIDTH)
@@ -150,7 +168,9 @@ axis_crosspoint_inst (
     .m_axis_tlast({ {% for p in range(n-1,-1,-1) %}m{{'%02d'%p}}_axis_tlast{% if not loop.last %}, {% endif %}{% endfor %} }),
     .m_axis_tid({ {% for p in range(n-1,-1,-1) %}m{{'%02d'%p}}_axis_tid{% if not loop.last %}, {% endif %}{% endfor %} }),
     .m_axis_tdest({ {% for p in range(n-1,-1,-1) %}m{{'%02d'%p}}_axis_tdest{% if not loop.last %}, {% endif %}{% endfor %} }),
-    .m_axis_tuser({ {% for p in range(n-1,-1,-1) %}m{{'%02d'%p}}_axis_tuser{% if not loop.last %}, {% endif %}{% endfor %} })
+    .m_axis_tuser({ {% for p in range(n-1,-1,-1) %}m{{'%02d'%p}}_axis_tuser{% if not loop.last %}, {% endif %}{% endfor %} }),
+    // Control
+    .select({ {% for p in range(n-1,-1,-1) %}m{{'%02d'%p}}_select{% if not loop.last %}, {% endif %}{% endfor %} })
 );
 
 endmodule

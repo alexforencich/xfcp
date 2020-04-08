@@ -31,21 +31,45 @@ THE SOFTWARE.
  */
 module axis_fifo #
 (
+    // FIFO depth in words
+    // KEEP_WIDTH words per cycle if KEEP_ENABLE set
+    // Rounded up to nearest power of 2 cycles
     parameter DEPTH = 4096,
+    // Width of AXI stream interfaces in bits
     parameter DATA_WIDTH = 8,
+    // Propagate tkeep signal
+    // If disabled, tkeep assumed to be 1'b1
     parameter KEEP_ENABLE = (DATA_WIDTH>8),
+    // tkeep signal width (words per cycle)
     parameter KEEP_WIDTH = (DATA_WIDTH/8),
+    // Propagate tlast signal
     parameter LAST_ENABLE = 1,
+    // Propagate tid signal
     parameter ID_ENABLE = 0,
+    // tid signal width
     parameter ID_WIDTH = 8,
+    // Propagate tdest signal
     parameter DEST_ENABLE = 0,
+    // tdest signal width
     parameter DEST_WIDTH = 8,
+    // Propagate tuser signal
     parameter USER_ENABLE = 1,
+    // tuser signal width
     parameter USER_WIDTH = 1,
+    // Frame FIFO mode - operate on frames instead of cycles
+    // When set, m_axis_tvalid will not be deasserted within a frame
+    // Requires LAST_ENABLE set
     parameter FRAME_FIFO = 0,
+    // tuser value for bad frame marker
     parameter USER_BAD_FRAME_VALUE = 1'b1,
+    // tuser mask for bad frame marker
     parameter USER_BAD_FRAME_MASK = 1'b1,
+    // Drop frames marked bad
+    // Requires FRAME_FIFO set
     parameter DROP_BAD_FRAME = 0,
+    // Drop incoming frames when full
+    // When set, s_axis_tready is always asserted
+    // Requires FRAME_FIFO set
     parameter DROP_WHEN_FULL = 0
 )
 (
@@ -89,22 +113,22 @@ parameter ADDR_WIDTH = (KEEP_ENABLE && KEEP_WIDTH > 1) ? $clog2(DEPTH/KEEP_WIDTH
 // check configuration
 initial begin
     if (FRAME_FIFO && !LAST_ENABLE) begin
-        $error("Error: FRAME_FIFO set requires LAST_ENABLE set");
+        $error("Error: FRAME_FIFO set requires LAST_ENABLE set (instance %m)");
         $finish;
     end
 
     if (DROP_BAD_FRAME && !FRAME_FIFO) begin
-        $error("Error: DROP_BAD_FRAME set requires FRAME_FIFO set");
+        $error("Error: DROP_BAD_FRAME set requires FRAME_FIFO set (instance %m)");
         $finish;
     end
 
     if (DROP_WHEN_FULL && !FRAME_FIFO) begin
-        $error("Error: DROP_WHEN_FULL set requires FRAME_FIFO set");
+        $error("Error: DROP_WHEN_FULL set requires FRAME_FIFO set (instance %m)");
         $finish;
     end
 
     if (DROP_BAD_FRAME && (USER_BAD_FRAME_MASK & {USER_WIDTH{1'b1}}) == 0) begin
-        $error("Error: Invalid USER_BAD_FRAME_MASK value");
+        $error("Error: Invalid USER_BAD_FRAME_MASK value (instance %m)");
         $finish;
     end
 end
@@ -180,7 +204,7 @@ assign status_good_frame = good_frame_reg;
 always @* begin
     write = 1'b0;
 
-    drop_frame_next = 1'b0;
+    drop_frame_next = drop_frame_reg;
     overflow_next = 1'b0;
     bad_frame_next = 1'b0;
     good_frame_next = 1'b0;

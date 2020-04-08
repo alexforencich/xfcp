@@ -32,7 +32,6 @@ THE SOFTWARE.
 module eth_mac_phy_10g_fifo #
 (
     parameter DATA_WIDTH = 64,
-    parameter CTRL_WIDTH = (DATA_WIDTH/8),
     parameter HDR_WIDTH = (DATA_WIDTH/32),
     parameter AXIS_DATA_WIDTH = DATA_WIDTH,
     parameter AXIS_KEEP_ENABLE = (AXIS_DATA_WIDTH>8),
@@ -162,37 +161,37 @@ parameter KEEP_WIDTH = DATA_WIDTH/8;
 localparam TX_USER_WIDTH = (TX_PTP_TS_ENABLE && TX_PTP_TAG_ENABLE ? PTP_TAG_WIDTH : 0) + 1;
 localparam RX_USER_WIDTH = (RX_PTP_TS_ENABLE ? PTP_TS_WIDTH : 0) + 1;
 
-wire [DATA_WIDTH-1:0]    tx_fifo_axis_tdata;
-wire [KEEP_WIDTH-1:0]    tx_fifo_axis_tkeep;
-wire                     tx_fifo_axis_tvalid;
-wire                     tx_fifo_axis_tready;
-wire                     tx_fifo_axis_tlast;
-wire [TX_USER_WIDTH-1:0] tx_fifo_axis_tuser;
+wire [DATA_WIDTH-1:0]      tx_fifo_axis_tdata;
+wire [KEEP_WIDTH-1:0]      tx_fifo_axis_tkeep;
+wire                       tx_fifo_axis_tvalid;
+wire                       tx_fifo_axis_tready;
+wire                       tx_fifo_axis_tlast;
+wire [TX_USER_WIDTH-1:0]   tx_fifo_axis_tuser;
 
-wire [DATA_WIDTH-1:0]    tx_axis_tdata_int;
-wire [KEEP_WIDTH-1:0]    tx_axis_tkeep_int;
-wire                     tx_axis_tvalid_int;
-wire                     tx_axis_tready_int;
-wire                     tx_axis_tlast_int;
-wire [TX_USER_WIDTH-1:0] tx_axis_tuser_int;
+wire [AXIS_DATA_WIDTH-1:0] tx_axis_tdata_int;
+wire [AXIS_KEEP_WIDTH-1:0] tx_axis_tkeep_int;
+wire                       tx_axis_tvalid_int;
+wire                       tx_axis_tready_int;
+wire                       tx_axis_tlast_int;
+wire [TX_USER_WIDTH-1:0]   tx_axis_tuser_int;
 
-wire [DATA_WIDTH-1:0]    rx_fifo_axis_tdata;
-wire [KEEP_WIDTH-1:0]    rx_fifo_axis_tkeep;
-wire                     rx_fifo_axis_tvalid;
-wire                     rx_fifo_axis_tlast;
-wire [RX_USER_WIDTH-1:0] rx_fifo_axis_tuser;
+wire [DATA_WIDTH-1:0]      rx_fifo_axis_tdata;
+wire [KEEP_WIDTH-1:0]      rx_fifo_axis_tkeep;
+wire                       rx_fifo_axis_tvalid;
+wire                       rx_fifo_axis_tlast;
+wire [RX_USER_WIDTH-1:0]   rx_fifo_axis_tuser;
 
-wire [RX_USER_WIDTH-1:0] rx_axis_tuser_int;
+wire [RX_USER_WIDTH-1:0]   rx_axis_tuser_int;
 
-wire [PTP_TS_WIDTH-1:0]  tx_ptp_ts_96;
-wire [PTP_TS_WIDTH-1:0]  rx_ptp_ts_96;
+wire [PTP_TS_WIDTH-1:0]    tx_ptp_ts_96;
+wire [PTP_TS_WIDTH-1:0]    rx_ptp_ts_96;
 
-wire [PTP_TS_WIDTH-1:0]  tx_axis_ptp_ts_96;
-wire [PTP_TAG_WIDTH-1:0] tx_axis_ptp_ts_tag;
-wire                     tx_axis_ptp_ts_valid;
+wire [PTP_TS_WIDTH-1:0]    tx_axis_ptp_ts_96;
+wire [PTP_TAG_WIDTH-1:0]   tx_axis_ptp_ts_tag;
+wire                       tx_axis_ptp_ts_valid;
 
-wire [PTP_TS_WIDTH-1:0]  rx_axis_ptp_ts_96;
-wire                     rx_axis_ptp_ts_valid;
+wire [PTP_TS_WIDTH-1:0]    rx_axis_ptp_ts_96;
+wire                       rx_axis_ptp_ts_valid;
 
 // synchronize MAC status signals into logic clock domain
 wire tx_error_underflow_int;
@@ -288,8 +287,8 @@ if (TX_PTP_TS_ENABLE) begin
     if (TX_PTP_TAG_ENABLE) begin
 
         ptp_tag_insert #(
-            .DATA_WIDTH(DATA_WIDTH),
-            .KEEP_WIDTH(KEEP_WIDTH),
+            .DATA_WIDTH(AXIS_DATA_WIDTH),
+            .KEEP_WIDTH(AXIS_KEEP_WIDTH),
             .TAG_WIDTH(PTP_TAG_WIDTH),
             .TAG_OFFSET(1),
             .USER_WIDTH(TX_USER_WIDTH)
@@ -417,6 +416,7 @@ if (TX_PTP_TS_ENABLE) begin
             .m_status_good_frame()
         );
 
+        assign s_axis_tx_ptp_ts_ready = 1'b0;
         assign m_axis_tx_ptp_ts_tag = {PTP_TAG_WIDTH{1'b0}};
 
     end
@@ -539,7 +539,6 @@ endgenerate
 eth_mac_phy_10g #(
     .DATA_WIDTH(DATA_WIDTH),
     .KEEP_WIDTH(KEEP_WIDTH),
-    .CTRL_WIDTH(CTRL_WIDTH),
     .HDR_WIDTH(HDR_WIDTH),
     .ENABLE_PADDING(ENABLE_PADDING),
     .ENABLE_DIC(ENABLE_DIC),
