@@ -295,7 +295,7 @@ sync_reset #(
 sync_reset_125mhz_inst (
     .clk(clk_125mhz_int),
     .rst(~mmcm_locked),
-    .sync_reset_out(rst_125mhz_int)
+    .out(rst_125mhz_int)
 );
 
 sync_reset #(
@@ -304,7 +304,7 @@ sync_reset #(
 sync_reset_62mhz_inst (
     .clk(clk_62mhz_int),
     .rst(~mmcm_locked),
-    .sync_reset_out(rst_62mhz_int)
+    .out(rst_62mhz_int)
 );
 
 // GPIO

@@ -8,7 +8,6 @@ FPGA_ARCH = virtexuplus
 SYN_FILES = rtl/fpga.v
 SYN_FILES += rtl/fpga_core.v
 SYN_FILES += rtl/debounce_switch.v
-SYN_FILES += rtl/sync_reset.v
 SYN_FILES += rtl/sync_signal.v
 SYN_FILES += rtl/mdio_master.v
 SYN_FILES += lib/xfcp/rtl/xfcp_interface_uart.v
@@ -56,11 +55,13 @@ SYN_FILES += lib/axis/rtl/axis_cobs_decode.v
 SYN_FILES += lib/axis/rtl/axis_fifo.v
 SYN_FILES += lib/axis/rtl/axis_async_fifo.v
 SYN_FILES += lib/axis/rtl/axis_async_fifo_adapter.v
+SYN_FILES += lib/axis/rtl/sync_reset.v
 
 # XDC files
 XDC_FILES = fpga.xdc
 XDC_FILES += lib/eth/syn/eth_mac_fifo.tcl
 XDC_FILES += lib/axis/syn/axis_async_fifo.tcl
+XDC_FILES += lib/axis/syn/sync_reset.tcl
 XDC_FILES += lib/xfcp/syn/xfcp_mod_gty.tcl
 
 # IP
