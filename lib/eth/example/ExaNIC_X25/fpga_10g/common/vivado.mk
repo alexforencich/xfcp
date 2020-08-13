@@ -40,6 +40,7 @@ CONFIG ?= config.mk
 SYN_FILES_REL = $(patsubst %, ../%, $(SYN_FILES))
 INC_FILES_REL = $(patsubst %, ../%, $(INC_FILES))
 XCI_FILES_REL = $(patsubst %, ../%, $(XCI_FILES))
+IP_TCL_FILES_REL = $(patsubst %, ../%, $(IP_TCL_FILES))
 
 ifdef XDC_FILES
   XDC_FILES_REL = $(patsubst %, ../%, $(XDC_FILES))
@@ -58,8 +59,11 @@ all: fpga
 
 fpga: $(FPGA_TOP).bit
 
+vivado: $(FPGA_TOP).xpr
+	vivado $(FPGA_TOP).xpr
+
 tmpclean:
-	-rm -rf *.log *.jou *.cache *.hw *.ip_user_files *.runs *.xpr *.html *.xml *.sim *.srcs *.str .Xil defines.v
+	-rm -rf *.log *.jou *.cache *.hbs *.hw *.ip_user_files *.runs *.xpr *.html *.xml *.sim *.srcs *.str .Xil defines.v
 	-rm -rf create_project.tcl run_synth.tcl run_impl.tcl generate_bit.tcl
 
 clean: tmpclean
@@ -73,7 +77,7 @@ distclean: clean
 ###################################################################
 
 # Vivado project file
-%.xpr: Makefile $(XCI_FILES_REL)
+%.xpr: Makefile $(XCI_FILES_REL) $(IP_TCL_FILES_REL)
 	rm -rf defines.v
 	touch defines.v
 	for x in $(DEFS); do echo '`define' $$x >> defines.v; done
@@ -82,6 +86,7 @@ distclean: clean
 	for x in $(SYN_FILES_REL); do echo "add_files -fileset sources_1 $$x" >> create_project.tcl; done
 	for x in $(XDC_FILES_REL); do echo "add_files -fileset constrs_1 $$x" >> create_project.tcl; done
 	for x in $(XCI_FILES_REL); do echo "import_ip $$x" >> create_project.tcl; done
+	for x in $(IP_TCL_FILES_REL); do echo "source $$x" >> create_project.tcl; done
 	echo "exit" >> create_project.tcl
 	vivado -nojournal -nolog -mode batch -source create_project.tcl
 
