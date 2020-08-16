@@ -107,7 +107,7 @@ clk_125mhz_ibufg_inst (
 // VCO range: 800 MHz to 1600 MHz
 // M = 8, D = 1 sets Fvco = 1000 MHz (in range)
 // Divide by 8 to get output frequency of 125 MHz
-MMCME3_BASE #(
+MMCME4_BASE #(
     .BANDWIDTH("OPTIMIZED"),
     .CLKOUT0_DIVIDE_F(8),
     .CLKOUT0_DUTY_CYCLE(0.5),

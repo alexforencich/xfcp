@@ -2,7 +2,7 @@
 # FPGA settings
 FPGA_PART = xcvu095-ffva2104-2-e
 FPGA_TOP = fpga
-FPGA_ARCH = VirtexUltrascale
+FPGA_ARCH = virtexu
 
 # Files for synthesis
 SYN_FILES = rtl/fpga.v
@@ -60,7 +60,7 @@ XDC_FILES += lib/axis/syn/axis_async_fifo.tcl
 XDC_FILES += lib/axis/syn/sync_reset.tcl
 
 # IP
-XCI_FILES = ip/gig_ethernet_pcs_pma_0.xci
+IP_TCL_FILES = ip/gig_ethernet_pcs_pma_0.tcl
 
 include ../common/vivado.mk
 

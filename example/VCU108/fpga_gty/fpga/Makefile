@@ -2,7 +2,7 @@
 # FPGA settings
 FPGA_PART = xcvu095-ffva2104-2-e
 FPGA_TOP = fpga
-FPGA_ARCH = VirtexUltrascale
+FPGA_ARCH = virtexu
 
 # Files for synthesis
 SYN_FILES = rtl/fpga.v
@@ -65,10 +65,10 @@ XDC_FILES += lib/axis/syn/sync_reset.tcl
 XDC_FILES += lib/xfcp/syn/xfcp_mod_gty.tcl
 
 # IP
-XCI_FILES = ip/gig_ethernet_pcs_pma_0.xci
-XCI_FILES += ip/gtwizard_ultrascale_0.xci
-XCI_FILES += ip/gtwizard_ultrascale_1.xci
-XCI_FILES += ip/gtwizard_ultrascale_2.xci
+IP_TCL_FILES = ip/gig_ethernet_pcs_pma_0.tcl
+IP_TCL_FILES += ip/gtwizard_ultrascale_0.tcl
+IP_TCL_FILES += ip/gtwizard_ultrascale_1.tcl
+IP_TCL_FILES += ip/gtwizard_ultrascale_2.tcl
 
 include ../common/vivado.mk
 

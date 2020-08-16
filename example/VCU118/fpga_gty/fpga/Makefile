@@ -65,8 +65,8 @@ XDC_FILES += lib/axis/syn/sync_reset.tcl
 XDC_FILES += lib/xfcp/syn/xfcp_mod_gty.tcl
 
 # IP
-XCI_FILES = ip/gig_ethernet_pcs_pma_0.xci
-XCI_FILES += ip/gtwizard_ultrascale_0.xci
+IP_TCL_FILES = ip/gig_ethernet_pcs_pma_0.tcl
+IP_TCL_FILES += ip/gtwizard_ultrascale_0.tcl
 
 include ../common/vivado.mk
 
