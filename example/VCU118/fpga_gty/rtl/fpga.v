@@ -474,6 +474,12 @@ wire qsfp_gty_txusrclk2;
 wire [8*4-1:0] qsfp_gty_txprbssel;
 wire [8-1:0] qsfp_gty_txprbsforceerr;
 wire [8-1:0] qsfp_gty_txpolarity;
+wire [8-1:0] qsfp_gty_txelecidle;
+wire [8-1:0] qsfp_gty_txinhibit;
+wire [8*5-1:0] qsfp_gty_txdiffctrl;
+wire [8*7-1:0] qsfp_gty_txmaincursor;
+wire [8*5-1:0] qsfp_gty_txpostcursor;
+wire [8*5-1:0] qsfp_gty_txprecursor;
 
 wire qsfp_gty_rxusrclk2;
 wire [8-1:0] qsfp_gty_rxpolarity;
@@ -548,6 +554,12 @@ xfcp_qsfp1_gty_quad_inst (
     .gty_txprbssel(qsfp_gty_txprbssel[0*4*4 +: 4*4]),
     .gty_txprbsforceerr(qsfp_gty_txprbsforceerr[0*4*1 +: 4*1]),
     .gty_txpolarity(qsfp_gty_txpolarity[0*4*1 +: 4*1]),
+    .gty_txelecidle(qsfp_gty_txelecidle[0*4*1 +: 4*1]),
+    .gty_txinhibit(qsfp_gty_txinhibit[0*4*1 +: 4*1]),
+    .gty_txdiffctrl(qsfp_gty_txdiffctrl[0*4*5 +: 4*5]),
+    .gty_txmaincursor(qsfp_gty_txmaincursor[0*4*7 +: 4*7]),
+    .gty_txpostcursor(qsfp_gty_txpostcursor[0*4*5 +: 4*5]),
+    .gty_txprecursor(qsfp_gty_txprecursor[0*4*5 +: 4*5]),
 
     .gty_rxusrclk2({4{qsfp_gty_rxusrclk2}}),
     .gty_rxpolarity(qsfp_gty_rxpolarity[0*4*1 +: 4*1]),
@@ -623,6 +635,12 @@ xfcp_qsfp2_gty_quad_inst (
     .gty_txprbssel(qsfp_gty_txprbssel[1*4*4 +: 4*4]),
     .gty_txprbsforceerr(qsfp_gty_txprbsforceerr[1*4*1 +: 4*1]),
     .gty_txpolarity(qsfp_gty_txpolarity[1*4*1 +: 4*1]),
+    .gty_txelecidle(qsfp_gty_txelecidle[1*4*1 +: 4*1]),
+    .gty_txinhibit(qsfp_gty_txinhibit[1*4*1 +: 4*1]),
+    .gty_txdiffctrl(qsfp_gty_txdiffctrl[1*4*5 +: 4*5]),
+    .gty_txmaincursor(qsfp_gty_txmaincursor[1*4*7 +: 4*7]),
+    .gty_txpostcursor(qsfp_gty_txpostcursor[1*4*5 +: 4*5]),
+    .gty_txprecursor(qsfp_gty_txprecursor[1*4*5 +: 4*5]),
 
     .gty_rxusrclk2({4{qsfp_gty_rxusrclk2}}),
     .gty_rxpolarity(qsfp_gty_rxpolarity[1*4*1 +: 4*1]),
@@ -686,9 +704,15 @@ gtwizard_ultrascale_0 gtwizard_ultrascale_0_inst (
     .rxpolarity_in                       (qsfp_gty_rxpolarity),
     .rxprbscntreset_in                   (qsfp_gty_rxprbscntreset),
     .rxprbssel_in                        (qsfp_gty_rxprbssel),
+    .txdiffctrl_in                       (qsfp_gty_txdiffctrl),
+    .txelecidle_in                       (qsfp_gty_txelecidle),
+    .txinhibit_in                        (qsfp_gty_txinhibit),
+    .txmaincursor_in                     (qsfp_gty_txmaincursor),
     .txpolarity_in                       (qsfp_gty_txpolarity),
+    .txpostcursor_in                     (qsfp_gty_txpostcursor),
     .txprbsforceerr_in                   (qsfp_gty_txprbsforceerr),
     .txprbssel_in                        (qsfp_gty_txprbssel),
+    .txprecursor_in                      (qsfp_gty_txprecursor),
     .drpdo_out                           (qsfp_gty_drp_di),
     .drprdy_out                          (qsfp_gty_drp_rdy),
     .rxpmaresetdone_out                  (),

@@ -541,6 +541,12 @@ wire qsfp_gty_txusrclk2;
 wire [4*4-1:0] qsfp_gty_txprbssel;
 wire [4-1:0] qsfp_gty_txprbsforceerr;
 wire [4-1:0] qsfp_gty_txpolarity;
+wire [4-1:0] qsfp_gty_txelecidle;
+wire [4-1:0] qsfp_gty_txinhibit;
+wire [4*5-1:0] qsfp_gty_txdiffctrl;
+wire [4*7-1:0] qsfp_gty_txmaincursor;
+wire [4*5-1:0] qsfp_gty_txpostcursor;
+wire [4*5-1:0] qsfp_gty_txprecursor;
 
 wire qsfp_gty_rxusrclk2;
 wire [4-1:0] qsfp_gty_rxpolarity;
@@ -615,6 +621,12 @@ xfcp_qsfp_gty_quad_inst (
     .gty_txprbssel(qsfp_gty_txprbssel),
     .gty_txprbsforceerr(qsfp_gty_txprbsforceerr),
     .gty_txpolarity(qsfp_gty_txpolarity),
+    .gty_txelecidle(qsfp_gty_txelecidle),
+    .gty_txinhibit(qsfp_gty_txinhibit),
+    .gty_txdiffctrl(qsfp_gty_txdiffctrl),
+    .gty_txmaincursor(qsfp_gty_txmaincursor),
+    .gty_txpostcursor(qsfp_gty_txpostcursor),
+    .gty_txprecursor(qsfp_gty_txprecursor),
 
     .gty_rxusrclk2({4{qsfp_gty_rxusrclk2}}),
     .gty_rxpolarity(qsfp_gty_rxpolarity),
@@ -678,9 +690,15 @@ gtwizard_ultrascale_0 gtwizard_ultrascale_0_inst (
     .rxpolarity_in                       (qsfp_gty_rxpolarity),
     .rxprbscntreset_in                   (qsfp_gty_rxprbscntreset),
     .rxprbssel_in                        (qsfp_gty_rxprbssel),
+    .txdiffctrl_in                       (qsfp_gty_txdiffctrl),
+    .txelecidle_in                       (qsfp_gty_txelecidle),
+    .txinhibit_in                        (qsfp_gty_txinhibit),
+    .txmaincursor_in                     (qsfp_gty_txmaincursor),
     .txpolarity_in                       (qsfp_gty_txpolarity),
+    .txpostcursor_in                     (qsfp_gty_txpostcursor),
     .txprbsforceerr_in                   (qsfp_gty_txprbsforceerr),
     .txprbssel_in                        (qsfp_gty_txprbssel),
+    .txprecursor_in                      (qsfp_gty_txprecursor),
     .drpdo_out                           (qsfp_gty_drp_di),
     .drprdy_out                          (qsfp_gty_drp_rdy),
     .rxpmaresetdone_out                  (),
@@ -721,6 +739,12 @@ wire cfp2_gty_txusrclk2;
 wire [10*4-1:0] cfp2_gty_txprbssel;
 wire [10-1:0] cfp2_gty_txprbsforceerr;
 wire [10-1:0] cfp2_gty_txpolarity;
+wire [10-1:0] cfp2_gty_txelecidle;
+wire [10-1:0] cfp2_gty_txinhibit;
+wire [10*5-1:0] cfp2_gty_txdiffctrl;
+wire [10*7-1:0] cfp2_gty_txmaincursor;
+wire [10*5-1:0] cfp2_gty_txpostcursor;
+wire [10*5-1:0] cfp2_gty_txprecursor;
 
 wire cfp2_gty_rxusrclk2;
 wire [10-1:0] cfp2_gty_rxpolarity;
@@ -795,6 +819,12 @@ xfcp_cfp2_gty_quad_inst_1 (
     .gty_txprbssel(cfp2_gty_txprbssel[0*4*4 +: 4*4]),
     .gty_txprbsforceerr(cfp2_gty_txprbsforceerr[0*4*1 +: 4*1]),
     .gty_txpolarity(cfp2_gty_txpolarity[0*4*1 +: 4*1]),
+    .gty_txelecidle(cfp2_gty_txelecidle[0*4*1 +: 4*1]),
+    .gty_txinhibit(cfp2_gty_txinhibit[0*4*1 +: 4*1]),
+    .gty_txdiffctrl(cfp2_gty_txdiffctrl[0*4*5 +: 4*5]),
+    .gty_txmaincursor(cfp2_gty_txmaincursor[0*4*7 +: 4*7]),
+    .gty_txpostcursor(cfp2_gty_txpostcursor[0*4*5 +: 4*5]),
+    .gty_txprecursor(cfp2_gty_txprecursor[0*4*5 +: 4*5]),
 
     .gty_rxusrclk2({4{cfp2_gty_rxusrclk2}}),
     .gty_rxpolarity(cfp2_gty_rxpolarity[0*4*1 +: 4*1]),
@@ -870,6 +900,12 @@ xfcp_cfp2_gty_quad_inst_2 (
     .gty_txprbssel(cfp2_gty_txprbssel[1*4*4 +: 4*4]),
     .gty_txprbsforceerr(cfp2_gty_txprbsforceerr[1*4*1 +: 4*1]),
     .gty_txpolarity(cfp2_gty_txpolarity[1*4*1 +: 4*1]),
+    .gty_txelecidle(cfp2_gty_txelecidle[1*4*1 +: 4*1]),
+    .gty_txinhibit(cfp2_gty_txinhibit[1*4*1 +: 4*1]),
+    .gty_txdiffctrl(cfp2_gty_txdiffctrl[1*4*5 +: 4*5]),
+    .gty_txmaincursor(cfp2_gty_txmaincursor[1*4*7 +: 4*7]),
+    .gty_txpostcursor(cfp2_gty_txpostcursor[1*4*5 +: 4*5]),
+    .gty_txprecursor(cfp2_gty_txprecursor[1*4*5 +: 4*5]),
 
     .gty_rxusrclk2({4{cfp2_gty_rxusrclk2}}),
     .gty_rxpolarity(cfp2_gty_rxpolarity[1*4*1 +: 4*1]),
@@ -937,6 +973,12 @@ xfcp_cfp2_gty_quad_inst_3 (
     .gty_txprbssel(cfp2_gty_txprbssel[2*4*4 +: 2*4]),
     .gty_txprbsforceerr(cfp2_gty_txprbsforceerr[2*4*1 +: 2*1]),
     .gty_txpolarity(cfp2_gty_txpolarity[2*4*1 +: 2*1]),
+    .gty_txelecidle(cfp2_gty_txelecidle[2*4*1 +: 2*1]),
+    .gty_txinhibit(cfp2_gty_txinhibit[2*4*1 +: 2*1]),
+    .gty_txdiffctrl(cfp2_gty_txdiffctrl[2*4*5 +: 2*5]),
+    .gty_txmaincursor(cfp2_gty_txmaincursor[2*4*7 +: 2*7]),
+    .gty_txpostcursor(cfp2_gty_txpostcursor[2*4*5 +: 2*5]),
+    .gty_txprecursor(cfp2_gty_txprecursor[2*4*5 +: 2*5]),
 
     .gty_rxusrclk2({4{cfp2_gty_rxusrclk2}}),
     .gty_rxpolarity(cfp2_gty_rxpolarity[2*4*1 +: 2*1]),
@@ -1000,9 +1042,15 @@ gtwizard_ultrascale_1 gtwizard_ultrascale_1_inst (
     .rxpolarity_in                       (cfp2_gty_rxpolarity),
     .rxprbscntreset_in                   (cfp2_gty_rxprbscntreset),
     .rxprbssel_in                        (cfp2_gty_rxprbssel),
+    .txdiffctrl_in                       (cfp2_gty_txdiffctrl),
+    .txelecidle_in                       (cfp2_gty_txelecidle),
+    .txinhibit_in                        (cfp2_gty_txinhibit),
+    .txmaincursor_in                     (cfp2_gty_txmaincursor),
     .txpolarity_in                       (cfp2_gty_txpolarity),
+    .txpostcursor_in                     (cfp2_gty_txpostcursor),
     .txprbsforceerr_in                   (cfp2_gty_txprbsforceerr),
     .txprbssel_in                        (cfp2_gty_txprbssel),
+    .txprecursor_in                      (cfp2_gty_txprecursor),
     .drpdo_out                           (cfp2_gty_drp_di),
     .drprdy_out                          (cfp2_gty_drp_rdy),
     .rxpmaresetdone_out                  (),
@@ -1035,6 +1083,12 @@ wire bullseye_gty_txusrclk2;
 wire [4*4-1:0] bullseye_gty_txprbssel;
 wire [4-1:0] bullseye_gty_txprbsforceerr;
 wire [4-1:0] bullseye_gty_txpolarity;
+wire [4-1:0] bullseye_gty_txelecidle;
+wire [4-1:0] bullseye_gty_txinhibit;
+wire [4*5-1:0] bullseye_gty_txdiffctrl;
+wire [4*7-1:0] bullseye_gty_txmaincursor;
+wire [4*5-1:0] bullseye_gty_txpostcursor;
+wire [4*5-1:0] bullseye_gty_txprecursor;
 
 wire bullseye_gty_rxusrclk2;
 wire [4-1:0] bullseye_gty_rxpolarity;
@@ -1109,6 +1163,12 @@ xfcp_bullseye_gty_quad_inst(
     .gty_txprbssel(bullseye_gty_txprbssel),
     .gty_txprbsforceerr(bullseye_gty_txprbsforceerr),
     .gty_txpolarity(bullseye_gty_txpolarity),
+    .gty_txelecidle(bullseye_gty_txelecidle),
+    .gty_txinhibit(bullseye_gty_txinhibit),
+    .gty_txdiffctrl(bullseye_gty_txdiffctrl),
+    .gty_txmaincursor(bullseye_gty_txmaincursor),
+    .gty_txpostcursor(bullseye_gty_txpostcursor),
+    .gty_txprecursor(bullseye_gty_txprecursor),
 
     .gty_rxusrclk2({4{bullseye_gty_rxusrclk2}}),
     .gty_rxpolarity(bullseye_gty_rxpolarity),
@@ -1172,9 +1232,15 @@ gtwizard_ultrascale_2 gtwizard_ultrascale_2_inst (
     .rxpolarity_in                       (bullseye_gty_rxpolarity),
     .rxprbscntreset_in                   (bullseye_gty_rxprbscntreset),
     .rxprbssel_in                        (bullseye_gty_rxprbssel),
+    .txdiffctrl_in                       (bullseye_gty_txdiffctrl),
+    .txelecidle_in                       (bullseye_gty_txelecidle),
+    .txinhibit_in                        (bullseye_gty_txinhibit),
+    .txmaincursor_in                     (bullseye_gty_txmaincursor),
     .txpolarity_in                       (bullseye_gty_txpolarity),
+    .txpostcursor_in                     (bullseye_gty_txpostcursor),
     .txprbsforceerr_in                   (bullseye_gty_txprbsforceerr),
     .txprbssel_in                        (bullseye_gty_txprbssel),
+    .txprecursor_in                      (bullseye_gty_txprecursor),
     .drpdo_out                           (bullseye_gty_drp_di),
     .drprdy_out                          (bullseye_gty_drp_rdy),
     .rxpmaresetdone_out                  (),
