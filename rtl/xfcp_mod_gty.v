@@ -166,6 +166,12 @@ end
 assign gty_txprbssel = gty_txprbssel_sync_reg;
 assign gty_txprbsforceerr = gty_txprbsforceerr_sync_2_reg ^ gty_txprbsforceerr_sync_3_reg;
 assign gty_txpolarity = gty_txpolarity_sync_reg;
+assign gty_txelecidle = gty_txelecidle_sync_reg;
+assign gty_txinhibit = gty_txinhibit_sync_reg;
+assign gty_txdiffctrl = gty_txdiffctrl_sync_reg;
+assign gty_txmaincursor = gty_txmaincursor_sync_reg;
+assign gty_txpostcursor = gty_txpostcursor_sync_reg;
+assign gty_txprecursor = gty_txprecursor_sync_reg;
 
 reg gty_rxpolarity_reg = 1'b0, gty_rxpolarity_next;
 reg gty_rxpolarity_sync_reg = 1'b0;
