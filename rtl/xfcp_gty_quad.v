@@ -102,6 +102,8 @@ module xfcp_gty_quad #
     output wire [CH-1:0]                gty_reset,
     output wire [CH-1:0]                gty_tx_reset,
     output wire [CH-1:0]                gty_rx_reset,
+    input  wire [CH-1:0]                gty_tx_reset_done,
+    input  wire [CH-1:0]                gty_rx_reset_done,
 
     input  wire [CH-1:0]                gty_txusrclk2,
     output wire [CH*4-1:0]              gty_txprbssel,
@@ -209,6 +211,8 @@ generate
             .gty_reset(gty_reset[n +: 1]),
             .gty_tx_reset(gty_tx_reset[n +: 1]),
             .gty_rx_reset(gty_rx_reset[n +: 1]),
+            .gty_tx_reset_done(gty_tx_reset_done[n +: 1]),
+            .gty_rx_reset_done(gty_rx_reset_done[n +: 1]),
             .gty_txusrclk2(gty_txusrclk2[n +: 1]),
             .gty_txprbssel(gty_txprbssel[n*4 +: 4]),
             .gty_txprbsforceerr(gty_txprbsforceerr[n +: 1]),

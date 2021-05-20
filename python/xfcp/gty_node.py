@@ -401,6 +401,12 @@ class GTYE3ChannelNode(node.MemoryNode):
     def rx_reset(self):
         self.masked_write(0xfe00, 0x0004, 0x0004)
 
+    def get_tx_reset_done(self):
+        return bool(self.masked_read(0xfe00, 0x0200))
+
+    def get_rx_reset_done(self):
+        return bool(self.masked_read(0xfe00, 0x0400))
+
     def get_tx_polarity(self):
         return bool(self.masked_read(0xfe02, 0x0001))
 

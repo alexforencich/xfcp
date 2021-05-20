@@ -69,6 +69,8 @@ module xfcp_mod_gty #
     output wire                   gty_reset,
     output wire                   gty_tx_reset,
     output wire                   gty_rx_reset,
+    input  wire                   gty_tx_reset_done,
+    input  wire                   gty_rx_reset_done,
 
     input  wire                   gty_txusrclk2,
     output wire [3:0]             gty_txprbssel,
@@ -128,6 +130,26 @@ always @(posedge gty_rxusrclk2 or posedge gty_rx_reset_reg) begin
         gty_rx_reset_sync_1_reg <= 1'b0;
         gty_rx_reset_sync_2_reg <= gty_rx_reset_sync_1_reg;
     end
+end
+
+reg gty_tx_reset_done_reg = 1'b0;
+reg gty_tx_reset_done_sync_1_reg = 1'b0, gty_tx_reset_done_sync_2_reg = 1'b0;
+reg gty_rx_reset_done_reg = 1'b0;
+reg gty_rx_reset_done_sync_1_reg = 1'b0, gty_rx_reset_done_sync_2_reg = 1'b0;
+
+always @(posedge gty_txusrclk2) begin
+    gty_tx_reset_done_reg <= gty_tx_reset_done;
+end
+
+always @(posedge gty_rxusrclk2) begin
+    gty_rx_reset_done_reg <= gty_rx_reset_done;
+end
+
+always @(posedge clk) begin
+    gty_tx_reset_done_sync_1_reg <= gty_tx_reset_done_reg;
+    gty_tx_reset_done_sync_2_reg <= gty_tx_reset_done_sync_1_reg;
+    gty_rx_reset_done_sync_1_reg <= gty_rx_reset_done_reg;
+    gty_rx_reset_done_sync_2_reg <= gty_rx_reset_done_sync_1_reg;
 end
 
 reg [3:0] gty_txprbssel_reg = 4'd0, gty_txprbssel_next;
@@ -275,6 +297,10 @@ always @* begin
         end else begin
             // read
             case (wb_adr[7:0])
+                8'h00: begin
+                    wb_dat_int_next[9] = gty_tx_reset_done_sync_2_reg;
+                    wb_dat_int_next[10] = gty_rx_reset_done_sync_2_reg;
+                end
                 8'h01: begin
                     wb_dat_int_next[0] = gty_txpolarity_reg;
                     wb_dat_int_next[1] = gty_rxpolarity_reg;
