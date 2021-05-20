@@ -60,11 +60,11 @@ SYN_FILES += lib/axis/rtl/sync_reset.v
 # XDC files
 XDC_FILES = fpga.xdc
 XDC_FILES += clock.xdc
-XDC_FILES += lib/eth/syn/gmii_phy_if.tcl
-XDC_FILES += lib/eth/syn/eth_mac_1g_gmii.tcl
-XDC_FILES += lib/eth/syn/eth_mac_fifo.tcl
-XDC_FILES += lib/axis/syn/axis_async_fifo.tcl
-XDC_FILES += lib/axis/syn/sync_reset.tcl
+XDC_FILES += lib/eth/syn/vivado/gmii_phy_if.tcl
+XDC_FILES += lib/eth/syn/vivado/eth_mac_1g_gmii.tcl
+XDC_FILES += lib/eth/syn/vivado/eth_mac_fifo.tcl
+XDC_FILES += lib/axis/syn/vivado/axis_async_fifo.tcl
+XDC_FILES += lib/axis/syn/vivado/sync_reset.tcl
 
 include ../common/vivado.mk
 
