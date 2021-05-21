@@ -636,27 +636,7 @@ always @* begin
 end
 
 always @(posedge clk) begin
-    if (rst) begin
-        state_reg <= STATE_IDLE;
-        up_xfcp_in_tready_reg <= 1'b0;
-        cmd_address_reg <= 7'd0;
-        cmd_valid_reg <= 1'b0;
-        data_in_valid_reg <= 1'b0;
-        data_out_ready_reg <= 1'b0;
-        prescale_reg <= DEFAULT_PRESCALE;
-        stop_on_idle_reg <= 1'b0;
-        missed_ack_reg <= 1'b0;
-    end else begin
-        state_reg <= state_next;
-        up_xfcp_in_tready_reg <= up_xfcp_in_tready_next;
-        cmd_address_reg <= cmd_address_next;
-        cmd_valid_reg <= cmd_valid_next;
-        data_in_valid_reg <= data_in_valid_next;
-        data_out_ready_reg <= data_out_ready_next;
-        prescale_reg <= prescale_next;
-        stop_on_idle_reg <= stop_on_idle_next;
-        missed_ack_reg <= missed_ack_next;
-    end
+    state_reg <= state_next;
 
     id_ptr_reg <= id_ptr_next;
 
@@ -666,16 +646,40 @@ always @(posedge clk) begin
         last_cycle_reg <= up_xfcp_in_tlast;
     end
 
+    cmd_address_reg <= cmd_address_next;
     cmd_start_reg <= cmd_start_next;
     cmd_read_reg <= cmd_read_next;
     cmd_write_reg <= cmd_write_next;
     cmd_write_multiple_reg <= cmd_write_multiple_next;
     cmd_stop_reg <= cmd_stop_next;
+    cmd_valid_reg <= cmd_valid_next;
 
     cmd_transaction_stop_reg <= cmd_transaction_stop_next;
 
     data_in_reg <= data_in_next;
+    data_in_valid_reg <= data_in_valid_next;
     data_in_last_reg <= data_in_last_next;
+
+    data_out_ready_reg <= data_out_ready_next;
+
+    prescale_reg <= prescale_next;
+    stop_on_idle_reg <= stop_on_idle_next;
+
+    missed_ack_reg <= missed_ack_next;
+
+    up_xfcp_in_tready_reg <= up_xfcp_in_tready_next;
+
+    if (rst) begin
+        state_reg <= STATE_IDLE;
+        cmd_address_reg <= 7'd0;
+        cmd_valid_reg <= 1'b0;
+        data_in_valid_reg <= 1'b0;
+        data_out_ready_reg <= 1'b0;
+        prescale_reg <= DEFAULT_PRESCALE;
+        stop_on_idle_reg <= 1'b0;
+        missed_ack_reg <= 1'b0;
+        up_xfcp_in_tready_reg <= 1'b0;
+    end
 end
 
 // output datapath logic

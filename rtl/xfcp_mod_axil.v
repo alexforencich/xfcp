@@ -588,23 +588,7 @@ always @* begin
 end
 
 always @(posedge clk) begin
-    if (rst) begin
-        state_reg <= STATE_IDLE;
-        up_xfcp_in_tready_reg <= 1'b0;
-        m_axil_awvalid_reg <= 1'b0;
-        m_axil_wvalid_reg <= 1'b0;
-        m_axil_bready_reg <= 1'b0;
-        m_axil_arvalid_reg <= 1'b0;
-        m_axil_rready_reg <= 1'b0;
-    end else begin
-        state_reg <= state_next;
-        up_xfcp_in_tready_reg <= up_xfcp_in_tready_next;
-        m_axil_awvalid_reg <= m_axil_awvalid_next;
-        m_axil_wvalid_reg <= m_axil_wvalid_next;
-        m_axil_bready_reg <= m_axil_bready_next;
-        m_axil_arvalid_reg <= m_axil_arvalid_next;
-        m_axil_rready_reg <= m_axil_rready_next;
-    end
+    state_reg <= state_next;
 
     id_ptr_reg <= id_ptr_next;
 
@@ -619,7 +603,24 @@ always @(posedge clk) begin
     addr_reg <= addr_next;
     data_reg <= data_next;
 
+    up_xfcp_in_tready_reg <= up_xfcp_in_tready_next;
+
+    m_axil_awvalid_reg <= m_axil_awvalid_next;
     m_axil_wstrb_reg <= m_axil_wstrb_next;
+    m_axil_wvalid_reg <= m_axil_wvalid_next;
+    m_axil_bready_reg <= m_axil_bready_next;
+    m_axil_arvalid_reg <= m_axil_arvalid_next;
+    m_axil_rready_reg <= m_axil_rready_next;
+
+    if (rst) begin
+        state_reg <= STATE_IDLE;
+        up_xfcp_in_tready_reg <= 1'b0;
+        m_axil_awvalid_reg <= 1'b0;
+        m_axil_wvalid_reg <= 1'b0;
+        m_axil_bready_reg <= 1'b0;
+        m_axil_arvalid_reg <= 1'b0;
+        m_axil_rready_reg <= 1'b0;
+    end
 end
 
 // output datapath logic

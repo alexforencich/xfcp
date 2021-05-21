@@ -338,6 +338,28 @@ always @* begin
 end
 
 always @(posedge clk) begin
+    wb_dat_int_reg <= wb_dat_int_next;
+    wb_ack_int_reg <= wb_ack_int_next;
+
+    gty_reset_reg <= gty_reset_next;
+    gty_tx_reset_reg <= gty_tx_reset_next;
+    gty_rx_reset_reg <= gty_rx_reset_next;
+
+    gty_txprbssel_reg <= gty_txprbssel_next;
+    gty_txprbsforceerr_reg <= gty_txprbsforceerr_next;
+    gty_txpolarity_reg <= gty_txpolarity_next;
+    gty_txelecidle_reg <= gty_txelecidle_next;
+    gty_txinhibit_reg <= gty_txinhibit_next;
+    gty_txdiffctrl_reg <= gty_txdiffctrl_next;
+    gty_txmaincursor_reg <= gty_txmaincursor_next;
+    gty_txpostcursor_reg <= gty_txpostcursor_next;
+    gty_txprecursor_reg <= gty_txprecursor_next;
+
+    gty_rxpolarity_reg <= gty_rxpolarity_next;
+    gty_rxprbscntreset_reg <= gty_rxprbscntreset_next;
+    gty_rxprbssel_reg <= gty_rxprbssel_next;
+    gty_rxprbserr_reg <= gty_rxprbserr_next;
+
     if (rst) begin
         wb_ack_int_reg <= 1'b0;
         gty_reset_reg <= 1'b0;
@@ -356,27 +378,7 @@ always @(posedge clk) begin
         gty_rxprbscntreset_reg <= 1'b0;
         gty_rxprbssel_reg <= 4'd0;
         gty_rxprbserr_reg <= 1'b0;
-    end else begin
-        wb_ack_int_reg <= wb_ack_int_next;
-        gty_reset_reg <= gty_reset_next;
-        gty_tx_reset_reg <= gty_tx_reset_next;
-        gty_rx_reset_reg <= gty_rx_reset_next;
-        gty_txprbssel_reg <= gty_txprbssel_next;
-        gty_txprbsforceerr_reg <= gty_txprbsforceerr_next;
-        gty_txpolarity_reg <= gty_txpolarity_next;
-        gty_txelecidle_reg <= gty_txelecidle_next;
-        gty_txinhibit_reg <= gty_txinhibit_next;
-        gty_txdiffctrl_reg <= gty_txdiffctrl_next;
-        gty_txmaincursor_reg <= gty_txmaincursor_next;
-        gty_txpostcursor_reg <= gty_txpostcursor_next;
-        gty_txprecursor_reg <= gty_txprecursor_next;
-        gty_rxpolarity_reg <= gty_rxpolarity_next;
-        gty_rxprbscntreset_reg <= gty_rxprbscntreset_next;
-        gty_rxprbssel_reg <= gty_rxprbssel_next;
-        gty_rxprbserr_reg <= gty_rxprbserr_next;
     end
-
-    wb_dat_int_reg <= wb_dat_int_next;
 end
 
 xfcp_mod_wb #(

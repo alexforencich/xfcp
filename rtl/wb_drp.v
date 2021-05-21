@@ -69,10 +69,10 @@ assign drp_we = wb_cyc_i & wb_stb_i & wb_we_i & ~cycle;
 assign wb_ack_o = drp_rdy;
 
 always @(posedge clk) begin
+    cycle <= wb_cyc_i & wb_stb_i & ~drp_rdy;
+
     if (rst) begin
         cycle <= 1'b0;
-    end else begin
-        cycle <= wb_cyc_i & wb_stb_i & ~drp_rdy;
     end
 end
 

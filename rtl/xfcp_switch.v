@@ -467,35 +467,38 @@ always @* begin
 end
 
 always @(posedge clk) begin
+    down_state_reg <= down_state_next;
+    up_state_reg <= up_state_next;
+
+    id_ptr_reg <= id_ptr_next;
+
+    down_select_reg <= down_select_next;
+    down_frame_reg <= down_frame_next;
+    down_enable_reg <= down_enable_next;
+
+    up_select_reg <= up_select_next;
+    up_frame_reg <= up_frame_next;
+
+    up_xfcp_in_tready_reg <= up_xfcp_in_tready_next;
+    down_xfcp_in_tready_reg <= down_xfcp_in_tready_next;
+
+    int_loop_tdata_reg <= int_loop_tdata_next;
+    int_loop_tvalid_reg <= int_loop_tvalid_next;
+    int_loop_tlast_reg <= int_loop_tlast_next;
+    int_loop_tuser_reg <= int_loop_tuser_next;
+
     if (rst) begin
         down_state_reg <= DOWN_STATE_IDLE;
         up_state_reg <= UP_STATE_IDLE;
         down_select_reg <= {CL_PORTS{1'b0}};
         down_frame_reg <= 1'b0;
         down_enable_reg <= 1'b0;
-        int_loop_tvalid_reg <= 1'b0;
         up_select_reg <= {CL_PORTS_P1{1'b0}};
         up_frame_reg <= 1'b0;
         up_xfcp_in_tready_reg <= 1'b0;
         down_xfcp_in_tready_reg <= {PORTS{1'b0}};
-    end else begin
-        down_state_reg <= down_state_next;
-        up_state_reg <= up_state_next;
-        down_select_reg <= down_select_next;
-        down_frame_reg <= down_frame_next;
-        down_enable_reg <= down_enable_next;
-        int_loop_tvalid_reg <= int_loop_tvalid_next;
-        up_select_reg <= up_select_next;
-        up_frame_reg <= up_frame_next;
-        up_xfcp_in_tready_reg <= up_xfcp_in_tready_next;
-        down_xfcp_in_tready_reg <= down_xfcp_in_tready_next;
+        int_loop_tvalid_reg <= 1'b0;
     end
-
-    id_ptr_reg <= id_ptr_next;
-
-    int_loop_tdata_reg <= int_loop_tdata_next;
-    int_loop_tlast_reg <= int_loop_tlast_next;
-    int_loop_tuser_reg <= int_loop_tuser_next;
 end
 
 // upstream output datapath logic

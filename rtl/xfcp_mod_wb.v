@@ -579,17 +579,7 @@ always @* begin
 end
 
 always @(posedge clk) begin
-    if (rst) begin
-        state_reg <= STATE_IDLE;
-        up_xfcp_in_tready_reg <= 1'b0;
-        wb_stb_o_reg <= 1'b0;
-        wb_cyc_o_reg <= 1'b0;
-    end else begin
-        state_reg <= state_next;
-        up_xfcp_in_tready_reg <= up_xfcp_in_tready_next;
-        wb_stb_o_reg <= wb_stb_o_next;
-        wb_cyc_o_reg <= wb_cyc_o_next;
-    end
+    state_reg <= state_next;
 
     id_ptr_reg <= id_ptr_next;
 
@@ -603,8 +593,19 @@ always @(posedge clk) begin
     addr_reg <= addr_next;
     data_reg <= data_next;
 
+    up_xfcp_in_tready_reg <= up_xfcp_in_tready_next;
+
     wb_we_o_reg <= wb_we_o_next;
     wb_sel_o_reg <= wb_sel_o_next;
+    wb_stb_o_reg <= wb_stb_o_next;
+    wb_cyc_o_reg <= wb_cyc_o_next;
+
+    if (rst) begin
+        state_reg <= STATE_IDLE;
+        up_xfcp_in_tready_reg <= 1'b0;
+        wb_stb_o_reg <= 1'b0;
+        wb_cyc_o_reg <= 1'b0;
+    end
 end
 
 // output datapath logic

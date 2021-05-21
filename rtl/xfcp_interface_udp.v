@@ -425,6 +425,18 @@ always @* begin
 end
 
 always @(posedge clk) begin
+    down_frame_reg <= down_frame_next;
+    down_enable_reg <= down_enable_next;
+
+    up_frame_reg <= up_frame_next;
+
+    rx_udp_hdr_ready_reg <= rx_udp_hdr_ready_next;
+    rx_udp_payload_axis_tready_reg <= rx_udp_payload_axis_tready_next;
+
+    tx_udp_hdr_valid_reg <= tx_udp_hdr_valid_next;
+    tx_udp_ip_dest_ip_reg <= tx_udp_ip_dest_ip_next;
+    tx_udp_dest_port_reg <= tx_udp_dest_port_next;
+
     if (rst) begin
         down_frame_reg <= 1'b0;
         down_enable_reg <= 1'b0;
@@ -432,17 +444,7 @@ always @(posedge clk) begin
         rx_udp_hdr_ready_reg <= 1'b0;
         rx_udp_payload_axis_tready_reg <= 1'b0;
         tx_udp_hdr_valid_reg <= 1'b0;
-    end else begin
-        down_frame_reg <= down_frame_next;
-        down_enable_reg <= down_enable_next;
-        up_frame_reg <= up_frame_next;
-        rx_udp_hdr_ready_reg <= rx_udp_hdr_ready_next;
-        rx_udp_payload_axis_tready_reg <= rx_udp_payload_axis_tready_next;
-        tx_udp_hdr_valid_reg <= tx_udp_hdr_valid_next;
     end
-
-    tx_udp_ip_dest_ip_reg <= tx_udp_ip_dest_ip_next;
-    tx_udp_dest_port_reg <= tx_udp_dest_port_next;
 end
 
 // downstream output datapath logic

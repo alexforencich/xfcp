@@ -483,6 +483,26 @@ always @* begin
 end
 
 always @(posedge clk) begin
+    down_state_reg <= down_state_next;
+    up_state_reg <= up_state_next;
+
+    down_need_start_reg <= down_need_start_next;
+    down_select_reg <= down_select_next;
+    down_frame_reg <= down_frame_next;
+
+    up_header_read_ptr_reg <= up_header_read_ptr_next;
+    up_header_write_ptr_reg <= up_header_write_ptr_next;
+
+    if (up_header_write) begin
+        up_header_mem[up_header_write_ptr_reg] = up_header_write_data;
+    end
+
+    up_select_reg <= up_select_next;
+    up_frame_reg <= up_frame_next;
+
+    up_xfcp_in_tready_reg <= up_xfcp_in_tready_next;
+    down_xfcp_in_tready_reg <= down_xfcp_in_tready_next;
+
     if (rst) begin
         down_state_reg <= DOWN_STATE_IDLE;
         up_state_reg <= UP_STATE_IDLE;
@@ -491,24 +511,7 @@ always @(posedge clk) begin
         up_select_reg <= {CL_PORTS{1'b0}};
         up_frame_reg <= 1'b0;
         up_xfcp_in_tready_reg <= {PORTS{1'b0}};
-    end else begin
-        down_state_reg <= down_state_next;
-        up_state_reg <= up_state_next;
-        down_select_reg <= down_select_next;
-        down_frame_reg <= down_frame_next;
-        up_select_reg <= up_select_next;
-        up_frame_reg <= up_frame_next;
-        up_xfcp_in_tready_reg <= up_xfcp_in_tready_next;
-        down_xfcp_in_tready_reg <= down_xfcp_in_tready_next;
-    end
-
-    down_need_start_reg <= down_need_start_next;
-
-    up_header_read_ptr_reg <= up_header_read_ptr_next;
-    up_header_write_ptr_reg <= up_header_write_ptr_next;
-
-    if (up_header_write) begin
-        up_header_mem[up_header_write_ptr_reg] = up_header_write_data;
+        down_xfcp_in_tready_reg <= 1'b0;
     end
 end
 
