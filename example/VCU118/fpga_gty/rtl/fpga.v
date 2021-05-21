@@ -310,14 +310,6 @@ assign i2c_sda_i = i2c_sda;
 assign i2c_sda = i2c_sda_t ? 1'bz : i2c_sda_o;
 
 // GTY instances
-assign qsfp1_modsell = 1'b0;
-assign qsfp1_resetl = 1'b1;
-assign qsfp1_lpmode = 1'b0;
-
-assign qsfp2_modsell = 1'b0;
-assign qsfp2_resetl = 1'b1;
-assign qsfp2_lpmode = 1'b0;
-
 wire gty_drp_clk = clk_62mhz_int;
 wire gty_drp_rst = rst_62mhz_int;
 

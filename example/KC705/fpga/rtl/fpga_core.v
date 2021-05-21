@@ -131,19 +131,6 @@ wire xfcp_udp_interface_up_tready;
 wire xfcp_udp_interface_up_tlast;
 wire xfcp_udp_interface_up_tuser;
 
-// GMII between MAC and PHY IF
-wire gmii_rx_clk;
-wire gmii_rx_rst;
-wire [7:0] gmii_rxd;
-wire gmii_rx_dv;
-wire gmii_rx_er;
-
-wire gmii_tx_clk;
-wire gmii_tx_rst;
-wire [7:0] gmii_txd;
-wire gmii_tx_en;
-wire gmii_tx_er;
-
 // AXI between MAC and Ethernet modules
 wire [7:0] rx_eth_axis_tdata;
 wire rx_eth_axis_tvalid;
