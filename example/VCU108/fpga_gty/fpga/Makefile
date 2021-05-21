@@ -10,7 +10,6 @@ SYN_FILES += rtl/fpga_core.v
 SYN_FILES += rtl/debounce_switch.v
 SYN_FILES += rtl/sync_signal.v
 SYN_FILES += lib/xfcp/rtl/xfcp_interface_uart.v
-SYN_FILES += lib/xfcp/rtl/xfcp_mod_i2c_master.v
 SYN_FILES += lib/xfcp/rtl/xfcp_interface_udp.v
 SYN_FILES += lib/xfcp/rtl/xfcp_mod_i2c_master.v
 SYN_FILES += lib/xfcp/rtl/xfcp_mod_wb.v
