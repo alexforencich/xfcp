@@ -379,7 +379,6 @@ node.register(GTYE4CommonNode, 0x8A92)
 
 class GTYE3ChannelNode(node.MemoryNode):
     def __init__(self, obj=None):
-        self.rx_prbs_error_valid = False
         self.rx_prbs_error = False
         super().__init__(obj)
 
@@ -439,16 +438,13 @@ class GTYE3ChannelNode(node.MemoryNode):
         self.masked_write(0xfe06, 0x0002, 0x0002)
 
     def is_rx_prbs_error(self):
-        if self.rx_prbs_error_valid:
-            self.rx_prbs_error_valid = False
-            return self.rx_prbs_error
-        else:
-            return bool(self.masked_read(0xfe06, 0x0004))
+        val = self.rx_prbs_error
+        self.rx_prbs_error = False
+        return val | bool(self.masked_read(0xfe06, 0x0004))
 
     def is_rx_prbs_locked(self):
         w = self.masked_read(0xfe06, 0x000c)
-        self.rx_prbs_error = bool(w & 0x0004)
-        self.rx_prbs_error_valid = True
+        self.rx_prbs_error |= bool(w & 0x0004)
         return bool(w & 0x0008)
 
     def get_tx_elecidle(self):
