@@ -48,9 +48,6 @@ prbs_mode_mapping = {
 
 
 class GTYE3CommonNode(node.MemoryNode):
-    def __init__(self, obj=None):
-        super(GTYE3CommonNode, self).__init__(obj)
-
     def masked_read(self, addr, mask):
         return self.read_word(addr) & mask
 
@@ -375,8 +372,7 @@ node.register(GTYE3CommonNode, 0x8A82)
 
 
 class GTYE4CommonNode(GTYE3CommonNode):
-    def __init__(self, obj=None):
-        super(GTYE4CommonNode, self).__init__(obj)
+    pass
 
 node.register(GTYE4CommonNode, 0x8A92)
 
@@ -385,7 +381,7 @@ class GTYE3ChannelNode(node.MemoryNode):
     def __init__(self, obj=None):
         self.rx_prbs_error_valid = False
         self.rx_prbs_error = False
-        super(GTYE3ChannelNode, self).__init__(obj)
+        super().__init__(obj)
 
     def masked_read(self, addr, mask):
         return self.read_word(addr) & mask
@@ -498,7 +494,6 @@ node.register(GTYE3ChannelNode, 0x8A83)
 
 
 class GTYE4ChannelNode(GTYE3ChannelNode):
-    def __init__(self, obj=None):
-        super(GTYE4ChannelNode, self).__init__(obj)
+    pass
 
 node.register(GTYE4ChannelNode, 0x8A93)

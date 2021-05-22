@@ -182,7 +182,7 @@ class Node(object):
 
 class SwitchNode(Node):
     def __init__(self, obj=None):
-        super(SwitchNode, self).__init__(obj)
+        super().__init__(obj)
 
         self.up_ports = 0
         self.down_ports = 0
@@ -192,7 +192,7 @@ class SwitchNode(Node):
             self.down_ports = obj.down_ports
 
     def init(self, id_pkt=None):
-        super(SwitchNode, self).init(id_pkt)
+        super().init(id_pkt)
 
         self.up_ports, self.down_ports = struct.unpack_from('BB', self.id_pkt.payload, 2)
 
@@ -206,7 +206,7 @@ register(SwitchNode, 0x0100, 8)
 
 class MemoryNode(Node):
     def __init__(self, obj=None):
-        super(MemoryNode, self).__init__(obj)
+        super().__init__(obj)
 
         self.addr_width = 32
         self.data_width = 32
@@ -222,7 +222,7 @@ class MemoryNode(Node):
         self.byte_addr_width = self.addr_width+((self.word_size-1)//8).bit_length()
 
     def init(self, id_pkt=None):
-        super(MemoryNode, self).init(id_pkt)
+        super().init(id_pkt)
 
         self.addr_width, self.data_width, self.word_size, self.count_width = struct.unpack_from('<HHHH', self.id_pkt.payload, 2)
         self.byte_addr_width = self.addr_width+((self.word_size-1)//8).bit_length()
@@ -313,9 +313,6 @@ register(MemoryNode, 0x8000, 1)
 
 
 class I2CNode(Node):
-    def __init__(self, obj=None):
-        super(I2CNode, self).__init__(obj)
-
     def read_i2c(self, addr, count):
         pkt = packet.I2CRequestPacket()
         pkt.path = self.path

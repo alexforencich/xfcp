@@ -119,22 +119,22 @@ class Packet(object):
 
 
 class IDRequestPacket(Packet):
-    def __init__(self, payload=b'', path=[], rpath=[], ptype=0xfe):
-        super(IDRequestPacket, self).__init__(payload, path, rpath, ptype)
+    def __init__(self, payload=b'', path=(), rpath=(), ptype=0xfe):
+        super().__init__(payload, path, rpath, ptype)
 
 register(IDRequestPacket, 0xfe)
 
 
 class IDResponsePacket(Packet):
-    def __init__(self, payload=b'', path=[], rpath=[], ptype=0xff):
-        super(IDResponsePacket, self).__init__(payload, path, rpath, ptype)
+    def __init__(self, payload=b'', path=(), rpath=(), ptype=0xff):
+        super().__init__(payload, path, rpath, ptype)
 
 register(IDResponsePacket, 0xff)
 
 
 class MemoryAccessPacket(Packet):
-    def __init__(self, payload=b'', path=[], rpath=[], ptype=0):
-        super(MemoryAccessPacket, self).__init__(payload, path, rpath, ptype)
+    def __init__(self, payload=b'', path=(), rpath=(), ptype=0):
+        super().__init__(payload, path, rpath, ptype)
 
         self.addr = 0
         self.count = 0
@@ -156,11 +156,11 @@ class MemoryAccessPacket(Packet):
         self.payload += self.count.to_bytes(cw, 'little')
         self.payload += self.data
 
-        return super(MemoryAccessPacket, self).build()
+        return super().build()
 
     def parse(self, data=None):
         if data is not None:
-            super(MemoryAccessPacket, self).parse(data)
+            super().parse(data)
 
         aw = (self.addr_width+7)//8
         cw = (self.count_width+7)//8
@@ -183,40 +183,40 @@ class MemoryAccessPacket(Packet):
 
 
 class ReadRequestPacket(MemoryAccessPacket):
-    def __init__(self, payload=b'', path=[], rpath=[], ptype=0x10):
-        super(ReadRequestPacket, self).__init__(payload, path, rpath, ptype)
+    def __init__(self, payload=b'', path=(), rpath=(), ptype=0x10):
+        super().__init__(payload, path, rpath, ptype)
 
 register(ReadRequestPacket, 0x10)
 
 
 class ReadResponsePacket(MemoryAccessPacket):
-    def __init__(self, payload=b'', path=[], rpath=[], ptype=0x11):
-        super(ReadResponsePacket, self).__init__(payload, path, rpath, ptype)
+    def __init__(self, payload=b'', path=(), rpath=(), ptype=0x11):
+        super().__init__(payload, path, rpath, ptype)
 
 register(ReadResponsePacket, 0x11)
 
 
 class WriteRequestPacket(MemoryAccessPacket):
-    def __init__(self, payload=b'', path=[], rpath=[], ptype=0x12):
-        super(WriteRequestPacket, self).__init__(payload, path, rpath, ptype)
+    def __init__(self, payload=b'', path=(), rpath=(), ptype=0x12):
+        super().__init__(payload, path, rpath, ptype)
 
     def build(self):
         self.count = len(self.data)
-        return super(WriteRequestPacket, self).build()
+        return super().build()
 
 register(WriteRequestPacket, 0x12)
 
 
 class WriteResponsePacket(MemoryAccessPacket):
-    def __init__(self, payload=b'', path=[], rpath=[], ptype=0x13):
-        super(WriteResponsePacket, self).__init__(payload, path, rpath, ptype)
+    def __init__(self, payload=b'', path=(), rpath=(), ptype=0x13):
+        super().__init__(payload, path, rpath, ptype)
 
 register(WriteResponsePacket, 0x13)
 
 
 class I2CPacket(Packet):
-    def __init__(self, payload=b'', path=[], rpath=[], ptype=0x2C):
-        super(I2CPacket, self).__init__(payload, path, rpath, ptype)
+    def __init__(self, payload=b'', path=(), rpath=(), ptype=0x2C):
+        super().__init__(payload, path, rpath, ptype)
 
     def pack_status_query_req(self):
         self.payload += struct.pack("B", 0x40)
@@ -360,8 +360,8 @@ class I2CPacket(Packet):
 
 
 class I2CRequestPacket(I2CPacket):
-    def __init__(self, payload=b'', path=[], rpath=[], ptype=0x2C):
-        super(I2CRequestPacket, self).__init__(payload, path, rpath, ptype)
+    def __init__(self, payload=b'', path=(), rpath=(), ptype=0x2C):
+        super().__init__(payload, path, rpath, ptype)
 
     def pack_status_query(self):
         self.pack_status_query_req()
@@ -385,8 +385,8 @@ register(I2CRequestPacket, 0x2C)
 
 
 class I2CResponsePacket(I2CPacket):
-    def __init__(self, payload=b'', path=[], rpath=[], ptype=0x2D):
-        super(I2CResponsePacket, self).__init__(payload, path, rpath, ptype)
+    def __init__(self, payload=b'', path=(), rpath=(), ptype=0x2D):
+        super().__init__(payload, path, rpath, ptype)
 
     def pack_status_query(self, status):
         self.pack_status_query_resp(status)
