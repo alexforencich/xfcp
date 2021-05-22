@@ -23,11 +23,11 @@ THE SOFTWARE.
 
 """
 
-from __future__ import print_function
-
 import argparse
 
-import xfcp.interface, xfcp.node
+import xfcp.interface
+import xfcp.node
+
 
 def main():
     #parser = argparse.ArgumentParser(description=__doc__.strip())
@@ -73,6 +73,6 @@ def main():
 
     print(hex(n[1].read_dword(16)))
 
+
 if __name__ == "__main__":
     main()
-

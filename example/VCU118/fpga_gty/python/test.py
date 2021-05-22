@@ -23,12 +23,14 @@ THE SOFTWARE.
 
 """
 
-from __future__ import print_function
-
 import argparse
 import time
 
-import xfcp.interface, xfcp.node, xfcp.gty_node
+import xfcp.interface
+import xfcp.node
+import xfcp.i2c_node
+import xfcp.gty_node
+
 
 def main():
     #parser = argparse.ArgumentParser(description=__doc__.strip())
@@ -126,6 +128,6 @@ def main():
             ch.is_rx_prbs_error(),
             ch.get_rx_prbs_err_count()))
 
+
 if __name__ == "__main__":
     main()
-

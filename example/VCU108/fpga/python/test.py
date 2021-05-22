@@ -23,11 +23,12 @@ THE SOFTWARE.
 
 """
 
-from __future__ import print_function
-
 import argparse
 
-import xfcp.interface, xfcp.node
+import xfcp.interface
+import xfcp.node
+import xfcp.i2c_node
+
 
 def main():
     #parser = argparse.ArgumentParser(description=__doc__.strip())
@@ -79,6 +80,6 @@ def main():
         if n[3].get_i2c_status() == 0:
             print(hex(k))
 
+
 if __name__ == "__main__":
     main()
-

@@ -23,11 +23,12 @@ THE SOFTWARE.
 
 """
 
-from __future__ import print_function
-
 import argparse
 
-import xfcp.interface, xfcp.node
+import xfcp.interface
+import xfcp.node
+import xfcp.i2c_node
+
 
 def main():
     #parser = argparse.ArgumentParser(description=__doc__.strip())
@@ -83,6 +84,6 @@ def main():
     print("MAC Address:")
     print(n[3].write_read_i2c(0x57, b'\xFA', 6).hex())
 
+
 if __name__ == "__main__":
     main()
-
