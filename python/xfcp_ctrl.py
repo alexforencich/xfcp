@@ -27,6 +27,7 @@ import argparse
 
 import xfcp.interface
 import xfcp.node
+import xfcp.i2c_node
 
 
 def main():
@@ -111,7 +112,7 @@ def main():
             n2 = n.get_by_path(path)
             if n2 is None:
                 print("Error: invalid path (%s)" % path)
-            elif isinstance(n2, xfcp.node.I2CNode):
+            elif isinstance(n2, xfcp.i2c_node.I2CNode):
                 i = n2.write_i2c(int(item[1], 0), bytearray.fromhex(item[2]))
                 print("Wrote %d bytes to %s addr 0x%x" % (i, '.'.join(str(x) for x in n2.path), int(item[1], 0)))
             else:
@@ -124,7 +125,7 @@ def main():
             n2 = n.get_by_path(path)
             if n2 is None:
                 print("Error: invalid path (%s)" % path)
-            elif isinstance(n2, xfcp.node.I2CNode):
+            elif isinstance(n2, xfcp.i2c_node.I2CNode):
                 data = n2.read_i2c(int(item[1], 0), int(item[2], 0))
                 print(' '.join(('{:02x}'.format(x) for x in data)))
             else:
@@ -137,7 +138,7 @@ def main():
             n2 = n.get_by_path(path)
             if n2 is None:
                 print("Error: invalid path (%s)" % path)
-            elif isinstance(n2, xfcp.node.I2CNode):
+            elif isinstance(n2, xfcp.i2c_node.I2CNode):
                 s = "%s I2C bus device addresses: " % path
                 for k in range(128):
                     n2.read_i2c(k, 1)
