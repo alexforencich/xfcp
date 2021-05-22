@@ -45,34 +45,35 @@ def parse(data):
 
 
 class Packet(object):
-    def __init__(self, payload=b'', path=[], rpath=[], ptype=0):
+    def __init__(self, payload=b'', path=(), rpath=(), ptype=0):
         self.payload = payload
         self.path = path
         self.rpath = rpath
         self.ptype = ptype
 
         if isinstance(payload, Packet):
-            self.payload = bytearray(payload.payload)
+            self.payload = bytes(payload.payload)
             self.path = tuple(payload.path)
             self.rpath = tuple(payload.rpath)
             self.ptype = payload.ptype
 
     def build(self):
-        data = b''
+        data = bytearray()
 
         for p in self.path:
-            data += struct.pack('B', p)
+            data.append(p)
 
         if len(self.rpath) > 0:
-            data += struct.pack('B', 0xFE)
+            data.append(0xFE)
             for p in self.rpath:
-                data += struct.pack('B', p)
+                data.append(p)
 
-        data += struct.pack('BB', 0xFF, self.ptype)
+        data.append(0xFF)
+        data.append(self.ptype)
 
-        data += self.payload
+        data.extend(self.payload)
 
-        return data
+        return bytes(data)
 
     def parse(self, data):
         i = 0
@@ -98,7 +99,7 @@ class Packet(object):
         self.ptype = data[i]
         i += 1
 
-        self.payload = data[i:]
+        self.payload = bytes(data[i:])
 
     def __eq__(self, other):
         if isinstance(other, Packet):
