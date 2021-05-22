@@ -224,7 +224,7 @@ def bench():
     def clkgen():
         clk.next = not clk
 
-    phy_clk_hp = Signal(int(40))
+    phy_clk_hp = Signal(int(20))
 
     @instance
     def rx_clk_gen():
