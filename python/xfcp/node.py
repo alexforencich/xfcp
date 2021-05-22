@@ -153,7 +153,14 @@ class Node(object):
         print('\n'.join(self.format_tree()))
 
     def __repr__(self):
-        return '%s(interface=%s, path=%s, ntype=%d, name="%s", ext_str="%s", children=%s)' % (type(self).__name__, repr(self.interface), repr(self.path), self.ntype, self.name, self.ext_str, repr(self.children))
+        return (
+            f"{type(self).__name__}(interface={self.interface}, "
+            f"path={self.path}, "
+            f"ntype={self.ntype:#x}, "
+            f"name={self.name!r}, "
+            f"ext_str={self.ext_str!r}, "
+            f"children={self.children})"
+        )
 
     def __getitem__(self, key):
         if type(key) is slice:

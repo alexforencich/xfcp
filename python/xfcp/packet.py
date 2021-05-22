@@ -110,7 +110,12 @@ class Packet(object):
         return False
 
     def __repr__(self):
-        return '%s(payload=%s, path=%s, rpath=%s, ptype=%d)' % (type(self).__name__, repr(self.payload), repr(self.path), repr(self.rpath), self.ptype)
+        return (
+            f"{type(self).__name__}(payload={self.payload}, "
+            f"path={self.path}, "
+            f"rpath={self.rpath}, "
+            f"ptype={self.ptype:#x})"
+        )
 
 
 class IDRequestPacket(Packet):
@@ -164,7 +169,17 @@ class MemoryAccessPacket(Packet):
         self.data = self.payload[aw+cw:]
 
     def __repr__(self):
-        return '%s(payload=%s, path=%s, rpath=%s, ptype=%d, addr=0x%x, count=%d, data=%s, addr_width=%d, count_width=%d)' % (type(self).__name__, repr(self.payload), repr(self.path), repr(self.rpath), self.ptype, self.addr, self.count, repr(self.data), self.addr_width, self.count_width)
+        return (
+            f"{type(self).__name__}(payload={self.payload}, "
+            f"path={self.path}, "
+            f"rpath={self.rpath}, "
+            f"ptype={self.ptype:#x}, "
+            f"addr={self.addr:#x}, "
+            f"count={self.count}, "
+            f"data={self.data}, "
+            f"addr_width={self.addr_width}, "
+            f"count_width={self.count_width})"
+        )
 
 
 class ReadRequestPacket(MemoryAccessPacket):
