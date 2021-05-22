@@ -270,10 +270,15 @@ class I2CPacket(Packet):
             return None
 
     def pack_read_req(self, count=1, start=False, stop=False):
+        cmd = 0x02
+        if start:
+            cmd |= 0x01
+        if stop:
+            cmd |= 0x08
         if count == 1:
-            self.payload += struct.pack('B', 0x02 | (0x01 if start else 0x00) | (0x08 if stop else 0x00))
-        elif count > 1:
-            self.payload += struct.pack('BB', 0x12 | (0x01 if start else 0x00) | (0x08 if stop else 0x00), count)
+            self.payload += struct.pack('B', cmd)
+        else:
+            self.payload += struct.pack('BB', cmd | 0x10, count)
 
     def unpack_read_req(self):
         if len(self.payload) < 1:
@@ -292,10 +297,15 @@ class I2CPacket(Packet):
             return None
 
     def pack_read_resp(self, data, start=False, stop=False):
+        cmd = 0x02
+        if start:
+            cmd |= 0x01
+        if stop:
+            cmd |= 0x08
         if len(data) == 1:
-            self.payload += struct.pack('B', 0x02 | (0x01 if start else 0x00) | (0x08 if stop else 0x00)) + data
-        elif len(data) > 1:
-            self.payload += struct.pack('BB', 0x12 | (0x01 if start else 0x00) | (0x08 if stop else 0x00), len(data)) + data
+            self.payload += struct.pack('B', cmd) + data
+        else:
+            self.payload += struct.pack('BB', cmd | 0x10, len(data)) + data
 
     def unpack_read_resp(self):
         if len(self.payload) < 2:
@@ -315,10 +325,15 @@ class I2CPacket(Packet):
             return None
 
     def pack_write_req(self, data, start=False, stop=False):
+        cmd = 0x04
+        if start:
+            cmd |= 0x01
+        if stop:
+            cmd |= 0x08
         if len(data) == 1:
-            self.payload += struct.pack('B', 0x04 | (0x01 if start else 0x00) | (0x08 if stop else 0x00)) + data
-        elif len(data) > 1:
-            self.payload += struct.pack('BB', 0x14 | (0x01 if start else 0x00) | (0x08 if stop else 0x00), len(data)) + data
+            self.payload += struct.pack('B', cmd) + data
+        else:
+            self.payload += struct.pack('BB', cmd | 0x10, len(data)) + data
 
     def unpack_write_req(self):
         if len(self.payload) < 2:
