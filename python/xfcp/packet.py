@@ -145,8 +145,8 @@ class MemoryAccessPacket(Packet):
             self.count_width = payload.count_width
 
     def build(self):
-        aw = int((self.addr_width+7)/8)
-        cw = int((self.count_width+7)/8)
+        aw = (self.addr_width+7)//8
+        cw = (self.count_width+7)//8
         self.payload = self.addr.to_bytes(aw, 'little')
         self.payload += self.count.to_bytes(cw, 'little')
         self.payload += self.data
@@ -157,8 +157,8 @@ class MemoryAccessPacket(Packet):
         if data is not None:
             super(MemoryAccessPacket, self).parse(data)
 
-        aw = int((self.addr_width+7)/8)
-        cw = int((self.count_width+7)/8)
+        aw = (self.addr_width+7)//8
+        cw = (self.count_width+7)//8
         self.addr = int.from_bytes(self.payload[0:aw], 'little')
         self.count = int.from_bytes(self.payload[aw:aw+cw], 'little')
         self.data = self.payload[aw+cw:]
