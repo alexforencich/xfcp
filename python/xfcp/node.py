@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 """
 
-import math
 import struct
 
 from . import packet
@@ -210,13 +209,13 @@ class MemoryNode(Node):
             self.word_size = obj.word_size
             self.count_width = obj.count_width
 
-        self.byte_addr_width = int(self.addr_width+math.ceil(math.log(self.word_size/8, 2)))
+        self.byte_addr_width = self.addr_width+((self.word_size-1)//8).bit_length()
 
     def init(self, id_pkt=None):
         super(MemoryNode, self).init(id_pkt)
 
         self.addr_width, self.data_width, self.word_size, self.count_width = struct.unpack_from('<HHHH', self.id_pkt.payload, 2)
-        self.byte_addr_width = int(self.addr_width+math.ceil(math.log(self.word_size/8, 2)))
+        self.byte_addr_width = self.addr_width+((self.word_size-1)//8).bit_length()
 
         return self
 
