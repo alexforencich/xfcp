@@ -163,10 +163,10 @@ class Node(object):
 
     def __iter__(self):
         return self.children.__iter__()
-    
+
     def __len__(self):
         return len(self.children)
-        
+
     def count(self):
         return len(self.children)
 
@@ -359,4 +359,3 @@ class I2CNode(Node):
         return pkt.unpack_set_prescale()
 
 register(I2CNode, 0x2C00, 8)
-

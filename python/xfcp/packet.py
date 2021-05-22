@@ -101,7 +101,7 @@ class Packet(object):
         self.payload = data[i:]
 
     def __eq__(self, other):
-        if isinstance(payload, Packet):
+        if isinstance(other, Packet):
             return (self.path == other.path and
                 self.rpath == other.rpath and
                 self.ptype == other.ptype and
@@ -376,4 +376,3 @@ class I2CResponsePacket(I2CPacket):
         return self.unpack_write_resp()
 
 register(I2CResponsePacket, 0x2D)
-

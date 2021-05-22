@@ -46,6 +46,7 @@ prbs_mode_mapping = {
     'sq': PRBS_MODE_SQ
 }
 
+
 class GTYE3CommonNode(node.MemoryNode):
     def __init__(self, obj=None):
         super(GTYE3CommonNode, self).__init__(obj)
@@ -501,4 +502,3 @@ class GTYE4ChannelNode(GTYE3ChannelNode):
         super(GTYE4ChannelNode, self).__init__(obj)
 
 node.register(GTYE4ChannelNode, 0x8A93)
-

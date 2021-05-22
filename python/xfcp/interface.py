@@ -28,6 +28,7 @@ import socket
 from . import packet
 from . import node
 
+
 def cobs_encode(block):
     block = bytearray(block)
     enc = bytearray()
@@ -60,6 +61,7 @@ def cobs_encode(block):
         enc.extend(seg)
 
     return bytes(enc)
+
 
 def cobs_decode(block):
     block = bytearray(block)
@@ -150,4 +152,3 @@ class UDPInterface(Interface):
 
     def receive(self):
         return packet.parse(self.socket.recvfrom(1500)[0])
-

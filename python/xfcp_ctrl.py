@@ -27,7 +27,9 @@ from __future__ import print_function
 
 import argparse
 
-import xfcp.interface, xfcp.node
+import xfcp.interface
+import xfcp.node
+
 
 def main():
     #parser = argparse.ArgumentParser(description=__doc__.strip())
@@ -37,10 +39,10 @@ def main():
     parser.add_argument('-H', '--host', type=str, help="Host (i.e. 192.168.1.128:14000)")
     parser.add_argument('--enum', action='store_true', help="Enumerate modules")
     parser.add_argument('--id', type=str, nargs=1, metavar=('PATH',), action='append', help="Identify module")
-    parser.add_argument('--write', type=str, nargs=3, metavar=('PATH','ADDR', 'DATA'), action='append', help="Memory write")
-    parser.add_argument('--read', type=str, nargs=3, metavar=('PATH','ADDR', 'LEN'), action='append', help="Memory read")
-    parser.add_argument('--write_i2c', type=str, nargs=3, metavar=('PATH','ADDR', 'DATA'), action='append', help="I2C write")
-    parser.add_argument('--read_i2c', type=str, nargs=3, metavar=('PATH','ADDR', 'LEN'), action='append', help="I2C read")
+    parser.add_argument('--write', type=str, nargs=3, metavar=('PATH', 'ADDR', 'DATA'), action='append', help="Memory write")
+    parser.add_argument('--read', type=str, nargs=3, metavar=('PATH', 'ADDR', 'LEN'), action='append', help="Memory read")
+    parser.add_argument('--write_i2c', type=str, nargs=3, metavar=('PATH', 'ADDR', 'DATA'), action='append', help="I2C write")
+    parser.add_argument('--read_i2c', type=str, nargs=3, metavar=('PATH', 'ADDR', 'LEN'), action='append', help="I2C read")
     parser.add_argument('--enum_i2c', type=str, nargs=1, metavar=('PATH'), action='append', help="I2C enumerate")
 
     args = parser.parse_args()
@@ -52,7 +54,7 @@ def main():
     intf = None
 
     if host is not None:
-        # ethernet interface
+        # Ethernet interface
         intf = xfcp.interface.UDPInterface(host)
     else:
         # serial interface
@@ -150,6 +152,6 @@ def main():
     if do_enumerate:
         n.print_tree()
 
+
 if __name__ == "__main__":
     main()
-
