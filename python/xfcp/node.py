@@ -128,10 +128,13 @@ class Node(object):
 
         return l
 
+    def path_string(self):
+        return '.'.join(str(x) for x in self.path)
+
     def format_tree(self):
         s = ''
         if len(self.path) > 0:
-            s += '[{}] '.format('.'.join(str(x) for x in self.path))
+            s += '[{}] '.format(self.path_string())
         s += type(self).__name__ + ' [{}]'.format(self.name)
         if len(self.ext_str) > 0:
             s += ' [{}]'.format(self.ext_str)
