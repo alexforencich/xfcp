@@ -381,9 +381,10 @@ wire [CL_PORTS_P1-1:0] grant_encoded;
 // arbiter instance
 arbiter #(
     .PORTS(PORTS+1),
-    .TYPE("ROUND_ROBIN"),
-    .BLOCK("ACKNOWLEDGE"),
-    .LSB_PRIORITY("HIGH")
+    .ARB_TYPE_ROUND_ROBIN(1),
+    .ARB_BLOCK(1),
+    .ARB_BLOCK_ACK(1),
+    .ARB_LSB_HIGH_PRIORITY(1)
 )
 arb_inst (
     .clk(clk),
