@@ -93,7 +93,31 @@ def main():
     for ch in xcvr:
         ch.reset()
 
-    time.sleep(0.01)
+    print("Wait for transceiver reset done")
+    for k in range(30):
+        done = True
+        for ch in xcvr:
+            if not ch.get_tx_reset_done() or not ch.get_rx_reset_done():
+                done = False
+                break
+        if done:
+            break
+        time.sleep(0.1)
+
+    print("Check reset done status")
+    for ch in xcvr:
+        if not ch.get_tx_reset_done():
+            print("[%s] [%s]%s TX reset not done!" % (
+                '.'.join(str(x) for x in ch.path),
+                ch.name,
+                ' [{}]'.format(ch.ext_str) if ch.ext_str else ''))
+        if not ch.get_rx_reset_done():
+            print("[%s] [%s]%s RX reset not done!" % (
+                '.'.join(str(x) for x in ch.path),
+                ch.name,
+                ' [{}]'.format(ch.ext_str) if ch.ext_str else ''))
+
+    print("Done")
 
     print("Clear error counters")
     for ch in xcvr:
