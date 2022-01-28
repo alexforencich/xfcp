@@ -73,7 +73,7 @@ set_property -dict {LOC AT21 IOSTANDARD LVCMOS18} [get_ports phy_int_n]
 #set_property -dict {LOC AV21 IOSTANDARD LVCMOS18 SLEW SLOW DRIVE 8} [get_ports phy_mdc]
 
 # 625 MHz ref clock from SGMII PHY
-create_clock -period 1.600 -name phy_sgmii_clk [get_ports phy_sgmii_clk_p]
+#create_clock -period 1.600 -name phy_sgmii_clk [get_ports phy_sgmii_clk_p]
 
 # Bullseye GTY
 set_property -dict {LOC AR45} [get_ports bullseye_rx0_p] ;# MGTYRXP0_126 GTYE3_CHANNEL_X0Y8 / GTYE3_COMMON_X0Y3
