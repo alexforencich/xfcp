@@ -459,10 +459,16 @@ wire [8-1:0] qsfp_gty_drp_we;
 wire [8-1:0] qsfp_gty_drp_rdy;
 
 wire [8-1:0] qsfp_gty_reset;
-wire [8-1:0] qsfp_gty_tx_reset;
-wire [8-1:0] qsfp_gty_rx_reset;
-wire qsfp_gty_tx_reset_done;
-wire qsfp_gty_rx_reset_done;
+wire [8-1:0] qsfp_gty_tx_pcs_reset;
+wire [8-1:0] qsfp_gty_tx_pma_reset;
+wire [8-1:0] qsfp_gty_rx_pcs_reset;
+wire [8-1:0] qsfp_gty_rx_pma_reset;
+wire [8-1:0] qsfp_gty_rx_dfe_lpm_reset;
+wire [8-1:0] qsfp_gty_eyescan_reset;
+wire [8-1:0] qsfp_gty_tx_reset_done;
+wire [8-1:0] qsfp_gty_tx_pma_reset_done;
+wire [8-1:0] qsfp_gty_rx_reset_done;
+wire [8-1:0] qsfp_gty_rx_pma_reset_done;
 
 wire qsfp_gty_txusrclk2;
 wire [8*4-1:0] qsfp_gty_txprbssel;
@@ -541,10 +547,16 @@ xfcp_qsfp1_gty_quad_inst (
     .gty_drp_rdy(qsfp_gty_drp_rdy[0*4*1 +: 4*1]),
 
     .gty_reset(qsfp_gty_reset[0*4*1 +: 4*1]),
-    .gty_tx_reset(qsfp_gty_tx_reset[0*4*1 +: 4*1]),
-    .gty_rx_reset(qsfp_gty_rx_reset[0*4*1 +: 4*1]),
-    .gty_tx_reset_done({4{qsfp_gty_tx_reset_done}}),
-    .gty_rx_reset_done({4{qsfp_gty_rx_reset_done}}),
+    .gty_tx_pcs_reset(qsfp_gty_tx_pcs_reset[0*4*1 +: 4*1]),
+    .gty_tx_pma_reset(qsfp_gty_tx_pma_reset[0*4*1 +: 4*1]),
+    .gty_rx_pcs_reset(qsfp_gty_rx_pcs_reset[0*4*1 +: 4*1]),
+    .gty_rx_pma_reset(qsfp_gty_rx_pma_reset[0*4*1 +: 4*1]),
+    .gty_rx_dfe_lpm_reset(qsfp_gty_rx_dfe_lpm_reset[0*4*1 +: 4*1]),
+    .gty_eyescan_reset(qsfp_gty_eyescan_reset[0*4*1 +: 4*1]),
+    .gty_tx_reset_done(qsfp_gty_tx_reset_done[0*4*1 +: 4*1]),
+    .gty_tx_pma_reset_done(qsfp_gty_tx_pma_reset_done[0*4*1 +: 4*1]),
+    .gty_rx_reset_done(qsfp_gty_rx_reset_done[0*4*1 +: 4*1]),
+    .gty_rx_pma_reset_done(qsfp_gty_rx_pma_reset_done[0*4*1 +: 4*1]),
 
     .gty_txusrclk2({4{qsfp_gty_txusrclk2}}),
     .gty_txprbssel(qsfp_gty_txprbssel[0*4*4 +: 4*4]),
@@ -624,10 +636,16 @@ xfcp_qsfp2_gty_quad_inst (
     .gty_drp_rdy(qsfp_gty_drp_rdy[1*4*1 +: 4*1]),
 
     .gty_reset(qsfp_gty_reset[1*4*1 +: 4*1]),
-    .gty_tx_reset(qsfp_gty_tx_reset[1*4*1 +: 4*1]),
-    .gty_rx_reset(qsfp_gty_rx_reset[1*4*1 +: 4*1]),
-    .gty_tx_reset_done({4{qsfp_gty_tx_reset_done}}),
-    .gty_rx_reset_done({4{qsfp_gty_rx_reset_done}}),
+    .gty_tx_pcs_reset(qsfp_gty_tx_pcs_reset[1*4*1 +: 4*1]),
+    .gty_tx_pma_reset(qsfp_gty_tx_pma_reset[1*4*1 +: 4*1]),
+    .gty_rx_pcs_reset(qsfp_gty_rx_pcs_reset[1*4*1 +: 4*1]),
+    .gty_rx_pma_reset(qsfp_gty_rx_pma_reset[1*4*1 +: 4*1]),
+    .gty_rx_dfe_lpm_reset(qsfp_gty_rx_dfe_lpm_reset[1*4*1 +: 4*1]),
+    .gty_eyescan_reset(qsfp_gty_eyescan_reset[1*4*1 +: 4*1]),
+    .gty_tx_reset_done(qsfp_gty_tx_reset_done[1*4*1 +: 4*1]),
+    .gty_tx_pma_reset_done(qsfp_gty_tx_pma_reset_done[1*4*1 +: 4*1]),
+    .gty_rx_reset_done(qsfp_gty_rx_reset_done[1*4*1 +: 4*1]),
+    .gty_rx_pma_reset_done(qsfp_gty_rx_pma_reset_done[1*4*1 +: 4*1]),
 
     .gty_txusrclk2({4{qsfp_gty_txusrclk2}}),
     .gty_txprbssel(qsfp_gty_txprbssel[1*4*4 +: 4*4]),
@@ -675,13 +693,13 @@ gtwizard_ultrascale_0 gtwizard_ultrascale_0_inst (
     .gtwiz_userclk_rx_active_out         (),
     .gtwiz_reset_clk_freerun_in          (gty_drp_clk),
     .gtwiz_reset_all_in                  (gty_drp_rst || qsfp_gty_reset),
-    .gtwiz_reset_tx_pll_and_datapath_in  (|qsfp_gty_tx_reset),
+    .gtwiz_reset_tx_pll_and_datapath_in  (1'b0),
     .gtwiz_reset_tx_datapath_in          (1'b0),
-    .gtwiz_reset_rx_pll_and_datapath_in  (|qsfp_gty_rx_reset),
+    .gtwiz_reset_rx_pll_and_datapath_in  (1'b0),
     .gtwiz_reset_rx_datapath_in          (1'b0),
     .gtwiz_reset_rx_cdr_stable_out       (),
-    .gtwiz_reset_tx_done_out             (qsfp_gty_tx_reset_done),
-    .gtwiz_reset_rx_done_out             (qsfp_gty_rx_reset_done),
+    .gtwiz_reset_tx_done_out             (),
+    .gtwiz_reset_rx_done_out             (),
     .gtwiz_userdata_tx_in                ({8{64'd0}}),
     .gtwiz_userdata_rx_out               (),
     .drpaddr_common_in                   (qsfp_gty_com_drp_addr),
@@ -714,12 +732,21 @@ gtwizard_ultrascale_0 gtwizard_ultrascale_0_inst (
     .drpdo_out                           (qsfp_gty_drp_di),
     .drprdy_out                          (qsfp_gty_drp_rdy),
     .gtpowergood_out                     (),
-    .rxpmaresetdone_out                  (),
+    .eyescandataerror_out                (),
     .rxprbserr_out                       (qsfp_gty_rxprbserr),
     .rxprbslocked_out                    (qsfp_gty_rxprbslocked),
+    .rxpcsreset_in                       (qsfp_gty_rx_pcs_reset),
+    .rxpmareset_in                       (qsfp_gty_rx_pma_reset),
+    .rxdfelpmreset_in                    (qsfp_gty_rx_dfe_lpm_reset),
+    .eyescanreset_in                     (qsfp_gty_eyescan_reset),
+    .rxpmaresetdone_out                  (qsfp_gty_rx_pma_reset_done),
     .rxprgdivresetdone_out               (),
-    .txpmaresetdone_out                  (),
-    .txprgdivresetdone_out               ()
+    .rxresetdone_out                     (qsfp_gty_rx_reset_done),
+    .txpcsreset_in                       (qsfp_gty_tx_pcs_reset),
+    .txpmareset_in                       (qsfp_gty_tx_pma_reset),
+    .txpmaresetdone_out                  (qsfp_gty_tx_pma_reset_done),
+    .txprgdivresetdone_out               (),
+    .txresetdone_out                     (qsfp_gty_tx_reset_done)
 );
 
 // SGMII interface to PHY

@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2017 Alex Forencich
+Copyright (c) 2017-2022 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -100,10 +100,16 @@ module xfcp_gty_quad #
     input  wire [CH-1:0]                gty_drp_rdy,
 
     output wire [CH-1:0]                gty_reset,
-    output wire [CH-1:0]                gty_tx_reset,
-    output wire [CH-1:0]                gty_rx_reset,
+    output wire [CH-1:0]                gty_tx_pcs_reset,
+    output wire [CH-1:0]                gty_tx_pma_reset,
+    output wire [CH-1:0]                gty_rx_pcs_reset,
+    output wire [CH-1:0]                gty_rx_pma_reset,
+    output wire [CH-1:0]                gty_rx_dfe_lpm_reset,
+    output wire [CH-1:0]                gty_eyescan_reset,
     input  wire [CH-1:0]                gty_tx_reset_done,
+    input  wire [CH-1:0]                gty_tx_pma_reset_done,
     input  wire [CH-1:0]                gty_rx_reset_done,
+    input  wire [CH-1:0]                gty_rx_pma_reset_done,
 
     input  wire [CH-1:0]                gty_txusrclk2,
     output wire [CH*4-1:0]              gty_txprbssel,
@@ -209,10 +215,16 @@ generate
             .gty_drp_we(gty_drp_we[n +: 1]),
             .gty_drp_rdy(gty_drp_rdy[n +: 1]),
             .gty_reset(gty_reset[n +: 1]),
-            .gty_tx_reset(gty_tx_reset[n +: 1]),
-            .gty_rx_reset(gty_rx_reset[n +: 1]),
+            .gty_tx_pcs_reset(gty_tx_pcs_reset[n +: 1]),
+            .gty_tx_pma_reset(gty_tx_pma_reset[n +: 1]),
+            .gty_rx_pcs_reset(gty_rx_pcs_reset[n +: 1]),
+            .gty_rx_pma_reset(gty_rx_pma_reset[n +: 1]),
+            .gty_rx_dfe_lpm_reset(gty_rx_dfe_lpm_reset[n +: 1]),
+            .gty_eyescan_reset(gty_eyescan_reset[n +: 1]),
             .gty_tx_reset_done(gty_tx_reset_done[n +: 1]),
+            .gty_tx_pma_reset_done(gty_tx_pma_reset_done[n +: 1]),
             .gty_rx_reset_done(gty_rx_reset_done[n +: 1]),
+            .gty_rx_pma_reset_done(gty_rx_pma_reset_done[n +: 1]),
             .gty_txusrclk2(gty_txusrclk2[n +: 1]),
             .gty_txprbssel(gty_txprbssel[n*4 +: 4]),
             .gty_txprbsforceerr(gty_txprbsforceerr[n +: 1]),

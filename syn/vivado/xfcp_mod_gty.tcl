@@ -24,13 +24,6 @@ foreach inst [get_cells -hier -filter {(ORIG_REF_NAME == xfcp_mod_gty || REF_NAM
     puts "Inserting timing constraints for xfcp_mod_gty instance $inst"
 
     # reset synchronization
-    set reset_ffs [get_cells -quiet -hier -regexp ".*/gty_(tx|rx)_reset_sync_\[12\]_reg_reg" -filter "PARENT == $inst"]
-
-    if {[llength $reset_ffs]} {
-        set_property ASYNC_REG TRUE $reset_ffs
-        set_false_path -to [get_pins -of_objects $reset_ffs -filter {IS_PRESET || IS_RESET}]
-    }
-
     set sync_ffs [get_cells -hier -regexp ".*/gty_tx_reset_done_(sync_\[12\])?_reg_reg" -filter "PARENT == $inst"]
 
     if {[llength $sync_ffs]} {
@@ -41,6 +34,16 @@ foreach inst [get_cells -hier -filter {(ORIG_REF_NAME == xfcp_mod_gty || REF_NAM
         set_max_delay -from [get_cells $inst/gty_tx_reset_done_reg_reg] -to [get_cells $inst/gty_tx_reset_done_sync_1_reg_reg] -datapath_only [get_property -min PERIOD $src_clk]
     }
 
+    set sync_ffs [get_cells -hier -regexp ".*/gty_tx_pma_reset_done_(sync_\[12\])?_reg_reg" -filter "PARENT == $inst"]
+
+    if {[llength $sync_ffs]} {
+        set_property ASYNC_REG TRUE $sync_ffs
+
+        set src_clk [get_clocks -of_objects [get_pins $inst/gty_tx_pma_reset_done_reg_reg/C]]
+
+        set_max_delay -from [get_cells $inst/gty_tx_pma_reset_done_reg_reg] -to [get_cells $inst/gty_tx_pma_reset_done_sync_1_reg_reg] -datapath_only [get_property -min PERIOD $src_clk]
+    }
+
     set sync_ffs [get_cells -hier -regexp ".*/gty_rx_reset_done_(sync_\[12\])?_reg_reg" -filter "PARENT == $inst"]
 
     if {[llength $sync_ffs]} {
@@ -49,6 +52,16 @@ foreach inst [get_cells -hier -filter {(ORIG_REF_NAME == xfcp_mod_gty || REF_NAM
         set src_clk [get_clocks -of_objects [get_pins $inst/gty_rx_reset_done_reg_reg/C]]
 
         set_max_delay -from [get_cells $inst/gty_rx_reset_done_reg_reg] -to [get_cells $inst/gty_rx_reset_done_sync_1_reg_reg] -datapath_only [get_property -min PERIOD $src_clk]
+    }
+
+    set sync_ffs [get_cells -hier -regexp ".*/gty_rx_pma_reset_done_(sync_\[12\])?_reg_reg" -filter "PARENT == $inst"]
+
+    if {[llength $sync_ffs]} {
+        set_property ASYNC_REG TRUE $sync_ffs
+
+        set src_clk [get_clocks -of_objects [get_pins $inst/gty_rx_pma_reset_done_reg_reg/C]]
+
+        set_max_delay -from [get_cells $inst/gty_rx_pma_reset_done_reg_reg] -to [get_cells $inst/gty_rx_pma_reset_done_sync_1_reg_reg] -datapath_only [get_property -min PERIOD $src_clk]
     }
 
     # TX

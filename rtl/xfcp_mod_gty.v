@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2017 Alex Forencich
+Copyright (c) 2017-2022 Alex Forencich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -67,10 +67,16 @@ module xfcp_mod_gty #
     input  wire                   gty_drp_rdy,
 
     output wire                   gty_reset,
-    output wire                   gty_tx_reset,
-    output wire                   gty_rx_reset,
+    output wire                   gty_tx_pcs_reset,
+    output wire                   gty_tx_pma_reset,
+    output wire                   gty_rx_pcs_reset,
+    output wire                   gty_rx_pma_reset,
+    output wire                   gty_rx_dfe_lpm_reset,
+    output wire                   gty_eyescan_reset,
     input  wire                   gty_tx_reset_done,
+    input  wire                   gty_tx_pma_reset_done,
     input  wire                   gty_rx_reset_done,
+    input  wire                   gty_rx_pma_reset_done,
 
     input  wire                   gty_txusrclk2,
     output wire [3:0]             gty_txprbssel,
@@ -103,53 +109,49 @@ reg [15:0] wb_dat_int_reg = 16'd0, wb_dat_int_next;
 reg wb_ack_int_reg = 1'b0, wb_ack_int_next;
 
 reg gty_reset_reg = 1'b0, gty_reset_next;
-reg gty_tx_reset_reg = 1'b0, gty_tx_reset_next;
-reg gty_tx_reset_sync_1_reg = 1'b0, gty_tx_reset_sync_2_reg = 1'b0;
-reg gty_rx_reset_reg = 1'b0, gty_rx_reset_next;
-reg gty_rx_reset_sync_1_reg = 1'b0, gty_rx_reset_sync_2_reg = 1'b0;
+reg gty_tx_pcs_reset_reg = 1'b0, gty_tx_pcs_reset_next;
+reg gty_tx_pma_reset_reg = 1'b0, gty_tx_pma_reset_next;
+reg gty_rx_pcs_reset_reg = 1'b0, gty_rx_pcs_reset_next;
+reg gty_rx_pma_reset_reg = 1'b0, gty_rx_pma_reset_next;
+reg gty_rx_dfe_lpm_reset_reg = 1'b0, gty_rx_dfe_lpm_reset_next;
+reg gty_eyescan_reset_reg = 1'b0, gty_eyescan_reset_next;
 
 assign gty_reset = gty_reset_reg;
-assign gty_tx_reset = gty_tx_reset_sync_2_reg;
-assign gty_rx_reset = gty_rx_reset_sync_2_reg;
-
-always @(posedge gty_txusrclk2 or posedge gty_tx_reset_reg) begin
-    if (gty_tx_reset_reg) begin
-        gty_tx_reset_sync_1_reg <= 1'b1;
-        gty_tx_reset_sync_2_reg <= 1'b1;
-    end else begin
-        gty_tx_reset_sync_1_reg <= 1'b0;
-        gty_tx_reset_sync_2_reg <= gty_tx_reset_sync_1_reg;
-    end
-end
-
-always @(posedge gty_rxusrclk2 or posedge gty_rx_reset_reg) begin
-    if (gty_rx_reset_reg) begin
-        gty_rx_reset_sync_1_reg <= 1'b1;
-        gty_rx_reset_sync_2_reg <= 1'b1;
-    end else begin
-        gty_rx_reset_sync_1_reg <= 1'b0;
-        gty_rx_reset_sync_2_reg <= gty_rx_reset_sync_1_reg;
-    end
-end
+assign gty_tx_pcs_reset = gty_tx_pcs_reset_reg;
+assign gty_tx_pma_reset = gty_tx_pma_reset_reg;
+assign gty_rx_pcs_reset = gty_rx_pcs_reset_reg;
+assign gty_rx_pma_reset = gty_rx_pma_reset_reg;
+assign gty_rx_dfe_lpm_reset = gty_rx_dfe_lpm_reset_reg;
+assign gty_eyescan_reset = gty_eyescan_reset_reg;
 
 reg gty_tx_reset_done_reg = 1'b0;
 reg gty_tx_reset_done_sync_1_reg = 1'b0, gty_tx_reset_done_sync_2_reg = 1'b0;
+reg gty_tx_pma_reset_done_reg = 1'b0;
+reg gty_tx_pma_reset_done_sync_1_reg = 1'b0, gty_tx_pma_reset_done_sync_2_reg = 1'b0;
 reg gty_rx_reset_done_reg = 1'b0;
 reg gty_rx_reset_done_sync_1_reg = 1'b0, gty_rx_reset_done_sync_2_reg = 1'b0;
+reg gty_rx_pma_reset_done_reg = 1'b0;
+reg gty_rx_pma_reset_done_sync_1_reg = 1'b0, gty_rx_pma_reset_done_sync_2_reg = 1'b0;
 
 always @(posedge gty_txusrclk2) begin
     gty_tx_reset_done_reg <= gty_tx_reset_done;
+    gty_tx_pma_reset_done_reg <= gty_tx_pma_reset_done;
 end
 
 always @(posedge gty_rxusrclk2) begin
     gty_rx_reset_done_reg <= gty_rx_reset_done;
+    gty_rx_pma_reset_done_reg <= gty_rx_pma_reset_done;
 end
 
 always @(posedge clk) begin
     gty_tx_reset_done_sync_1_reg <= gty_tx_reset_done_reg;
     gty_tx_reset_done_sync_2_reg <= gty_tx_reset_done_sync_1_reg;
+    gty_tx_pma_reset_done_sync_1_reg <= gty_tx_pma_reset_done_reg;
+    gty_tx_pma_reset_done_sync_2_reg <= gty_tx_pma_reset_done_sync_1_reg;
     gty_rx_reset_done_sync_1_reg <= gty_rx_reset_done_reg;
     gty_rx_reset_done_sync_2_reg <= gty_rx_reset_done_sync_1_reg;
+    gty_rx_pma_reset_done_sync_1_reg <= gty_rx_pma_reset_done_reg;
+    gty_rx_pma_reset_done_sync_2_reg <= gty_rx_pma_reset_done_sync_1_reg;
 end
 
 reg [3:0] gty_txprbssel_reg = 4'd0, gty_txprbssel_next;
@@ -236,9 +238,13 @@ always @* begin
     wb_dat_int_next = 16'd0;
     wb_ack_int_next = 1'b0;
 
-    gty_reset_next = 1'b0;
-    gty_tx_reset_next = 1'b0;
-    gty_rx_reset_next = 1'b0;
+    gty_reset_next = gty_reset_reg;
+    gty_tx_pcs_reset_next = gty_tx_pcs_reset_reg;
+    gty_tx_pma_reset_next = gty_tx_pma_reset_reg;
+    gty_rx_pcs_reset_next = gty_rx_pcs_reset_reg;
+    gty_rx_pma_reset_next = gty_rx_pma_reset_reg;
+    gty_rx_dfe_lpm_reset_next = gty_rx_dfe_lpm_reset_reg;
+    gty_eyescan_reset_next = gty_eyescan_reset_reg;
 
     gty_txprbssel_next = gty_txprbssel_reg;
     gty_txprbsforceerr_next = gty_txprbsforceerr_reg;
@@ -261,8 +267,12 @@ always @* begin
             case (wb_adr[7:0])
                 8'h00: begin
                     gty_reset_next = wb_dat_m[0];
-                    gty_tx_reset_next = wb_dat_m[1];
-                    gty_rx_reset_next = wb_dat_m[2];
+                    gty_tx_pcs_reset_next = wb_dat_m[1];
+                    gty_tx_pma_reset_next = wb_dat_m[2];
+                    gty_rx_pcs_reset_next = wb_dat_m[3];
+                    gty_rx_pma_reset_next = wb_dat_m[4];
+                    gty_rx_dfe_lpm_reset_next = wb_dat_m[5];
+                    gty_eyescan_reset_next = wb_dat_m[6];
                 end
                 8'h01: begin
                     gty_txpolarity_next = wb_dat_m[0];
@@ -298,8 +308,17 @@ always @* begin
             // read
             case (wb_adr[7:0])
                 8'h00: begin
-                    wb_dat_int_next[9] = gty_tx_reset_done_sync_2_reg;
+                    wb_dat_int_next[0] = gty_reset_reg;
+                    wb_dat_int_next[1] = gty_tx_pcs_reset_reg;
+                    wb_dat_int_next[2] = gty_tx_pma_reset_reg;
+                    wb_dat_int_next[3] = gty_rx_pcs_reset_reg;
+                    wb_dat_int_next[4] = gty_rx_pma_reset_reg;
+                    wb_dat_int_next[5] = gty_rx_dfe_lpm_reset_reg;
+                    wb_dat_int_next[6] = gty_eyescan_reset_reg;
+                    wb_dat_int_next[8] = gty_tx_reset_done_sync_2_reg;
+                    wb_dat_int_next[9] = gty_tx_pma_reset_done_sync_2_reg;
                     wb_dat_int_next[10] = gty_rx_reset_done_sync_2_reg;
+                    wb_dat_int_next[11] = gty_rx_pma_reset_done_sync_2_reg;
                 end
                 8'h01: begin
                     wb_dat_int_next[0] = gty_txpolarity_reg;
@@ -342,8 +361,12 @@ always @(posedge clk) begin
     wb_ack_int_reg <= wb_ack_int_next;
 
     gty_reset_reg <= gty_reset_next;
-    gty_tx_reset_reg <= gty_tx_reset_next;
-    gty_rx_reset_reg <= gty_rx_reset_next;
+    gty_tx_pcs_reset_reg <= gty_tx_pcs_reset_next;
+    gty_tx_pma_reset_reg <= gty_tx_pma_reset_next;
+    gty_rx_pcs_reset_reg <= gty_rx_pcs_reset_next;
+    gty_rx_pma_reset_reg <= gty_rx_pma_reset_next;
+    gty_rx_dfe_lpm_reset_reg <= gty_rx_dfe_lpm_reset_next;
+    gty_eyescan_reset_reg <= gty_eyescan_reset_next;
 
     gty_txprbssel_reg <= gty_txprbssel_next;
     gty_txprbsforceerr_reg <= gty_txprbsforceerr_next;
@@ -363,8 +386,12 @@ always @(posedge clk) begin
     if (rst) begin
         wb_ack_int_reg <= 1'b0;
         gty_reset_reg <= 1'b0;
-        gty_tx_reset_reg <= 1'b0;
-        gty_rx_reset_reg <= 1'b0;
+        gty_tx_pcs_reset_reg <= 1'b0;
+        gty_tx_pma_reset_reg <= 1'b0;
+        gty_rx_pcs_reset_reg <= 1'b0;
+        gty_rx_pma_reset_reg <= 1'b0;
+        gty_rx_dfe_lpm_reset_reg <= 1'b0;
+        gty_eyescan_reset_reg <= 1'b0;
         gty_txprbssel_reg <= 4'd0;
         gty_txprbsforceerr_reg <= 1'b0;
         gty_txpolarity_reg <= 1'b0;

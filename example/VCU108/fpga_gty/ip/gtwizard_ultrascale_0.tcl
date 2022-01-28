@@ -22,7 +22,45 @@ set_property -dict [list \
     CONFIG.RX_REFCLK_SOURCE {X0Y15 clk0 X0Y14 clk0 X0Y13 clk0 X0Y12 clk0} \
     CONFIG.TX_REFCLK_SOURCE {X0Y15 clk0 X0Y14 clk0 X0Y13 clk0 X0Y12 clk0} \
     CONFIG.FREERUN_FREQUENCY {62.5} \
-    CONFIG.ENABLE_OPTIONAL_PORTS {drpaddr_common_in drpaddr_in drpclk_common_in drpclk_in drpdi_common_in drpdi_in drpen_common_in drpen_in drpwe_common_in drpwe_in rxpolarity_in rxprbscntreset_in rxprbssel_in txdiffctrl_in txelecidle_in txinhibit_in txmaincursor_in txpolarity_in txpostcursor_in txprbsforceerr_in txprbssel_in txprecursor_in drpdo_common_out drpdo_out drprdy_common_out drprdy_out rxprbserr_out rxprbslocked_out} \
+    CONFIG.ENABLE_OPTIONAL_PORTS {
+        drpaddr_in
+        drpclk_in
+        drpdi_in
+        drpen_in
+        drpwe_in
+        drpdo_out
+        drprdy_out
+        drpaddr_common_in
+        drpclk_common_in
+        drpdi_common_in
+        drpen_common_in
+        drpwe_common_in
+        drpdo_common_out
+        drprdy_common_out
+        rxpmareset_in
+        rxdfelpmreset_in
+        eyescanreset_in
+        rxpcsreset_in
+        rxresetdone_out
+        txpmareset_in
+        txpcsreset_in
+        txresetdone_out
+        rxpolarity_in
+        rxprbscntreset_in
+        rxprbssel_in
+        txdiffctrl_in
+        txelecidle_in
+        txinhibit_in
+        txmaincursor_in
+        txpolarity_in
+        txpostcursor_in
+        txprbsforceerr_in
+        txprbssel_in
+        txprecursor_in
+        rxprbserr_out
+        rxprbslocked_out
+        eyescandataerror_out
+    } \
     CONFIG.LOCATE_TX_USER_CLOCKING {CORE} \
     CONFIG.LOCATE_RX_USER_CLOCKING {CORE} \
 ] [get_ips gtwizard_ultrascale_0]
