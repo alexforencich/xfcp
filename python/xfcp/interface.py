@@ -108,12 +108,20 @@ class Interface(object):
 
 
 class SerialInterface(Interface):
-    def __init__(self, port='/dev/ttyUSB0', baud=115200, timeout=10):
+    def __init__(self, port='/dev/ttyUSB0', baud=115200, timeout=10, driver=None):
+        """
+        driver is expected to be a SerialDriver class from the labgrid module
+        """
         super().__init__()
 
         self.port = port
         self.baud = baud
-        self.serial_port = serial.Serial(port, baud, timeout=timeout)
+
+        # if labgrid driver is given, use labgrid driver
+        if driver is None:
+            self.serial_port = serial.Serial(port, baud, timeout=timeout)
+        else:
+            self.serial_port = driver.serial
 
     @property
     def timeout(self):
